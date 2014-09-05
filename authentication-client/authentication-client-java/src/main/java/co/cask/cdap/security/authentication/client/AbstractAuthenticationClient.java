@@ -67,7 +67,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    *
    * @return {@link AccessToken} object containing the access token
    * @throws IOException in case of a problem or the connection was aborted or if the access token is not received
-   * successfully form the authentication server
+   * successfully from the authentication server
    */
   protected abstract AccessToken fetchAccessToken() throws IOException;
 
