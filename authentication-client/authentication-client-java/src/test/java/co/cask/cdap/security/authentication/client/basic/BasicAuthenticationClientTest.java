@@ -18,8 +18,10 @@ package co.cask.cdap.security.authentication.client.basic;
 
 import co.cask.cdap.security.authentication.client.AccessToken;
 import co.cask.cdap.security.authentication.client.AuthenticationClient;
+import co.cask.cdap.security.authentication.client.basic.handlers.AuthDisabledHandler;
 import co.cask.cdap.security.authentication.client.basic.handlers.AuthenticationHandler;
 import co.cask.cdap.security.authentication.client.basic.handlers.BaseHandler;
+import co.cask.cdap.security.authentication.client.basic.handlers.EmptyUrlListHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.localserver.LocalTestServer;
 import org.junit.After;
@@ -31,6 +33,7 @@ import java.util.Properties;
 import javax.ws.rs.NotAuthorizedException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -38,13 +41,13 @@ public class BasicAuthenticationClientTest {
   public static final String USERNAME = "admin";
   public static final String PASSWORD = "realtime";
   public static final String TOKEN = "SuccessGeneratedToken";
+  public static final String NEW_TOKEN = "SuccessGeneratedSecondToken";
   public static final String TOKEN_TYPE = "Bearer";
   public static final String EMPTY_TOKEN_USERNAME = "emptyToken";
+  public static final String EXPIRED_TOKEN_USERNAME = "expiredToken";
   public static final Long TOKEN_LIFE_TIME = 86400L;
   private static final String USERNAME_PROP_NAME = "security.auth.client.username";
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
-  private static final String HOSTNAME_PROP_NAME = "security.auth.client.gateway.hostname";
-  private static final String PORT_PROP_NAME = "security.auth.client.gateway.port";
 
   private AuthenticationClient authenticationClient;
 
@@ -65,8 +68,7 @@ public class BasicAuthenticationClientTest {
     baseHandler.setAuthHost(testServerHost);
     baseHandler.setAuthPort(testServerPort);
     testProperties = new Properties();
-    testProperties.setProperty(HOSTNAME_PROP_NAME, testServerHost);
-    testProperties.setProperty(PORT_PROP_NAME, String.valueOf(testServerPort));
+    authenticationClient.setConnectionInfo(testServerHost, testServerPort, false);
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
   }
@@ -96,6 +98,18 @@ public class BasicAuthenticationClientTest {
     authenticationClient.getAccessToken();
   }
 
+  @Test
+  public void testExpiredTokenGetAccessToken() throws IOException {
+    testProperties.setProperty(USERNAME_PROP_NAME, EXPIRED_TOKEN_USERNAME);
+    authenticationClient.configure(testProperties);
+    AccessToken accessToken = authenticationClient.getAccessToken();
+    assertEquals(TOKEN, accessToken.getValue());
+    accessToken = authenticationClient.getAccessToken();
+    assertTrue(accessToken != null);
+    assertEquals(NEW_TOKEN, accessToken.getValue());
+    assertEquals(TOKEN_TYPE, accessToken.getTokenType());
+  }
+
   @Test(expected = IllegalStateException.class)
   public void testNotConfigureGetAccessToken() throws IOException {
     authenticationClient.getAccessToken();
@@ -113,6 +127,17 @@ public class BasicAuthenticationClientTest {
     authenticationClient.configure(testProperties);
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void testSecondCallConfigure() throws IOException {
+    authenticationClient.configure(testProperties);
+    authenticationClient.configure(testProperties);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testSecondCallSetConnectionInfo() throws IOException {
+    authenticationClient.setConnectionInfo("localhost", 443, true);
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void testEmptyPropertiesConfigure() throws IOException {
     authenticationClient.configure(new Properties());
@@ -122,6 +147,20 @@ public class BasicAuthenticationClientTest {
   public void testIsAuthEnabled() throws IOException {
     authenticationClient.configure(testProperties);
     assertTrue(authenticationClient.isAuthEnabled());
+  }
+
+  @Test(expected = IOException.class)
+  public void testEmptyUrlListIsAuthEnabled() throws IOException {
+    localTestServer.register("*", new EmptyUrlListHandler());
+    authenticationClient.configure(testProperties);
+    assertTrue(authenticationClient.isAuthEnabled());
+  }
+
+  @Test
+  public void testAuthDisabledIsAuthEnabled() throws IOException {
+    localTestServer.register("*", new AuthDisabledHandler());
+    authenticationClient.configure(testProperties);
+    assertFalse(authenticationClient.isAuthEnabled());
   }
 
   @After
