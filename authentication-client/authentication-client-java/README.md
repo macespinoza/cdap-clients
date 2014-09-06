@@ -5,11 +5,11 @@ The Authentication Client Java API is for fetching the access token from the aut
 
 ## Supported Actions
 
- - fetch a access token from the authentication server with credentials, which are supported by the active 
- authentication mechanism;
- - check is the authentication enabled in the gateway server;
- - invalidate cached access token;
- - get credentials which are required by the authentication provider on authentication server.  
+ - fetches an access token from the authentication server with credentials supported by the active authentication 
+   mechanism;
+ - check that authentication is enabled in the gateway server;
+ - invalidate any cached access token;
+ - retrieve credentials required by the authentication provider from the authentication server. 
  
  Current implementation supports three authentication mechanisms:
   - Basic Authentication;
@@ -39,35 +39,36 @@ The Authentication Client Java API is for fetching the access token from the aut
    
  Create a ```BasicAuthenticationClient``` instance by full class name:
  
- ``` 
-   AuthenticationClient authenticationClient 
-        = configuration.getClassByName("co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient");
+ ```
+  String authClientClassName = "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
+  AuthenticationClient authenticationClient = configuration.getClassByName(authClientClassName);
  ```
  
- Set the gateway server connection info (this method can be called only once for every AuthenticationClient object):
+ Set the gateway server connection info (this method needs calling only once for every ```AuthenticationClient``` 
+ object):
   - the gateway server hostname;
   - the gateway server port;
-  - the boolean flag, as true if SSL is enabled in the gateway server.
+  - the boolean flag, ```true``` if SSL is enabled in the gateway server.
  
  ```
   authenticationClient.setConnectionInfo("localhost", 10000, false);
  ```
   
- Configure the authentication client with additional properties (this method also can be called only once for every 
- AuthenticationClient object):
+ Configure the authentication client with additional properties (this method needs calling only once for every 
+ ```AuthenticationClient``` object):
  
  ```
   authenticationClient.configure(properties);
  ```
 
- **Note:** The BasicAuthenticationClient supports such properties:
+ **Note:** The ```BasicAuthenticationClient``` supports these properties:
  
  ```
   security.auth.client.username=admin        
   security.auth.client.password=realtime     
  ```
  
- Check if authentication enabled in the gateway server:
+ Check if authentication is enabled in the gateway server:
  
  ```
   boolean isEnabled = authenticationClient.isAuthEnabled();
@@ -78,7 +79,7 @@ The Authentication Client Java API is for fetching the access token from the aut
  ```  
    String token = authenticationClient.getAccessToken();  
  ```
- If an access token is not available, IOException will be thrown.
+ If an access token is not available, an ```IOException``` will be thrown. [
  
  
  Invalidate an access token:
@@ -87,13 +88,13 @@ The Authentication Client Java API is for fetching the access token from the aut
    authenticationClient.invalidateToken();
  ```
  
- Get credentials which are required by the authentication provider on authentication server:
+ Retrieve credentials required by the authentication provider from the authentication server:
 
  ```
    List<Credential> credentials = authenticationClient.getRequiredCredentials();
  ```
- **Note:** Interactive clients can use this list to obtain credentials from the user, and then run 
- ```authenticationClient.configure(properties);``` method:
+ **Note:** Interactive clients can use this list to obtain credentials from the user and then configure 
+ the ```authenticationClient```:
  
  ```
    for(Credential cred : credentials) {
@@ -106,7 +107,7 @@ The Authentication Client Java API is for fetching the access token from the aut
  
  ```getAccessToken();``` methods from the ```BasicAuthenticationClient``` throw exceptions using response code 
  analysis from the authentication server. These exceptions help determine if the request was processed unsuccessfully 
- and what was a reason of.
+ and for what reason.
  
  All cases, except a **200 OK** response, will throw these exceptions:
  
