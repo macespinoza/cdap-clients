@@ -5,7 +5,7 @@ The Authentication Client Java API is for fetching the access token from the aut
 
 ## Supported Actions
 
- - fetches an access token from the authentication server with credentials supported by the active authentication 
+ - fetch an access token from the authentication server with credentials supported by the active authentication 
    mechanism;
  - check that authentication is enabled in the gateway server;
  - invalidate any cached access token;
@@ -79,7 +79,7 @@ The Authentication Client Java API is for fetching the access token from the aut
  ```  
    String token = authenticationClient.getAccessToken();  
  ```
- If an access token is not available, an ```IOException``` will be thrown. [
+ If an access token is not available, an ```IOException``` will be thrown. 
  
  
  Invalidate an access token:
