@@ -1,4 +1,23 @@
-import httplib
+# -*- coding: utf-8 -*-
+# Copyright © 2014 Cask Data, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+try:
+    import httplib as hl
+except ImportError:
+    import http.client as hl
+
 import json
 import logging
 from random import randint
@@ -49,11 +68,13 @@ class AbstractAuthenticationClient(AuthenticationClient):
         LOG.debug(u"Try to get the authentication URI from the gateway server: {}.", self.__base_url)
 
         response = requests.get(self.__base_url)
-
-        if response.status_code == httplib.UNAUTHORIZED:
+        result = None
+        if response.status_code == hl.UNAUTHORIZED:
             uri_list = response.json()[self.AUTH_URI_KEY]
             if uri_list:
                 result = uri_list[randint(0, (len(uri_list) - 1))]
+            else:
+                raise IOError("Authentication servers list is empty.")
             return result
 
     def get_access_token(self):
@@ -62,7 +83,6 @@ class AbstractAuthenticationClient(AuthenticationClient):
         if self.__access_token is None or self.is_token_expired():
             request_time = int(round(time.time() * 1000))
             access_token = self.fetch_access_token()
-            expire_time = access_token.expires_in
             expiration_time = request_time + access_token.expires_in - self.SPARE_TIME_IN_MILLIS
             LOG.debug(u"Received the access token successfully. Expiration date is {}.",
                       datetime.datetime.fromtimestamp(expiration_time/1000).strftime(u'%Y-%m-%d %H:%M:%S.%f'))
@@ -71,10 +91,7 @@ class AbstractAuthenticationClient(AuthenticationClient):
     def execute(self, request_str):
         response = requests.get(self.auth_url, headers=json.loads(request_str))
         status_code = response.status_code
-        headers = response.headers
-
         RestClientUtils.verify_response_code(status_code)
-        t= response.content
         token_value = response.json()[self.ACCESS_TOKEN_KEY]
         token_type = response.json()[self.TOKEN_TYPE_KEY]
         expires_in_str = response.json()[self.EXPIRES_IN_KEY]

@@ -1,4 +1,23 @@
-import httplib
+# -*- coding: utf-8 -*-
+# Copyright © 2014 Cask Data, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+try:
+    import httplib as hl
+except ImportError:
+    import http.client as hl
+
 import logging
 
 
@@ -9,19 +28,22 @@ class RestClientUtils:
 
     @staticmethod
     def verify_response_code(response_code):
-        RestClientUtils.check_status(response_code)
+        if response_code is hl.OK:
+            LOG.debug("Success operation result code.")
+            return
+        else:
+            RestClientUtils.check_status(response_code)
 
     @staticmethod
     def check_status(status):
         raise {
-            httplib.OK: LOG.debug("Success operation result code."),
-            httplib.NOT_FOUND: RestClientUtils.raise_not_found_error(status),
-            httplib.BAD_REQUEST: RestClientUtils.raise_base_request_eror(status),
-            httplib.CONFLICT: RestClientUtils.raise_conflict_error(status),
-            httplib.UNAUTHORIZED: RestClientUtils.raise_unauthorized_error(status),
-            httplib.FORBIDDEN: RestClientUtils.raise_forbidden_error(status),
-            httplib.METHOD_NOT_ALLOWED: RestClientUtils.raise_method_not_allowed(status),
-            httplib.INTERNAL_SERVER_ERROR: RestClientUtils.raise_internal_server_error(status)
+            hl.NOT_FOUND: RestClientUtils.raise_not_found_error(status),
+            hl.BAD_REQUEST: RestClientUtils.raise_base_request_eror(status),
+            hl.CONFLICT: RestClientUtils.raise_conflict_error(status),
+            hl.UNAUTHORIZED: RestClientUtils.raise_unauthorized_error(status),
+            hl.FORBIDDEN: RestClientUtils.raise_forbidden_error(status),
+            hl.METHOD_NOT_ALLOWED: RestClientUtils.raise_method_not_allowed(status),
+            hl.INTERNAL_SERVER_ERROR: RestClientUtils.raise_internal_server_error(status)
         }.get(status, RestClientUtils.raise_not_supported_error(status))
 
     @staticmethod
@@ -72,14 +94,17 @@ class BaseHttpError(Exception):
     def __str__(self):
         return u"Code: %s \nMessage: %s" % (self.__errorCode, self.__errorMsg)
 
+
 class BadRequestError(BaseHttpError):
 
     def __init__(self, code, msg):
-        super(BadRequestError,self).__init__(code, msg)
+        super(BadRequestError, self).__init__(code, msg)
+
 
 class NotFoundError(BaseHttpError):
     def __init__(self, code, msg):
         super(NotFoundError, self).__init__(code, msg)
+
 
 class ConflictError(BaseHttpError):
     def __init__(self, code, msg):
@@ -109,4 +134,3 @@ class InternalServerError(BaseHttpError):
 class NotSupportedError(BaseHttpError):
     def __init__(self, code, msg):
         super(NotSupportedError, self).__init__(code, msg)
-
