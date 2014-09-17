@@ -26,21 +26,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.config.Lookup;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.SchemePortResolver;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.net.www.content.text.PlainTextInputStream;
 
 import java.io.IOException;
 import java.net.URI;
@@ -241,7 +234,8 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     SSLConnectionSocketFactory sf = new SSLConnectionSocketFactory(sslContext,
       org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     return RegistryBuilder
-      .<ConnectionSocketFactory>create().register("https", sf).register("http", PlainConnectionSocketFactory.getSocketFactory())
+      .<ConnectionSocketFactory>create().register("https", sf)
+      .register("http", PlainConnectionSocketFactory.getSocketFactory())
       .build();
   }
 }
