@@ -26,7 +26,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private URI baseUrl;
   private URI authUrl;
   private Boolean authEnabled;
-  private final HttpClient httpClient;
+  private HttpClient httpClient;
 
   /**
    * Fetches the access token from the authentication server.
@@ -70,13 +69,6 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * successfully from the authentication server
    */
   protected abstract AccessToken fetchAccessToken() throws IOException;
-
-  /**
-   * Constructs new instance.
-   */
-  protected AbstractAuthenticationClient() {
-    this.httpClient = new DefaultHttpClient();
-  }
 
   @Override
   public void invalidateToken() {
@@ -142,10 +134,11 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseUrl);
     String result = StringUtils.EMPTY;
     HttpGet get = new HttpGet(baseUrl);
-    HttpResponse response = httpClient.execute(get);
+    HttpResponse response = getHttpClient().execute(get);
     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
       Map<String, List<String>> responseMap = GSON.fromJson(EntityUtils.toString(response.getEntity()),
-                                                            new TypeToken<Map<String, List<String>>>() { }.getType());
+                                                            new TypeToken<Map<String, List<String>>>() {
+                                                            }.getType());
       List<String> uriList = responseMap.get(AUTH_URI_KEY);
       if (uriList != null && !uriList.isEmpty()) {
         result = uriList.get(RANDOM.nextInt(uriList.size()));
@@ -160,16 +153,17 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * Executes fetch access token request.
    *
    * @param request the http request to fetch access token from the authentication server
-   * @return  {@link AccessToken} object containing the access token
+   * @return {@link AccessToken} object containing the access token
    * @throws IOException IOException in case of a problem or the connection was aborted or if the access token is not
    * received successfully from the authentication server
    */
   protected AccessToken execute(HttpRequestBase request) throws IOException {
-    HttpResponse httpResponse = httpClient.execute(request);
+    HttpResponse httpResponse = getHttpClient().execute(request);
     RestClientUtils.verifyResponseCode(httpResponse);
 
     Map<String, String> responseMap = GSON.fromJson(EntityUtils.toString(httpResponse.getEntity()),
-                                                    new TypeToken<Map<String, String>>() { }.getType());
+                                                    new TypeToken<Map<String, String>>() {
+                                                    }.getType());
     String tokenValue = responseMap.get(ACCESS_TOKEN_KEY);
     String tokenType = responseMap.get(TOKEN_TYPE_KEY);
     String expiresInStr = responseMap.get(EXPIRES_IN_KEY);
@@ -187,4 +181,23 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   protected URI getAuthUrl() {
     return authUrl;
   }
+
+
+  /**
+   * @return the HttpClient instance
+   */
+  private HttpClient getHttpClient() {
+    if (httpClient == null) {
+      httpClient = initHttpClient();
+    }
+    return httpClient;
+  }
+
+  /**
+   * Initialize the HttpClient
+   *
+   * @return the HttpClient instance
+   */
+  protected abstract HttpClient initHttpClient();
+
 }
