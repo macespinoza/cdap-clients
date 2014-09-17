@@ -26,9 +26,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.config.Lookup;
+import org.apache.http.config.Registry;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,11 +109,11 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
 
   @Override
   protected HttpClient initHttpClient() {
+    Registry<ConnectionSocketFactory> registry = null;
     if (disableCertCheck) {
       try {
-        ClientConnectionManager cm = new BasicClientConnectionManager(getSchemeRegistry());
+        registry = getRegistryWithDisabledCertCheck();
         LOG.debug("init HTTP Client with self-signed certificates");
-        return new DefaultHttpClient(cm);
       } catch (KeyManagementException e) {
         LOG.error("Failed to init SSL context: {}", e);
       } catch (NoSuchAlgorithmException e) {
@@ -116,8 +121,10 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
       }
     }
 
-    return new DefaultHttpClient();
+    if (registry != null) {
+      return HttpClients.custom().setConnectionManager(new BasicHttpClientConnectionManager(registry)).build();
+    } else {
+      return HttpClients.createDefault();
+    }
   }
-
-
 }

@@ -26,9 +26,15 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.Lookup;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.SchemePortResolver;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -211,7 +217,8 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    */
   protected abstract HttpClient initHttpClient();
 
-  public static SchemeRegistry getSchemeRegistry() throws KeyManagementException, NoSuchAlgorithmException {
+  public static Registry<ConnectionSocketFactory> getRegistryWithDisabledCertCheck()
+    throws KeyManagementException, NoSuchAlgorithmException {
     SSLContext sslContext = SSLContext.getInstance("SSL");
     sslContext.init(null, new TrustManager[]{new X509TrustManager() {
       @Override
@@ -229,11 +236,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
         throws CertificateException {
       }
     }}, new SecureRandom());
-    SSLSocketFactory sf = new SSLSocketFactory(sslContext, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-    SchemeRegistry schemeRegistry = new SchemeRegistry();
-    schemeRegistry.register(new Scheme(HTTPS_PROTOCOL, 10101, sf));
-    schemeRegistry.register(new Scheme(HTTP_PROTOCOL, 80, PlainSocketFactory.getSocketFactory()));
-    return schemeRegistry;
+    SSLConnectionSocketFactory sf = new SSLConnectionSocketFactory(sslContext,
+      org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    return RegistryBuilder
+      .<ConnectionSocketFactory>create().register("https", sf).register("http", sf)
+      .build();
   }
-
 }
