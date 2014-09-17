@@ -27,22 +27,16 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * Authentication client that supports "Basic access authentication" using username and password.
@@ -53,6 +47,7 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   private static final String AUTHENTICATION_HEADER_PREFIX_BASIC = "Basic ";
   private static final String USERNAME_PROP_NAME = "security.auth.client.username";
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
+  private static final String DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME = "security.auth.disable.certificate.check";
 
   private boolean disableCertCheck;
   private String username;
@@ -80,8 +75,7 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
     password = properties.getProperty(PASSWORD_PROP_NAME);
     Preconditions.checkArgument(StringUtils.isNotEmpty(password), "The password property cannot be empty.");
 
-    String sslCheck = properties.getProperty("disable.ssl.certificate.check");
-    disableCertCheck = Boolean.valueOf(sslCheck);
+    disableCertCheck = Boolean.valueOf(properties.getProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME));
 
     LOG.debug("Basic authentication client is configured successfully.");
   }
@@ -110,38 +104,18 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
 
   @Override
   protected HttpClient initHttpClient() {
-    if (!disableCertCheck) {
+    if (disableCertCheck) {
       try {
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, new TrustManager[]{new X509TrustManager() {
-          @Override
-          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return null;
-          }
-
-          @Override
-          public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
-            throws CertificateException {
-          }
-
-          @Override
-          public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
-            throws CertificateException {
-          }
-        }}, new SecureRandom());
-        SSLSocketFactory sf = new SSLSocketFactory(sslContext);
-        Scheme httpsScheme = new Scheme("https", 10101, sf);
-        SchemeRegistry schemeRegistry = new SchemeRegistry();
-        schemeRegistry.register(httpsScheme);
-        ClientConnectionManager cm = new BasicClientConnectionManager(schemeRegistry);
-        LOG.info("init HTTP Client with SSL enabled");
+        ClientConnectionManager cm = new BasicClientConnectionManager(getSchemeRegistry());
+        LOG.debug("init HTTP Client with self-signed certificates");
         return new DefaultHttpClient(cm);
-      } catch (Exception e) {
-        LOG.error("Certificate is not signed by a trusted CA. {}", e);
+      } catch (KeyManagementException e) {
+        LOG.error("Failed to init SSL context: {}", e);
+      } catch (NoSuchAlgorithmException e) {
+        LOG.error("Failed to get instance of SSL context: {}", e);
       }
     }
 
-    LOG.info("init HTTP Client with SSL disabled");
     return new DefaultHttpClient();
   }
 

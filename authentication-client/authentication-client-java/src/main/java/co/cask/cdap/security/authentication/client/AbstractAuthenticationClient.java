@@ -26,17 +26,28 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Abstract authentication client implementation with common methods.
@@ -199,5 +210,30 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * @return the HttpClient instance
    */
   protected abstract HttpClient initHttpClient();
+
+  public static SchemeRegistry getSchemeRegistry() throws KeyManagementException, NoSuchAlgorithmException {
+    SSLContext sslContext = SSLContext.getInstance("SSL");
+    sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+      @Override
+      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
+
+      @Override
+      public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
+        throws CertificateException {
+      }
+
+      @Override
+      public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
+        throws CertificateException {
+      }
+    }}, new SecureRandom());
+    SSLSocketFactory sf = new SSLSocketFactory(sslContext, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    SchemeRegistry schemeRegistry = new SchemeRegistry();
+    schemeRegistry.register(new Scheme(HTTPS_PROTOCOL, 10101, sf));
+    schemeRegistry.register(new Scheme(HTTP_PROTOCOL, 80, PlainSocketFactory.getSocketFactory()));
+    return schemeRegistry;
+  }
 
 }
