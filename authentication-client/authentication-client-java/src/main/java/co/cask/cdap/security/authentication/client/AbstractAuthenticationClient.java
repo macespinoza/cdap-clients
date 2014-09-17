@@ -174,8 +174,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     RestClientUtils.verifyResponseCode(httpResponse);
 
     Map<String, String> responseMap = GSON.fromJson(EntityUtils.toString(httpResponse.getEntity()),
-                                                    new TypeToken<Map<String, String>>() {
-                                                    }.getType());
+                                                    new TypeToken<Map<String, String>>() { }.getType());
     String tokenValue = responseMap.get(ACCESS_TOKEN_KEY);
     String tokenType = responseMap.get(TOKEN_TYPE_KEY);
     String expiresInStr = responseMap.get(EXPIRES_IN_KEY);
