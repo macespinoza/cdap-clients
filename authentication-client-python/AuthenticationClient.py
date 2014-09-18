@@ -19,9 +19,16 @@ import six
 
 @six.add_metaclass(abc.ABCMeta)
 class AuthenticationClient(object):
-
+    """
+     The client interface to fetch access token from the authentication server.
+    """
     @abc.abstractmethod
-    def configure(self, host, port, ssl):
+    def configure(self, properties):
+        """
+        Configures the authentication client and can be called only once for every AuthenticationClient object
+        properties -- the configuration for authentication client which includes credentials and some additional
+        properties, if needed
+        """
         return
 
     @abc.abstractmethod
@@ -46,6 +53,10 @@ class AuthenticationClient(object):
 
     @abc.abstractmethod
     def fetch_access_token(self):
+        return
+
+    @abc.abstractmethod
+    def ssl_verification_status(self):
         return
 
     @abc.abstractmethod

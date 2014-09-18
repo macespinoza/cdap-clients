@@ -62,8 +62,10 @@ class AuthenticationHandler(brh):
 
             auth_header_val = self.headers[u'Authorization']
             if auth_header_val:
-                auth_header_val = auth_header_val.replace(u'Basic ', '')
-                credentials_str = base64.b64decode(auth_header_val)
+                auth_header_val = auth_header_val.replace('Basic ', '')
+                credentials_str = base64.b64decode(auth_header_val).decode('utf-8')
+
+                # credentials_str = credentials_str.encode("UTF-8")
                 credentials = credentials_str.split(':', 1)
                 username = credentials[0]
                 password = credentials[1]
@@ -73,7 +75,7 @@ class AuthenticationHandler(brh):
                     self.send_header(u"Content-type", u"application/json")
                     self.end_headers()
                     self.wfile.write(self.create_resp_body(TestConstants.TOKEN,
-                                                           TestConstants.TOKEN_TYPE, TestConstants.TOKEN_LIFE_TIME))
+                                                           TestConstants.TOKEN_TYPE, TestConstants.TOKEN_LIFE_TIME).encode('utf-8'))
                 elif TestConstants.EMPTY_TOKEN_USERNAME == username:
                     status_code = hl.OK
                     self.send_response(status_code)

@@ -22,6 +22,7 @@ class Config(object):
     def __init__(self):
         self.__username = None
         self.__password = None
+        self.__disable_cert_check = None
 
     @property
     def security_auth_client_username(self):
@@ -39,6 +40,14 @@ class Config(object):
     def security_auth_client_password(self, password):
         self.__password = password
 
+    @property
+    def security_auth_disable_ssl_cert_check(self):
+        return self.__disable_cert_check
+
+    @security_auth_disable_ssl_cert_check.setter
+    def security_auth_disable_ssl_cert_check(self, disable_cert_check):
+        self.__disable_cert_check = disable_cert_check
+
     def read_from_file(self, file):
         new_config = Config()
         json_config = None
@@ -47,5 +56,8 @@ class Config(object):
 
         new_config.__username = json_config[u'security_auth_client_username']
         new_config.__password = json_config[u'security_auth_client_password']
-
+        if json_config[u'security_auth_disable_ssl_cert_check'] is "true":
+            new_config.__disable_cert_check = True
+        else:
+            new_config.__disable_cert_check = False
         return new_config

@@ -33,6 +33,7 @@ LOG = logging.getLogger(__name__)
 
 
 class AbstractAuthenticationClient(AuthenticationClient):
+
     ACCESS_TOKEN_KEY = u"access_token"
     AUTH_URI_KEY = u"auth_uri"
     AUTHENTICATION_HEADER_PREFIX_BASIC = u"Basic "
@@ -67,7 +68,7 @@ class AbstractAuthenticationClient(AuthenticationClient):
             raise ValueError(u"Base authentication client is not configured!")
         LOG.debug(u"Try to get the authentication URI from the gateway server: {}.", self.__base_url)
 
-        response = requests.get(self.__base_url)
+        response = requests.get(self.__base_url, verify=self.ssl_verification_status())
         result = None
         if response.status_code == hl.UNAUTHORIZED:
             uri_list = response.json()[self.AUTH_URI_KEY]
@@ -89,7 +90,7 @@ class AbstractAuthenticationClient(AuthenticationClient):
         return access_token
 
     def execute(self, request_str):
-        response = requests.get(self.auth_url, headers=json.loads(request_str))
+        response = requests.get(self.auth_url, headers=json.loads(request_str), verify=self.ssl_verification_status())
         status_code = response.status_code
         RestClientUtils.verify_response_code(status_code)
         token_value = response.json()[self.ACCESS_TOKEN_KEY]

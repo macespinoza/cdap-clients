@@ -17,7 +17,6 @@ import base64
 import logging
 import json
 from AbstractAuthenticationClient import AbstractAuthenticationClient
-from Config import Config
 from Credential import Credential
 
 LOG = logging.getLogger(__name__)
@@ -32,6 +31,7 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         super(BasicAuthenticationClient, self).__init__()
         self.__username = None
         self.__password = None
+        self.__ssl_check_status = None
         self.__credentials = (Credential(self.USERNAME_PROP_NAME, u'Username for basic authentication.', False),
                               Credential(self.PASSWORD_PROP_NAME, u'Password for basic authentication.', True))
 
@@ -58,16 +58,18 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         if not self.__username or not self.__password:
             raise ValueError(u'Base authentication client is not configured!')
         LOG.debug(u'Authentication is enabled in the gateway server. Authentication URI {}.', self.auth_url)
-
-        base64string = base64.encodestring((u'%s:%s' % (self.__username, self.__password)).replace('\n', '').encode('utf-8'))
-        auth_header = json.dumps({u"Authorization": u"Basic %s" % base64string})
+        base64string = base64.b64encode((u'%s:%s' % (self.__username, self.__password)).encode('utf-8'))
+        auth_header = json.dumps({u"Authorization": u"Basic %s" % base64string.decode('utf-8')})
 
         return self.execute(auth_header)
 
-    def configure(self, config_file):
+    def ssl_verification_status(self):
+        return self.__ssl_check_status
+
+    def configure(self, config):
         if self.__username or self.__password:
             raise ValueError(u'Client is already configured!')
-        config = Config().read_from_file(config_file)
+
         self.__username = config.security_auth_client_username
         if not self.__username:
             raise ValueError(u'The username property cannot be empty.')
@@ -75,3 +77,5 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         self.__password = config.security_auth_client_password
         if not self.__password:
             raise ValueError(u'The password property cannot be empty.')
+
+        self.__ssl_check_status = config.security_auth_disable_ssl_cert_check

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 # Copyright © 2014 Cask Data, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -38,6 +37,7 @@ try:
 except ImportError:
     import unittest as unittest
 
+from Config import Config
 from BasicAuthenticationClient import BasicAuthenticationClient
 from AuthHandler import AuthenticationHandler
 import TestConstants
@@ -55,7 +55,6 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.__authentication_client.set_connection_info(u'localhost', TestConstants.SERVER_PORT, False)
         AuthenticationHandler.AUTH_HOST = u'localhost'
         AuthenticationHandler.AUTH_PORT = TestConstants.SERVER_PORT
-
         self.empty_response_server = SimpleTCPServer((u"localhost", TestConstants.SERVER_PORT+1), EmptyUrlListHandler)
         threading.Thread(target=self.empty_response_server.serve_forever).start()
 
@@ -71,12 +70,13 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.auth_disabled_server.shutdown()
 
     def test_auth_is_auth_enabled(self):
-        self.__authentication_client.configure(u"auth_config.json")
+        config = Config().read_from_file(u"auth_config.json")
+        self.__authentication_client.configure(config)
         assert(self.__authentication_client.is_auth_enabled())
 
     def test_success_get_access_token(self):
-
-        self.__authentication_client.configure(u"auth_config.json")
+        config = Config().read_from_file(u"auth_config.json")
+        self.__authentication_client.configure(config)
         access_token = self.__authentication_client.get_access_token()
         assert access_token
         self.assertEqual(TestConstants.TOKEN, access_token.value)
@@ -106,22 +106,26 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.assertEquals(TestConstants.TOKEN_TYPE, access_token.token_type)
 
     def test_empty_username_configure(self):
-        self.assertRaises(ValueError, self.__authentication_client.configure, u"empty_username_config.json")
+        config = Config().read_from_file(u"empty_username_config.json")
+        self.assertRaises(ValueError, self.__authentication_client.configure, config)
 
     def test_is_auth_enabled(self):
-        self.__authentication_client.configure(u"auth_config.json")
+        config = Config().read_from_file(u"auth_config.json")
+        self.__authentication_client.configure(config)
         self.assertTrue(self.__authentication_client.is_auth_enabled())
 
     def test_empty_url_list(self):
         empty_auth_client = BasicAuthenticationClient()
         empty_auth_client.set_connection_info(u'localhost', TestConstants.SERVER_PORT+1, False)
-        empty_auth_client.configure(u"auth_config.json")
+        config = Config().read_from_file(u"auth_config.json")
+        empty_auth_client.configure(config)
         self.assertRaises(IOError, empty_auth_client.is_auth_enabled)
 
     def test_auth_disabled_is_auth_enabled(self):
         dis_auth_client = BasicAuthenticationClient()
         dis_auth_client.set_connection_info(u'localhost', TestConstants.SERVER_PORT+2, False)
-        dis_auth_client.configure(u"auth_config.json")
+        config = Config().read_from_file(u"auth_config.json")
+        dis_auth_client.configure(config)
         self.assertFalse(dis_auth_client.is_auth_enabled())
 
 
