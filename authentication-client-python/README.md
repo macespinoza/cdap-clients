@@ -1,18 +1,18 @@
-# The Authentication Client Python API is for fetching the access token from the authentication server.
+# Authentication Client Python API
 
-Authentication Client Python API for supporting via external Python applications.
+The Authentication Client Python API is for fetching the access token from the authentication server when writing
+external Python applications.
 
 ## Supported Actions
 
- - fetch a access token from the authentication server with credentials, which are supported by the active 
- authentication mechanism;
- - check is the authentication enabled in the gateway server;
- - invalidate cached access token. 
+ - Fetch an access token from the authentication server with credentials supported by the active authentication mechanism;
+ - Check if authentication is enabled in the gateway server; and
+ - Invalidate any cached access tokens. 
  
  Current implementation supports three authentication mechanisms:
-  - Basic Authentication;
-  - LDAP;
-  - JAASPI.
+ - Basic Authentication
+ - LDAP
+ - JAASPI
 
 ## Usage
 
@@ -25,19 +25,20 @@ Authentication Client Python API for supporting via external Python applications
 
 ## Example
    
- Create a ```BasicAuthenticationClient``` instance,
+ Create a BasicAuthenticationClient instance:
  
  ```
    authentication_client = BasicAuthenticationClient()
  ```
       
- Set connection parameters: authentication server host, authentication server host port, SSL mode
+ Set the connection parameters: authentication server host; authentication server host port; SSL mode:
  
  ```
    authentication_client.set_connection_info('localhost', 10000, False)
  ```
  
- Create configuration file structure in JSON format:
+ Create the configuration file structure in JSON format:
+ 
  ```
   {
     "security_auth_client_username": "admin",
@@ -47,11 +48,12 @@ Authentication Client Python API for supporting via external Python applications
  ```  
  
  Load configuration from JSON File:
+ 
  ```
  config = Config().read_from_file('auth_config.json')
  ```
  
- Or set required field to Config object:
+ Or set the required fields in the ```Config``` object:
  ```
  config = Config()
  config.security_auth_client_username = "admin"
@@ -59,17 +61,19 @@ Authentication Client Python API for supporting via external Python applications
  config.security_ssl_cert_check = "true"
  ```
  
- Configure authentication client with Config object:
+ Configure the authentication client with the ```Config``` object:
  ```
  authentication_client.configure(config)
  ```
- Check is authentication enabled in the gateway server:
+ 
+ Check if authentication is enabled in the gateway server:
  
  ```
   is_enabled = authenticationClient.is_auth_enabled();
  ``` 
                       
- Get access token from the authentication server:
+ Retrieve the access token from the authentication server:
+ 
  ```
  token = authenticationClient.get_access_token();  
  ```
