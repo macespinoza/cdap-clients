@@ -15,6 +15,9 @@
 
 
 class Credential(object):
+    """
+    Represents a credential required for authentication.
+    """
 
     def __init__(self, name, description, secret):
         self.__name = name

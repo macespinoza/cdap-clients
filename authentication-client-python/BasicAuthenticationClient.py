@@ -32,8 +32,12 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         self.__username = None
         self.__password = None
         self.__security_ssl_cert_check = False
-        self.__credentials = (Credential(self.USERNAME_PROP_NAME, u'Username for basic authentication.', False),
-                              Credential(self.PASSWORD_PROP_NAME, u'Password for basic authentication.', True))
+        self.__credentials = (Credential(self.USERNAME_PROP_NAME,
+                                         u'Username for basic authentication.',
+                                         False),
+                              Credential(self.PASSWORD_PROP_NAME,
+                                         u'Password for basic authentication.',
+                                         True))
 
     @property
     def username(self):
@@ -56,10 +60,14 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
 
     def fetch_access_token(self):
         if not self.__username or not self.__password:
-            raise ValueError(u'Base authentication client is not configured!')
-        LOG.debug(u'Authentication is enabled in the gateway server. Authentication URI {}.', self.auth_url)
-        base64string = base64.b64encode((u'%s:%s' % (self.__username, self.__password)).encode('utf-8'))
-        auth_header = json.dumps({u"Authorization": u"Basic %s" % base64string.decode('utf-8')})
+            raise ValueError(u'Base authentication client'
+                             u' is not configured!')
+        LOG.debug(u'Authentication is enabled in the gateway server.'
+                  u' Authentication URI {}.', self.auth_url)
+        base64string = base64.b64encode(
+            (u'%s:%s' % (self.__username, self.__password)).encode('utf-8'))
+        auth_header = json.dumps(
+            {u"Authorization": u"Basic %s" % base64string.decode('utf-8')})
 
         return self.execute(auth_header)
 

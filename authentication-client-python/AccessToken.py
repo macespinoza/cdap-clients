@@ -15,6 +15,9 @@
 
 
 class AccessToken:
+    """
+    This class represents access token object.
+    """
 
     def __init__(self, value, expires_in, token_type):
         self.__value = value

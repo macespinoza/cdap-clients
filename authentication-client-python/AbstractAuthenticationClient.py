@@ -33,6 +33,9 @@ LOG = logging.getLogger(__name__)
 
 
 class AbstractAuthenticationClient(AuthenticationClient):
+    """
+    Abstract authentication client implementation with common methods.
+    """
 
     ACCESS_TOKEN_KEY = u"access_token"
     AUTH_URI_KEY = u"auth_uri"
@@ -48,6 +51,7 @@ class AbstractAuthenticationClient(AuthenticationClient):
         self.__auth_enabled = None
         self.__auth_url = None
         self.__base_url = None
+        self.__expiration_time = None
 
     def invalidate_token(self):
         self.__access_token = None
@@ -61,14 +65,26 @@ class AbstractAuthenticationClient(AuthenticationClient):
     def set_connection_info(self, host, port, ssl):
         if self.__base_url:
             raise ValueError(u"Connection info is already configured!")
-        self.__base_url = u'%s://%s:%d' % (self.HTTPS_PROTOCOL if ssl else self.HTTP_PROTOCOL, host, port)
+        self.__base_url = u'%s://%s:%d' % (self.HTTPS_PROTOCOL if ssl
+                                           else self.HTTP_PROTOCOL, host, port)
 
     def fetch_auth_url(self):
-        if self.__base_url is None:
-            raise ValueError(u"Base authentication client is not configured!")
-        LOG.debug(u"Try to get the authentication URI from the gateway server: {}.", self.__base_url)
+        """
+        Fetches the available authentication server URL, if
+        authentication is enabled in the gateway server,
+        otherwise, empty string will be returned.
 
-        response = requests.get(self.__base_url, verify=self.ssl_verification_status())
+        Return value:
+        string value of the authentication server URL
+        """
+        if self.__base_url is None:
+            raise ValueError(u"Base authentication"
+                             u" client is not configured!")
+        LOG.debug(u"Try to get the authentication URI from "
+                  u"the gateway server: {}.", self.__base_url)
+
+        response = requests.get(self.__base_url,
+                                verify=self.ssl_verification_status())
         result = None
         if response.status_code == hl.UNAUTHORIZED:
             uri_list = response.json()[self.AUTH_URI_KEY]
@@ -78,26 +94,53 @@ class AbstractAuthenticationClient(AuthenticationClient):
                 raise IOError("Authentication servers list is empty.")
             return result
 
+    def is_token_expired(self):
+        """
+        Checks if the access token has expired.
+
+        Return value:
+        true, if the access token has expired
+        """
+        return self.__expiration_time < int(round(time.time() * 1000))
+
     def get_access_token(self):
         if not self.is_auth_enabled():
-            raise IOError(u"Authentication is disabled in the gateway server.")
+            raise IOError(u"Authentication is "
+                          u"disabled in the gateway server.")
         if self.__access_token is None or self.is_token_expired():
             request_time = int(round(time.time() * 1000))
             access_token = self.fetch_access_token()
-            expiration_time = request_time + access_token.expires_in - self.SPARE_TIME_IN_MILLIS
-            LOG.debug(u"Received the access token successfully. Expiration date is {}.",
-                      datetime.datetime.fromtimestamp(expiration_time/1000).strftime(u'%Y-%m-%d %H:%M:%S.%f'))
+            self.__expiration_time = \
+                request_time + access_token.expires_in\
+                - self.SPARE_TIME_IN_MILLIS
+            LOG.debug(u"Received the access token successfully."
+                      u" Expiration date is {}.",
+                      datetime.datetime.
+                      fromtimestamp(self.__expiration_time/1000)
+                      .strftime(u'%Y-%m-%d %H:%M:%S.%f'))
         return access_token
 
-    def execute(self, request_str):
-        response = requests.get(self.auth_url, headers=json.loads(request_str), verify=self.ssl_verification_status())
+    def execute(self, headers):
+        """
+        Executes fetch access token request.
+
+        Keyword arguments:
+        headers -- headers needed to add to http request
+
+        Return value:
+        Object containing the access token
+        """
+        response = requests.get(self.auth_url,
+                                headers=json.loads(headers),
+                                verify=self.ssl_verification_status())
         status_code = response.status_code
         RestClientUtils.verify_response_code(status_code)
         token_value = response.json()[self.ACCESS_TOKEN_KEY]
         token_type = response.json()[self.TOKEN_TYPE_KEY]
         expires_in_str = response.json()[self.EXPIRES_IN_KEY]
         if not token_value or not token_type or not expires_in_str:
-            raise IOError(u'Unexpected response was received from the authentication server.')
+            raise IOError(u'Unexpected response was'
+                          u' received from the authentication server.')
         return AccessToken(token_value, expires_in_str, token_type)
 
     @property

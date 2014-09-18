@@ -32,5 +32,3 @@ class EmptyUrlListHandler(brh):
         self.send_header(u"Content-type", u"application/json")
         self.end_headers()
         self.wfile.write(auth_uri.encode('utf-8'))
-
-pass

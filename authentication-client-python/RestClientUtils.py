@@ -25,6 +25,9 @@ LOG = logging.getLogger(__name__)
 
 
 class RestClientUtils:
+    """
+    The utility class for working with rest clients
+    """
 
     @staticmethod
     def verify_response_code(response_code):
@@ -42,41 +45,50 @@ class RestClientUtils:
             hl.CONFLICT: RestClientUtils.raise_conflict_error(status),
             hl.UNAUTHORIZED: RestClientUtils.raise_unauthorized_error(status),
             hl.FORBIDDEN: RestClientUtils.raise_forbidden_error(status),
-            hl.METHOD_NOT_ALLOWED: RestClientUtils.raise_method_not_allowed(status),
-            hl.INTERNAL_SERVER_ERROR: RestClientUtils.raise_internal_server_error(status)
+            hl.METHOD_NOT_ALLOWED: RestClientUtils.raise_not_allowed(status),
+            hl.INTERNAL_SERVER_ERROR: RestClientUtils.raise_inter_serv_error(
+                status)
         }.get(status, RestClientUtils.raise_not_supported_error(status))
 
     @staticmethod
     def raise_not_found_error(status):
-        return NotFoundError(status, u'Not found HTTP code was received from gateway server.')
+        return NotFoundError(status, u'Not found HTTP code'
+                                     u' was received from gateway server.')
 
     @staticmethod
     def raise_base_request_eror(status):
-        return BadRequestError(status, u'Bad request HTTP code was received from gateway server.')
+        return BadRequestError(status, u'Bad request HTTP code '
+                                       u'was received from gateway server.')
 
     @staticmethod
     def raise_conflict_error(status):
-        return ConflictError(status, u'Conflict HTTP code was received from gateway server.')
+        return ConflictError(status, u'Conflict HTTP code was'
+                                     u' received from gateway server.')
 
     @staticmethod
     def raise_unauthorized_error(status):
-        return UnauthorizedError(status, u'Authorization error code was received from server. ')
+        return UnauthorizedError(status, u'Authorization error'
+                                         u' code was received from server. ')
 
     @staticmethod
     def raise_forbidden_error(status):
-        return ForbiddenError(status, u'Forbidden HTTP code was received from gateway server')
+        return ForbiddenError(status, u'Forbidden HTTP code was '
+                                      u'received from gateway server')
 
     @staticmethod
-    def raise_method_not_allowed(status):
-        return MethodNotAllowed(status, u'Method not allowed code was received from gateway server')
+    def raise_not_allowed(status):
+        return MethodNotAllowed(status, u'Method not allowed code was '
+                                        u'received from gateway server')
 
     @staticmethod
-    def raise_internal_server_error(status):
-        return InternalServerError(status, u'Internal server exception during operation process. ')
+    def raise_inter_serv_error(status):
+        return InternalServerError(status, u'Internal server exception '
+                                           u'during operation process. ')
 
     @staticmethod
     def raise_not_supported_error(status):
-        return NotSupportedError(status, u'Operation is not supported by gateway server')
+        return NotSupportedError(status, u'Operation is '
+                                         u'not supported by gateway server')
 
 
 class BaseHttpError(Exception):

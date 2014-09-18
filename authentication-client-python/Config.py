@@ -56,7 +56,7 @@ class Config(object):
 
         new_config.__username = json_config[u'security_auth_client_username']
         new_config.__password = json_config[u'security_auth_client_password']
-        if json_config[u'security_auth_disable_ssl_cert_check'] is "true":
+        if json_config[u'security_ssl_cert_check'] is "true":
             new_config.__security_ssl_cert_check = True
         else:
             new_config.__security_ssl_cert_check = False

@@ -51,7 +51,8 @@ class AuthenticationHandler(brh):
     def do_GET(self):
         if 'token' not in self.path:
             status_code = hl.UNAUTHORIZED
-            auth_uri = u'{"auth_uri":["http://%s:%d/token"]}' % (self.AUTH_HOST, self.AUTH_PORT)
+            auth_uri = u'{"auth_uri":["http://%s:%d/token"]}' %\
+                       (self.AUTH_HOST, self.AUTH_PORT)
             self.send_response(status_code)
             self.send_header(u"Content-type", u"application/json")
             self.end_headers()
@@ -63,33 +64,42 @@ class AuthenticationHandler(brh):
             auth_header_val = self.headers[u'Authorization']
             if auth_header_val:
                 auth_header_val = auth_header_val.replace('Basic ', '')
-                credentials_str = base64.b64decode(auth_header_val).decode('utf-8')
-
-                # credentials_str = credentials_str.encode("UTF-8")
+                credentials_str = base64.b64decode(auth_header_val)\
+                    .decode('utf-8')
                 credentials = credentials_str.split(':', 1)
                 username = credentials[0]
                 password = credentials[1]
-                if TestConstants.USERNAME == username and TestConstants.PASSWORD == password:
+                if TestConstants.USERNAME == username\
+                        and TestConstants.PASSWORD == password:
                     status_code = hl.OK
                     self.send_response(status_code)
                     self.send_header(u"Content-type", u"application/json")
                     self.end_headers()
-                    self.wfile.write(self.create_resp_body(TestConstants.TOKEN,
-                                                           TestConstants.TOKEN_TYPE, TestConstants.TOKEN_LIFE_TIME).encode('utf-8'))
+                    self.wfile.write(self.create_resp_body
+                                     (TestConstants.TOKEN,
+                                      TestConstants.TOKEN_TYPE,
+                                      TestConstants.TOKEN_LIFE_TIME)
+                                     .encode('utf-8'))
                 elif TestConstants.EMPTY_TOKEN_USERNAME == username:
                     status_code = hl.OK
                     self.send_response(status_code)
                     self.send_header(u"Content-type", u"application/json")
                     self.end_headers()
-                    self.wfile.write(self.create_resp_body('', TestConstants.TOKEN_TYPE,
-                                                           TestConstants.TOKEN_LIFE_TIME).encode('utf-8'))
+                    self.wfile.write(
+                        self.create_resp_body('',
+                                              TestConstants.TOKEN_TYPE,
+                                              TestConstants.TOKEN_LIFE_TIME)
+                        .encode('utf-8'))
 
                 elif TestConstants.EXPIRED_TOKEN_USERNAME == username:
                     if self.request_counter == 1:
-                        resp = self.create_resp_body(TestConstants.TOKEN, TestConstants.TOKEN_TYPE, 5)
+                        resp = self.create_resp_body(
+                            TestConstants.TOKEN, TestConstants.TOKEN_TYPE, 5)
                     else:
-                        resp = self.create_resp_body(TestConstants.NEW_TOKEN,
-                                                     TestConstants.TOKEN_TYPE, TestConstants.TOKEN_LIFE_TIME)
+                        resp = self.create_resp_body(
+                            TestConstants.NEW_TOKEN,
+                            TestConstants.TOKEN_TYPE,
+                            TestConstants.TOKEN_LIFE_TIME)
 
                     status_code = hl.OK
                     self.send_response(status_code)
@@ -110,4 +120,5 @@ class AuthenticationHandler(brh):
 
     @staticmethod
     def create_resp_body(value, type, expires_in):
-        return json.dumps({u'access_token': value, u'token_type': type, u'expires_in': expires_in})
+        return json.dumps({u'access_token': value, u'token_type': type,
+                           u'expires_in': expires_in})

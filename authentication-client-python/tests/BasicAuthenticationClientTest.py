@@ -48,18 +48,27 @@ class BasicAuthenticationClientTest(unittest.TestCase):
     def setUp(self):
 
         self.__authentication_client = BasicAuthenticationClient()
-        self.__local_test_server = SimpleTCPServer((u"localhost", TestConstants.SERVER_PORT), AuthenticationHandler)
+        self.__local_test_server = SimpleTCPServer(
+            (u"localhost", TestConstants.SERVER_PORT), AuthenticationHandler)
         self.__local_test_server.allow_reuse_address = True
-        self.__server_thread = threading.Thread(target=self.__local_test_server.serve_forever)
+        self.__server_thread = threading.\
+            Thread(target=self.__local_test_server.serve_forever)
         self.__server_thread.start()
-        self.__authentication_client.set_connection_info(u'localhost', TestConstants.SERVER_PORT, False)
+        self.__authentication_client.\
+            set_connection_info(u'localhost',
+                                TestConstants.SERVER_PORT, False)
         AuthenticationHandler.AUTH_HOST = u'localhost'
         AuthenticationHandler.AUTH_PORT = TestConstants.SERVER_PORT
-        self.empty_response_server = SimpleTCPServer((u"localhost", TestConstants.SERVER_PORT+1), EmptyUrlListHandler)
-        threading.Thread(target=self.empty_response_server.serve_forever).start()
+        self.empty_response_server = SimpleTCPServer(
+            (u"localhost", TestConstants.SERVER_PORT+1), EmptyUrlListHandler)
+        threading.Thread(target=self.empty_response_server.serve_forever)\
+            .start()
 
-        self.auth_disabled_server = SimpleTCPServer((u"localhost", TestConstants.SERVER_PORT+2), AuthDisabledHandler)
-        threading.Thread(target=self.auth_disabled_server.serve_forever).start()
+        self.auth_disabled_server = \
+            SimpleTCPServer((u"localhost", TestConstants.SERVER_PORT+2),
+                            AuthDisabledHandler)
+        threading.Thread(target=self.auth_disabled_server.serve_forever)\
+            .start()
 
     def tearDown(self):
         self.__local_test_server.server_close()
@@ -78,36 +87,42 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         config = Config().read_from_file(u"auth_config.json")
         self.__authentication_client.configure(config)
         access_token = self.__authentication_client.get_access_token()
-        assert access_token
+        self.assertIsNotNone(access_token)
         self.assertEqual(TestConstants.TOKEN, access_token.value)
         self.assertEqual(TestConstants.TOKEN_TYPE, access_token.token_type)
-        self.assertEqual(TestConstants.TOKEN_LIFE_TIME, access_token.expires_in)
+        self.assertEqual(TestConstants.TOKEN_LIFE_TIME,
+                         access_token.expires_in)
         self.__local_test_server.server_close()
 
     def test_not_authorization_get_access_token(self):
         self.__authentication_client.username = u"fail"
         self.__authentication_client.password = u"fail"
-        self.assertRaises(Exception,  self.__authentication_client.get_access_token)
+        self.assertRaises(Exception,
+                          self.__authentication_client.get_access_token)
 
     def test_empty_token_get_access_token(self):
-        self.__authentication_client.username = TestConstants.EMPTY_TOKEN_USERNAME
+        self.__authentication_client.username =\
+            TestConstants.EMPTY_TOKEN_USERNAME
         self.__authentication_client.password = TestConstants.PASSWORD
-        self.assertRaises(IOError, self.__authentication_client.get_access_token)
+        self.assertRaises(IOError,
+                          self.__authentication_client.get_access_token)
 
     def test_expired_token_get_access_token(self):
         AuthenticationHandler.request_counter = 0
-        self.__authentication_client.username = TestConstants.EXPIRED_TOKEN_USERNAME
+        self.__authentication_client.username =\
+            TestConstants.EXPIRED_TOKEN_USERNAME
         self.__authentication_client.password = TestConstants.PASSWORD
         access_token = self.__authentication_client.get_access_token()
-        self.assertEquals(TestConstants.TOKEN, access_token.value)
+        self.assertEqual(TestConstants.TOKEN, access_token.value)
         access_token = self.__authentication_client.get_access_token()
         self.assertIsNotNone(access_token)
-        self.assertEquals(TestConstants.NEW_TOKEN, access_token.value)
-        self.assertEquals(TestConstants.TOKEN_TYPE, access_token.token_type)
+        self.assertEqual(TestConstants.NEW_TOKEN, access_token.value)
+        self.assertEqual(TestConstants.TOKEN_TYPE, access_token.token_type)
 
     def test_empty_username_configure(self):
         config = Config().read_from_file(u"empty_username_config.json")
-        self.assertRaises(ValueError, self.__authentication_client.configure, config)
+        self.assertRaises(ValueError,
+                          self.__authentication_client.configure, config)
 
     def test_is_auth_enabled(self):
         config = Config().read_from_file(u"auth_config.json")
@@ -116,14 +131,18 @@ class BasicAuthenticationClientTest(unittest.TestCase):
 
     def test_empty_url_list(self):
         empty_auth_client = BasicAuthenticationClient()
-        empty_auth_client.set_connection_info(u'localhost', TestConstants.SERVER_PORT+1, False)
+        empty_auth_client.set_connection_info(u'localhost',
+                                              TestConstants.SERVER_PORT+1,
+                                              False)
         config = Config().read_from_file(u"auth_config.json")
         empty_auth_client.configure(config)
         self.assertRaises(IOError, empty_auth_client.is_auth_enabled)
 
     def test_auth_disabled_is_auth_enabled(self):
         dis_auth_client = BasicAuthenticationClient()
-        dis_auth_client.set_connection_info(u'localhost', TestConstants.SERVER_PORT+2, False)
+        dis_auth_client.set_connection_info(u'localhost',
+                                            TestConstants.SERVER_PORT+2,
+                                            False)
         config = Config().read_from_file(u"auth_config.json")
         dis_auth_client.configure(config)
         self.assertFalse(dis_auth_client.is_auth_enabled())
