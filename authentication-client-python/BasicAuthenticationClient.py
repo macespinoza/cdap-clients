@@ -64,7 +64,7 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         return self.execute(auth_header)
 
     def ssl_verification_status(self):
-        return self.__ssl_check_status
+        return self.__security_ssl_cert_check
 
     def configure(self, config):
         if self.__username or self.__password:
