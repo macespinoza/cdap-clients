@@ -31,7 +31,7 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         super(BasicAuthenticationClient, self).__init__()
         self.__username = None
         self.__password = None
-        self.__ssl_check_status = None
+        self.__security_ssl_cert_check = False
         self.__credentials = (Credential(self.USERNAME_PROP_NAME, u'Username for basic authentication.', False),
                               Credential(self.PASSWORD_PROP_NAME, u'Password for basic authentication.', True))
 
@@ -78,4 +78,4 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
         if not self.__password:
             raise ValueError(u'The password property cannot be empty.')
 
-        self.__ssl_check_status = config.security_auth_disable_ssl_cert_check
+        self.__security_ssl_cert_check = config.security_ssl_cert_check
