@@ -74,7 +74,7 @@ public interface AuthenticationClient {
   List<Credential> getRequiredCredentials();
 
   /**
-   * Method for releasing unused resources.
+   * Method for releasing resources.
    */
   void close();
 
