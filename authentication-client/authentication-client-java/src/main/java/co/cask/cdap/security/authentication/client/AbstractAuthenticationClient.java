@@ -187,4 +187,9 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   protected URI getAuthUrl() {
     return authUrl;
   }
+
+  @Override
+  public void close() {
+    httpClient.getConnectionManager().shutdown();
+  }
 }
