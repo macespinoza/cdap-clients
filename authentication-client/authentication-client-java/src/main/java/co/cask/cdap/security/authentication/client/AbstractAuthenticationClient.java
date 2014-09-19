@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Cask Data, Inc.
+ * Copyright © 2014 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,18 +26,29 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Abstract authentication client implementation with common methods.
@@ -60,7 +71,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private URI baseUrl;
   private URI authUrl;
   private Boolean authEnabled;
-  private final HttpClient httpClient;
+  private HttpClient httpClient;
 
   /**
    * Fetches the access token from the authentication server.
@@ -70,13 +81,6 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * successfully from the authentication server
    */
   protected abstract AccessToken fetchAccessToken() throws IOException;
-
-  /**
-   * Constructs new instance.
-   */
-  protected AbstractAuthenticationClient() {
-    this.httpClient = new DefaultHttpClient();
-  }
 
   @Override
   public void invalidateToken() {
@@ -142,10 +146,11 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseUrl);
     String result = StringUtils.EMPTY;
     HttpGet get = new HttpGet(baseUrl);
-    HttpResponse response = httpClient.execute(get);
+    HttpResponse response = getHttpClient().execute(get);
     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
       Map<String, List<String>> responseMap = GSON.fromJson(EntityUtils.toString(response.getEntity()),
-                                                            new TypeToken<Map<String, List<String>>>() { }.getType());
+                                                            new TypeToken<Map<String, List<String>>>() {
+                                                            }.getType());
       List<String> uriList = responseMap.get(AUTH_URI_KEY);
       if (uriList != null && !uriList.isEmpty()) {
         result = uriList.get(RANDOM.nextInt(uriList.size()));
@@ -160,12 +165,12 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * Executes fetch access token request.
    *
    * @param request the http request to fetch access token from the authentication server
-   * @return  {@link AccessToken} object containing the access token
+   * @return {@link AccessToken} object containing the access token
    * @throws IOException IOException in case of a problem or the connection was aborted or if the access token is not
    * received successfully from the authentication server
    */
   protected AccessToken execute(HttpRequestBase request) throws IOException {
-    HttpResponse httpResponse = httpClient.execute(request);
+    HttpResponse httpResponse = getHttpClient().execute(request);
     RestClientUtils.verifyResponseCode(httpResponse);
 
     Map<String, String> responseMap = GSON.fromJson(EntityUtils.toString(httpResponse.getEntity()),
@@ -191,5 +196,49 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   @Override
   public void close() {
     httpClient.getConnectionManager().shutdown();
+  }
+
+  /**
+   * @return the HttpClient instance
+   */
+  private HttpClient getHttpClient() {
+    if (httpClient == null) {
+      httpClient = initHttpClient();
+    }
+    return httpClient;
+  }
+
+  /**
+   * Initialize the HttpClient
+   *
+   * @return the HttpClient instance
+   */
+  protected abstract HttpClient initHttpClient();
+
+  public static Registry<ConnectionSocketFactory> getRegistryWithDisabledCertCheck()
+    throws KeyManagementException, NoSuchAlgorithmException {
+    SSLContext sslContext = SSLContext.getInstance("SSL");
+    sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+      @Override
+      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
+
+      @Override
+      public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
+        throws CertificateException {
+      }
+
+      @Override
+      public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
+        throws CertificateException {
+      }
+    }}, new SecureRandom());
+    SSLConnectionSocketFactory sf = new SSLConnectionSocketFactory(sslContext,
+      org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    return RegistryBuilder
+      .<ConnectionSocketFactory>create().register("https", sf)
+      .register("http", PlainConnectionSocketFactory.getSocketFactory())
+      .build();
   }
 }
