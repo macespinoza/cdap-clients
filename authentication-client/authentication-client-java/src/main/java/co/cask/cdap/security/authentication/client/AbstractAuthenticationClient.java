@@ -193,6 +193,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     return authUrl;
   }
 
+  @Override
+  public void close() {
+    httpClient.getConnectionManager().shutdown();
+  }
 
   /**
    * @return the HttpClient instance
