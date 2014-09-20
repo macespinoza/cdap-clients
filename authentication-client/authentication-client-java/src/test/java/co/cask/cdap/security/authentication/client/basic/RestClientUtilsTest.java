@@ -16,12 +16,7 @@
 
 package co.cask.cdap.security.authentication.client.basic;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.StatusLine;
-import org.apache.http.message.BasicStatusLine;
-import org.junit.Before;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.Test;
 
 import javax.ws.rs.BadRequestException;
@@ -32,120 +27,49 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 public class RestClientUtilsTest {
-  private HttpResponse response;
-
-  @Before
-  public void setUp() {
-    response = mock(HttpResponse.class);
-  }
-
   @Test
   public void testOkResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "OK");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.OK.getCode(), "OK");
   }
 
   @Test(expected = BadRequestException.class)
   public void testBadRequestResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_BAD_REQUEST,
-                                                "Bad Request");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.BAD_REQUEST.getCode(), "Bad Request");
   }
 
   @Test(expected = NotFoundException.class)
   public void testNotFoundResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NOT_FOUND,
-                                                "Not Found");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.NOT_FOUND.getCode(), "Not Found");
   }
 
   @Test(expected = NotAuthorizedException.class)
   public void testUnauthorizedResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_UNAUTHORIZED,
-                                                "Unauthorized");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.UNAUTHORIZED.getCode(), "Unauthorized");
   }
 
   @Test(expected = ForbiddenException.class)
   public void testForbiddenResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_FORBIDDEN,
-                                                "Forbidden");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.FORBIDDEN.getCode(),"Forbidden");
   }
 
   @Test(expected = NotAllowedException.class)
   public void testNotAllowedResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_METHOD_NOT_ALLOWED,
-                                                "Method Not Allowed");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.METHOD_NOT_ALLOWED.getCode(),"Method Not Allowed");
   }
 
   @Test(expected = BadRequestException.class)
   public void testConflictResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_CONFLICT, "Conflict");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.CONFLICT.getCode(), "Conflict");
   }
 
   @Test(expected = InternalServerErrorException.class)
   public void testInternalServerErrorResponseCodeAnalysis() {
-
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                                                "Internal Server Error");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.getCode(), "Internal Server Error");
   }
 
   @Test(expected = NotSupportedException.class)
   public void testNotImplementedResponseCodeAnalysis() {
-    StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NOT_IMPLEMENTED,
-                                                "Not Implemented");
-    when(response.getStatusLine()).thenReturn(statusLine);
-
-    RestClientUtils.verifyResponseCode(response);
-
-    verify(response).getStatusLine();
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.NOT_IMPLEMENTED.getCode(), "Not Implemented");
   }
 }

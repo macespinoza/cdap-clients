@@ -16,22 +16,9 @@
 
 package co.cask.cdap.security.authentication.client.basic;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
@@ -50,31 +37,31 @@ public final class RestClientUtils {
   }
 
   /**
-   * Utility method for analysis http response status code and throw appropriate Java API Exception
+   * Utility method for analysis HTTP response status code and throw appropriate Java API Exception.
    *
-   * @param response {@link org.apache.http.HttpResponse} http response
+   * @param code HTTP response code
+   * @param message HTTP response message
    */
-  public static void verifyResponseCode(HttpResponse response) {
-    int code = response.getStatusLine().getStatusCode();
+  public static void verifyResponseCode(int code, String message) {
     switch (code) {
-      case HttpStatus.SC_OK:
+      case 200:
         LOG.debug("Success operation result code.");
         break;
-      case HttpStatus.SC_NOT_FOUND:
+      case 404:
         throw new NotFoundException("Not found HTTP code was received from gateway server.");
-      case HttpStatus.SC_CONFLICT:
+      case 409:
         throw new BadRequestException("Conflict HTTP code was received from gateway server.");
-      case HttpStatus.SC_BAD_REQUEST:
+      case 400:
         throw new BadRequestException("Bad request HTTP code was received from gateway server.");
-      case HttpStatus.SC_UNAUTHORIZED:
-        throw new NotAuthorizedException(response);
-      case HttpStatus.SC_FORBIDDEN:
+      case 401:
+        throw new NotAuthorizedException(message);
+      case 403:
         throw new ForbiddenException("Forbidden HTTP code was received from gateway server");
-      case HttpStatus.SC_METHOD_NOT_ALLOWED:
-        throw new NotAllowedException(response.getStatusLine().getReasonPhrase());
-      case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+      case 405:
+        throw new NotAllowedException(message);
+      case 500:
         throw new InternalServerErrorException("Internal server exception during operation process.");
-      case HttpStatus.SC_NOT_IMPLEMENTED:
+      case 501:
       default:
         throw new NotSupportedException("Operation is not supported by gateway server");
     }
