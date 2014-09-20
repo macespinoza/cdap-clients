@@ -73,3 +73,4 @@ public interface AuthenticationClient {
    */
   List<Credential> getRequiredCredentials();
 }
+
