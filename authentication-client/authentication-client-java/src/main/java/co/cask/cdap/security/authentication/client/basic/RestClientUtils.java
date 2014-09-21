@@ -38,10 +38,10 @@ public final class RestClientUtils {
   }
 
   /**
-   * Utility method for analysis HTTP response status code and throw appropriate Java API Exception.
+   * Utility method for analysis http response status code and throw appropriate Java API Exception
    *
-   * @param code HTTP response code
-   * @param message HTTP response message
+   * @param code HTTP code
+   * @param message response message that corresponds to the HTTP code
    */
   public static void verifyResponseCode(int code, String message) {
     switch (code) {
