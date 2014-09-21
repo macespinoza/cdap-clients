@@ -23,7 +23,7 @@ import co.cask.cdap.common.http.HttpRequestConfig;
 import co.cask.cdap.common.http.HttpRequests;
 import co.cask.cdap.common.http.HttpResponse;
 import co.cask.cdap.common.http.ObjectResponse;
-import co.cask.cdap.security.authentication.client.basic.RestClientUtils;
+import co.cask.cdap.common.http.exception.HttpFailureException;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -178,7 +179,9 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     HttpResponse response = HttpRequests.execute(request, getHttpRequestConfig());
 
     LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
-    RestClientUtils.verifyResponseCode(response.getResponseCode(), response.getResponseMessage());
+    if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      throw new HttpFailureException(response.getResponseMessage(), response.getResponseCode());
+    }
 
     Map<String, String> responseMap =
       ObjectResponse.fromJsonBody(response, new TypeToken<Map<String, String>>() { }).getResponseObject();

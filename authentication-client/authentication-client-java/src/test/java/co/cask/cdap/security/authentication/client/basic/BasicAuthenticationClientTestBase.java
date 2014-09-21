@@ -16,6 +16,7 @@
 
 package co.cask.cdap.security.authentication.client.basic;
 
+import co.cask.cdap.common.http.exception.HttpFailureException;
 import co.cask.cdap.security.authentication.client.AccessToken;
 import co.cask.cdap.security.authentication.client.AuthenticationClient;
 import co.cask.http.AbstractHttpHandler;
@@ -37,6 +38,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.List;
@@ -44,12 +46,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Path;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -93,7 +95,7 @@ public abstract class BasicAuthenticationClientTestBase {
     assertEquals(TOKEN_LIFE_TIME, accessToken.getExpiresIn());
   }
 
-  @Test(expected = NotAuthorizedException.class)
+  @Test
   public void testNotAuthorizedGetAccessToken() throws IOException {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, "test");
@@ -104,7 +106,12 @@ public abstract class BasicAuthenticationClientTestBase {
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
                                            authEnabledRouter.getBindAddress().getPort(), sslEnabled);
     authenticationClient.configure(testProperties);
-    authenticationClient.getAccessToken();
+    try {
+      authenticationClient.getAccessToken();
+      fail("Expected unauthorized status.");
+    } catch (HttpFailureException e) {
+      assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, e.getStatusCode());
+    }
   }
 
   @Test(expected = IOException.class)
