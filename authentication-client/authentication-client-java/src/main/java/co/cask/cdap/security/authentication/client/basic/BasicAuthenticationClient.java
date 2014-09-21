@@ -17,25 +17,17 @@
 package co.cask.cdap.security.authentication.client.basic;
 
 import co.cask.cdap.security.authentication.client.AbstractAuthenticationClient;
-import co.cask.cdap.security.authentication.client.AccessToken;
 import co.cask.cdap.security.authentication.client.Credential;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.config.Registry;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
 
@@ -48,9 +40,8 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   private static final String AUTHENTICATION_HEADER_PREFIX_BASIC = "Basic ";
   private static final String USERNAME_PROP_NAME = "security.auth.client.username";
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
-  private static final String DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME = "security.auth.disable.certificate.check";
+  private static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
 
-  private boolean disableCertCheck;
   private String username;
   private String password;
   private final List<Credential> credentials;
@@ -76,7 +67,11 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
     password = properties.getProperty(PASSWORD_PROP_NAME);
     Preconditions.checkArgument(StringUtils.isNotEmpty(password), "The password property cannot be empty.");
 
-    disableCertCheck = Boolean.valueOf(properties.getProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME));
+    boolean verifySSLCert = Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME));
+    setVerifySSLCert(verifySSLCert);
+    if (!verifySSLCert) {
+      LOG.info("Disabling SSL certificate check.");
+    }
 
     LOG.debug("Basic authentication client is configured successfully.");
   }
@@ -87,40 +82,13 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   }
 
   @Override
-  protected AccessToken fetchAccessToken() throws IOException {
+  protected Multimap<String, String> getAuthenticationHeaders() {
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
       throw new IllegalStateException("Base authentication client is not configured!");
     }
 
-    LOG.debug("Authentication is enabled in the gateway server. Authentication URI {}.", getAuthUrl());
-    HttpGet getRequest = new HttpGet(getAuthUrl());
-
     String auth = Base64.encodeBase64String(String.format("%s:%s", username, password).getBytes());
     auth = auth.replaceAll("(\r|\n)", StringUtils.EMPTY);
-    getRequest.addHeader(HttpHeaders.AUTHORIZATION, AUTHENTICATION_HEADER_PREFIX_BASIC + auth);
-
-    return execute(getRequest);
-  }
-
-
-  @Override
-  protected HttpClient initHttpClient() {
-    Registry<ConnectionSocketFactory> registry = null;
-    if (disableCertCheck) {
-      try {
-        registry = getRegistryWithDisabledCertCheck();
-        LOG.debug("init HTTP Client with self-signed certificates");
-      } catch (KeyManagementException e) {
-        LOG.error("Failed to init SSL context: {}", e);
-      } catch (NoSuchAlgorithmException e) {
-        LOG.error("Failed to get instance of SSL context: {}", e);
-      }
-    }
-
-    if (registry != null) {
-      return HttpClients.custom().setConnectionManager(new BasicHttpClientConnectionManager(registry)).build();
-    } else {
-      return HttpClients.createDefault();
-    }
+    return ImmutableMultimap.of(HttpHeaders.AUTHORIZATION, AUTHENTICATION_HEADER_PREFIX_BASIC + auth);
   }
 }

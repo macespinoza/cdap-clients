@@ -16,22 +16,10 @@
 
 package co.cask.cdap.security.authentication.client.basic;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
+import java.net.HttpURLConnection;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
@@ -50,31 +38,31 @@ public final class RestClientUtils {
   }
 
   /**
-   * Utility method for analysis http response status code and throw appropriate Java API Exception
+   * Utility method for analysis HTTP response status code and throw appropriate Java API Exception.
    *
-   * @param response {@link org.apache.http.HttpResponse} http response
+   * @param code HTTP response code
+   * @param message HTTP response message
    */
-  public static void verifyResponseCode(HttpResponse response) {
-    int code = response.getStatusLine().getStatusCode();
+  public static void verifyResponseCode(int code, String message) {
     switch (code) {
-      case HttpStatus.SC_OK:
+      case HttpURLConnection.HTTP_OK:
         LOG.debug("Success operation result code.");
         break;
-      case HttpStatus.SC_NOT_FOUND:
+      case HttpURLConnection.HTTP_NOT_FOUND:
         throw new NotFoundException("Not found HTTP code was received from gateway server.");
-      case HttpStatus.SC_CONFLICT:
+      case HttpURLConnection.HTTP_CONFLICT:
         throw new BadRequestException("Conflict HTTP code was received from gateway server.");
-      case HttpStatus.SC_BAD_REQUEST:
+      case HttpURLConnection.HTTP_BAD_REQUEST:
         throw new BadRequestException("Bad request HTTP code was received from gateway server.");
-      case HttpStatus.SC_UNAUTHORIZED:
-        throw new NotAuthorizedException(response);
-      case HttpStatus.SC_FORBIDDEN:
+      case HttpURLConnection.HTTP_UNAUTHORIZED:
+        throw new NotAuthorizedException(message);
+      case HttpURLConnection.HTTP_FORBIDDEN:
         throw new ForbiddenException("Forbidden HTTP code was received from gateway server");
-      case HttpStatus.SC_METHOD_NOT_ALLOWED:
-        throw new NotAllowedException(response.getStatusLine().getReasonPhrase());
-      case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+      case HttpURLConnection.HTTP_BAD_METHOD:
+        throw new NotAllowedException(message);
+      case HttpURLConnection.HTTP_INTERNAL_ERROR:
         throw new InternalServerErrorException("Internal server exception during operation process.");
-      case HttpStatus.SC_NOT_IMPLEMENTED:
+      case HttpURLConnection.HTTP_NOT_IMPLEMENTED:
       default:
         throw new NotSupportedException("Operation is not supported by gateway server");
     }

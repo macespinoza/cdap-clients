@@ -72,12 +72,5 @@ public interface AuthenticationClient {
    * @return list of {@link Credential} objects for authentication
    */
   List<Credential> getRequiredCredentials();
-
-  /**
-   * Method for releasing resources.
-   */
-  void close();
-
 }
-
 

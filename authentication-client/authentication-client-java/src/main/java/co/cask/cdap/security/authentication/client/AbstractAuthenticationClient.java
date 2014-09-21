@@ -17,38 +17,27 @@
 
 package co.cask.cdap.security.authentication.client;
 
+import co.cask.cdap.common.conf.Constants;
+import co.cask.cdap.common.http.HttpRequest;
+import co.cask.cdap.common.http.HttpRequestConfig;
+import co.cask.cdap.common.http.HttpRequests;
+import co.cask.cdap.common.http.HttpResponse;
+import co.cask.cdap.common.http.ObjectResponse;
 import co.cask.cdap.security.authentication.client.basic.RestClientUtils;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.common.collect.Multimap;
+import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.util.EntityUtils;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * Abstract authentication client implementation with common methods.
@@ -64,23 +53,18 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private static final String EXPIRES_IN_KEY = "expires_in";
   private static final String TOKEN_TYPE_KEY = "token_type";
   private static final long SPARE_TIME_IN_MILLIS = 5000;
-  private static final Gson GSON = new Gson();
 
   private long expirationTime;
   private AccessToken accessToken;
-  private URI baseUrl;
-  private URI authUrl;
+  private URI baseURI;
+  private URI authURI;
   private Boolean authEnabled;
-  private HttpClient httpClient;
+  private boolean verifySSLCert;
 
   /**
-   * Fetches the access token from the authentication server.
-   *
-   * @return {@link AccessToken} object containing the access token
-   * @throws IOException in case of a problem or the connection was aborted or if the access token is not received
-   * successfully from the authentication server
+   * Returns HTTP headers required for authentication.
    */
-  protected abstract AccessToken fetchAccessToken() throws IOException;
+  protected abstract Multimap<String, String> getAuthenticationHeaders();
 
   @Override
   public void invalidateToken() {
@@ -90,10 +74,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   @Override
   public boolean isAuthEnabled() throws IOException {
     if (authEnabled == null) {
-      String strAuthUrl = fetchAuthURL();
-      authEnabled = StringUtils.isNotEmpty(strAuthUrl);
+      String strAuthURI = fetchAuthURI();
+      authEnabled = StringUtils.isNotEmpty(strAuthURI);
       if (authEnabled) {
-        authUrl = URI.create(strAuthUrl);
+        authURI = URI.create(strAuthURI);
       }
     }
     return authEnabled;
@@ -101,10 +85,11 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
 
   @Override
   public void setConnectionInfo(String host, int port, boolean ssl) {
-    if (baseUrl != null) {
+    if (baseURI != null) {
       throw new IllegalStateException("Connection info is already configured!");
     }
-    baseUrl = URI.create(String.format("%s://%s:%d", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port));
+    baseURI = URI.create(String.format("%s://%s:%d%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
+                                       Constants.Gateway.GATEWAY_VERSION));
   }
 
   @Override
@@ -123,6 +108,21 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   }
 
   /**
+   * @return the authentication server URL or empty value if authentication is not enabled in the gateway server
+   */
+  protected URI getAuthURI() {
+    return authURI;
+  }
+
+  public boolean isVerifySSLCert() {
+    return verifySSLCert;
+  }
+
+  protected void setVerifySSLCert(boolean verifySSLCert) {
+    this.verifySSLCert = verifySSLCert;
+  }
+
+  /**
    * Checks if the access token has expired.
    *
    * @return true, if the access token has expired
@@ -138,25 +138,30 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * @return string value of the authentication server URL
    * @throws IOException IOException in case of a problem or the connection was aborted or if url list is empty
    */
-  private String fetchAuthURL() throws IOException {
-    if (baseUrl == null) {
-      throw new IllegalStateException("Base authentication client is not configured!");
+  private String fetchAuthURI() throws IOException {
+    if (baseURI == null) {
+      throw new IllegalStateException("Connection information not set!");
     }
 
-    LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseUrl);
-    String result = StringUtils.EMPTY;
-    HttpGet get = new HttpGet(baseUrl);
-    HttpResponse response = getHttpClient().execute(get);
-    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-      Map<String, List<String>> responseMap = GSON.fromJson(EntityUtils.toString(response.getEntity()),
-                                                            new TypeToken<Map<String, List<String>>>() {
-                                                            }.getType());
-      List<String> uriList = responseMap.get(AUTH_URI_KEY);
-      if (uriList != null && !uriList.isEmpty()) {
-        result = uriList.get(RANDOM.nextInt(uriList.size()));
-      } else {
-        throw new IOException("Authentication servers list is empty.");
-      }
+    LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseURI);
+    HttpResponse response = HttpRequests.execute(HttpRequest.get(baseURI.toURL()).build(), getHttpRequestConfig());
+
+    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
+    if (response.getResponseCode() != HttpResponseStatus.UNAUTHORIZED.getCode()) {
+      return "";
+    }
+
+    Map<String, List<String>> responseMap =
+      ObjectResponse.fromJsonBody(response,
+                                  new TypeToken<Map<String, List<String>>>() { }).getResponseObject();
+    LOG.debug("Response map from gateway server: {}", responseMap);
+
+    String result;
+    List<String> uriList = responseMap.get(AUTH_URI_KEY);
+    if (uriList != null && !uriList.isEmpty()) {
+      result = uriList.get(RANDOM.nextInt(uriList.size()));
+    } else {
+      throw new IOException("Authentication servers list is empty.");
     }
     return result;
   }
@@ -169,15 +174,19 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * @throws IOException IOException in case of a problem or the connection was aborted or if the access token is not
    * received successfully from the authentication server
    */
-  protected AccessToken execute(HttpRequestBase request) throws IOException {
-    HttpResponse httpResponse = getHttpClient().execute(request);
-    RestClientUtils.verifyResponseCode(httpResponse);
+  private AccessToken execute(HttpRequest request) throws IOException {
+    HttpResponse response = HttpRequests.execute(request, getHttpRequestConfig());
 
-    Map<String, String> responseMap = GSON.fromJson(EntityUtils.toString(httpResponse.getEntity()),
-                                                    new TypeToken<Map<String, String>>() { }.getType());
+    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
+    RestClientUtils.verifyResponseCode(response.getResponseCode(), response.getResponseMessage());
+
+    Map<String, String> responseMap =
+      ObjectResponse.fromJsonBody(response, new TypeToken<Map<String, String>>() { }).getResponseObject();
     String tokenValue = responseMap.get(ACCESS_TOKEN_KEY);
     String tokenType = responseMap.get(TOKEN_TYPE_KEY);
     String expiresInStr = responseMap.get(EXPIRES_IN_KEY);
+
+    LOG.debug("Response map from auth server: {}", responseMap);
 
     if (StringUtils.isEmpty(tokenValue) || StringUtils.isEmpty(tokenType) || StringUtils.isEmpty(expiresInStr)) {
       throw new IOException("Unexpected response was received from the authentication server.");
@@ -186,59 +195,16 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     return new AccessToken(tokenValue, Long.valueOf(expiresInStr), tokenType);
   }
 
-  /**
-   * @return the authentication server URL or empty value if authentication is not enabled in the gateway server
-   */
-  protected URI getAuthUrl() {
-    return authUrl;
+  private AccessToken fetchAccessToken() throws IOException {
+    LOG.debug("Authentication is enabled in the gateway server. Authentication URI {}.", getAuthURI());
+
+    return execute(HttpRequest.get(getAuthURI().toURL())
+                     .addHeaders(getAuthenticationHeaders())
+                     .build()
+    );
   }
 
-  @Override
-  public void close() {
-    httpClient.getConnectionManager().shutdown();
-  }
-
-  /**
-   * @return the HttpClient instance
-   */
-  private HttpClient getHttpClient() {
-    if (httpClient == null) {
-      httpClient = initHttpClient();
-    }
-    return httpClient;
-  }
-
-  /**
-   * Initialize the HttpClient
-   *
-   * @return the HttpClient instance
-   */
-  protected abstract HttpClient initHttpClient();
-
-  public static Registry<ConnectionSocketFactory> getRegistryWithDisabledCertCheck()
-    throws KeyManagementException, NoSuchAlgorithmException {
-    SSLContext sslContext = SSLContext.getInstance("SSL");
-    sslContext.init(null, new TrustManager[]{new X509TrustManager() {
-      @Override
-      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-        return null;
-      }
-
-      @Override
-      public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
-        throws CertificateException {
-      }
-
-      @Override
-      public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s)
-        throws CertificateException {
-      }
-    }}, new SecureRandom());
-    SSLConnectionSocketFactory sf = new SSLConnectionSocketFactory(sslContext,
-      org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-    return RegistryBuilder
-      .<ConnectionSocketFactory>create().register("https", sf)
-      .register("http", PlainConnectionSocketFactory.getSocketFactory())
-      .build();
+  private HttpRequestConfig getHttpRequestConfig() {
+    return new HttpRequestConfig(0, 0, isVerifySSLCert());
   }
 }
