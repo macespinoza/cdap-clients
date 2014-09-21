@@ -19,6 +19,7 @@ package co.cask.cdap.security.authentication.client.basic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.HttpURLConnection;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
@@ -44,24 +45,24 @@ public final class RestClientUtils {
    */
   public static void verifyResponseCode(int code, String message) {
     switch (code) {
-      case 200:
+      case HttpURLConnection.HTTP_OK:
         LOG.debug("Success operation result code.");
         break;
-      case 404:
+      case HttpURLConnection.HTTP_NOT_FOUND:
         throw new NotFoundException("Not found HTTP code was received from gateway server.");
-      case 409:
+      case HttpURLConnection.HTTP_CONFLICT:
         throw new BadRequestException("Conflict HTTP code was received from gateway server.");
-      case 400:
+      case HttpURLConnection.HTTP_BAD_REQUEST:
         throw new BadRequestException("Bad request HTTP code was received from gateway server.");
-      case 401:
+      case HttpURLConnection.HTTP_UNAUTHORIZED:
         throw new NotAuthorizedException(message);
-      case 403:
+      case HttpURLConnection.HTTP_FORBIDDEN:
         throw new ForbiddenException("Forbidden HTTP code was received from gateway server");
-      case 405:
+      case HttpURLConnection.HTTP_BAD_METHOD:
         throw new NotAllowedException(message);
-      case 500:
+      case HttpURLConnection.HTTP_INTERNAL_ERROR:
         throw new InternalServerErrorException("Internal server exception during operation process.");
-      case 501:
+      case HttpURLConnection.HTTP_NOT_IMPLEMENTED:
       default:
         throw new NotSupportedException("Operation is not supported by gateway server");
     }

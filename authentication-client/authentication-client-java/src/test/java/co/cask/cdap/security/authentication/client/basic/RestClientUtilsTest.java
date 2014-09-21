@@ -50,12 +50,12 @@ public class RestClientUtilsTest {
 
   @Test(expected = ForbiddenException.class)
   public void testForbiddenResponseCodeAnalysis() {
-    RestClientUtils.verifyResponseCode(HttpResponseStatus.FORBIDDEN.getCode(),"Forbidden");
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.FORBIDDEN.getCode(), "Forbidden");
   }
 
   @Test(expected = NotAllowedException.class)
   public void testNotAllowedResponseCodeAnalysis() {
-    RestClientUtils.verifyResponseCode(HttpResponseStatus.METHOD_NOT_ALLOWED.getCode(),"Method Not Allowed");
+    RestClientUtils.verifyResponseCode(HttpResponseStatus.METHOD_NOT_ALLOWED.getCode(), "Method Not Allowed");
   }
 
   @Test(expected = BadRequestException.class)

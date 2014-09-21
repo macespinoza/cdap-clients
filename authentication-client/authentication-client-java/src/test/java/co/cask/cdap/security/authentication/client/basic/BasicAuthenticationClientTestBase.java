@@ -65,7 +65,8 @@ public abstract class BasicAuthenticationClientTestBase {
   public static final Long TOKEN_LIFE_TIME = 86400L;
   private static final String USERNAME_PROP_NAME = "security.auth.client.username";
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
-  private static final String DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME = "security.auth.disable.certificate.check";
+  private static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
+  private static final String VERIFY_SSL_CERT_PROP_VALUE = "false";
 
   protected static TestHttpService authEnabledRouter;
   protected static TestHttpService authDisabledRouter;
@@ -79,7 +80,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -97,7 +98,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, "test");
     testProperties.setProperty(PASSWORD_PROP_NAME, "test");
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -111,7 +112,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, EMPTY_TOKEN_USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -125,7 +126,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, EXPIRED_TOKEN_USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -144,7 +145,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, StringUtils.EMPTY);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -157,7 +158,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, StringUtils.EMPTY);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -170,7 +171,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.configure(testProperties);
@@ -197,7 +198,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authEnabledRouter.getBindAddress().getHostName(),
@@ -211,7 +212,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(noAuthServerRouter.getBindAddress().getHostName(),
@@ -225,7 +226,7 @@ public abstract class BasicAuthenticationClientTestBase {
     Properties testProperties = new Properties();
     testProperties.setProperty(USERNAME_PROP_NAME, USERNAME);
     testProperties.setProperty(PASSWORD_PROP_NAME, PASSWORD);
-    testProperties.setProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME, "true");
+    testProperties.setProperty(VERIFY_SSL_CERT_PROP_NAME, VERIFY_SSL_CERT_PROP_VALUE);
 
     AuthenticationClient authenticationClient = new BasicAuthenticationClient();
     authenticationClient.setConnectionInfo(authDisabledRouter.getBindAddress().getHostName(),

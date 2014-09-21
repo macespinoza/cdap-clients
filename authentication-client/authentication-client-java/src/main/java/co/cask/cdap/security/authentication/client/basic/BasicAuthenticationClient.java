@@ -40,7 +40,7 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   private static final String AUTHENTICATION_HEADER_PREFIX_BASIC = "Basic ";
   private static final String USERNAME_PROP_NAME = "security.auth.client.username";
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
-  private static final String DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME = "security.auth.disable.certificate.check";
+  private static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
 
   private String username;
   private String password;
@@ -67,10 +67,10 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
     password = properties.getProperty(PASSWORD_PROP_NAME);
     Preconditions.checkArgument(StringUtils.isNotEmpty(password), "The password property cannot be empty.");
 
-    boolean disableCertCheck = Boolean.valueOf(properties.getProperty(DISABLE_SELF_SIGNED_CERTIFICATES_PROP_NAME));
-    if (disableCertCheck) {
+    boolean verifySSLCert = Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME));
+    setVerifySSLCert(verifySSLCert);
+    if (!verifySSLCert) {
       LOG.info("Disabling SSL certificate check.");
-      setDisableSSLCertCheck(true);
     }
 
     LOG.debug("Basic authentication client is configured successfully.");

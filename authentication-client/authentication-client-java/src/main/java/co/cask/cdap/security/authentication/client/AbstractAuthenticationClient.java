@@ -18,7 +18,6 @@
 package co.cask.cdap.security.authentication.client;
 
 import co.cask.cdap.common.conf.Constants;
-import co.cask.cdap.common.http.HttpMethod;
 import co.cask.cdap.common.http.HttpRequest;
 import co.cask.cdap.common.http.HttpRequestConfig;
 import co.cask.cdap.common.http.HttpRequests;
@@ -57,10 +56,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
 
   private long expirationTime;
   private AccessToken accessToken;
-  private URI baseUrl;
-  private URI authUrl;
+  private URI baseURI;
+  private URI authURI;
   private Boolean authEnabled;
-  private boolean disableSSLCertCheck;
+  private boolean verifySSLCert;
 
   /**
    * Returns HTTP headers required for authentication.
@@ -75,10 +74,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   @Override
   public boolean isAuthEnabled() throws IOException {
     if (authEnabled == null) {
-      String strAuthUrl = fetchAuthURL();
-      authEnabled = StringUtils.isNotEmpty(strAuthUrl);
+      String strAuthURI = fetchAuthURI();
+      authEnabled = StringUtils.isNotEmpty(strAuthURI);
       if (authEnabled) {
-        authUrl = URI.create(strAuthUrl);
+        authURI = URI.create(strAuthURI);
       }
     }
     return authEnabled;
@@ -86,10 +85,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
 
   @Override
   public void setConnectionInfo(String host, int port, boolean ssl) {
-    if (baseUrl != null) {
+    if (baseURI != null) {
       throw new IllegalStateException("Connection info is already configured!");
     }
-    baseUrl = URI.create(String.format("%s://%s:%d%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
+    baseURI = URI.create(String.format("%s://%s:%d%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
                                        Constants.Gateway.GATEWAY_VERSION));
   }
 
@@ -111,12 +110,16 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   /**
    * @return the authentication server URL or empty value if authentication is not enabled in the gateway server
    */
-  protected URI getAuthUrl() {
-    return authUrl;
+  protected URI getAuthURI() {
+    return authURI;
   }
 
-  protected void setDisableSSLCertCheck(boolean disableSSLCertCheck) {
-    this.disableSSLCertCheck = disableSSLCertCheck;
+  public boolean isVerifySSLCert() {
+    return verifySSLCert;
+  }
+
+  protected void setVerifySSLCert(boolean verifySSLCert) {
+    this.verifySSLCert = verifySSLCert;
   }
 
   /**
@@ -135,17 +138,15 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * @return string value of the authentication server URL
    * @throws IOException IOException in case of a problem or the connection was aborted or if url list is empty
    */
-  private String fetchAuthURL() throws IOException {
-    if (baseUrl == null) {
+  private String fetchAuthURI() throws IOException {
+    if (baseURI == null) {
       throw new IllegalStateException("Connection information not set!");
     }
 
-    LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseUrl);
-    HttpResponse response =
-      HttpRequests.execute(HttpRequest.builder(HttpMethod.GET, baseUrl.toURL()).build(),
-                           new HttpRequestConfig(0, 0, disableSSLCertCheck));
+    LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseURI);
+    HttpResponse response = HttpRequests.execute(HttpRequest.get(baseURI.toURL()).build(), getHttpRequestConfig());
 
-    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseUrl);
+    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
     if (response.getResponseCode() != HttpResponseStatus.UNAUTHORIZED.getCode()) {
       return "";
     }
@@ -174,10 +175,9 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * received successfully from the authentication server
    */
   private AccessToken execute(HttpRequest request) throws IOException {
-    HttpResponse response =
-      HttpRequests.execute(request, new HttpRequestConfig(0, 0, disableSSLCertCheck));
+    HttpResponse response = HttpRequests.execute(request, getHttpRequestConfig());
 
-    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseUrl);
+    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
     RestClientUtils.verifyResponseCode(response.getResponseCode(), response.getResponseMessage());
 
     Map<String, String> responseMap =
@@ -196,10 +196,15 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   }
 
   private AccessToken fetchAccessToken() throws IOException {
-    LOG.debug("Authentication is enabled in the gateway server. Authentication URI {}.", getAuthUrl());
+    LOG.debug("Authentication is enabled in the gateway server. Authentication URI {}.", getAuthURI());
 
-    return execute(HttpRequest.builder(HttpMethod.GET, getAuthUrl().toURL())
+    return execute(HttpRequest.get(getAuthURI().toURL())
                      .addHeaders(getAuthenticationHeaders())
-                     .build());
+                     .build()
+    );
+  }
+
+  private HttpRequestConfig getHttpRequestConfig() {
+    return new HttpRequestConfig(0, 0, isVerifySSLCert());
   }
 }
