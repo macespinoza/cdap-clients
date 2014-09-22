@@ -27,7 +27,6 @@ import co.cask.cdap.common.http.exception.HttpFailureException;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +147,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     HttpResponse response = HttpRequests.execute(HttpRequest.get(baseURI.toURL()).build(), getHttpRequestConfig());
 
     LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
-    if (response.getResponseCode() != HttpResponseStatus.UNAUTHORIZED.getCode()) {
+    if (response.getResponseCode() != HttpURLConnection.HTTP_UNAUTHORIZED) {
       return "";
     }
 
