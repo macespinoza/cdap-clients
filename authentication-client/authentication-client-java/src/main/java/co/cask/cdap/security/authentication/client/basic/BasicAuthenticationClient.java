@@ -68,7 +68,7 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
     password = properties.getProperty(PASSWORD_PROP_NAME);
     Preconditions.checkArgument(StringUtils.isNotEmpty(password), "The password property cannot be empty.");
 
-    boolean verifySSLCert = Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME));
+    boolean verifySSLCert = Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME, "true"));
     setVerifySSLCert(verifySSLCert);
     if (!verifySSLCert) {
       LOG.info("Disabling SSL certificate check.");
