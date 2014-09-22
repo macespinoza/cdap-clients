@@ -37,10 +37,11 @@ import java.util.Properties;
 public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   private static final Logger LOG = LoggerFactory.getLogger(BasicAuthenticationClient.class);
 
+  public static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
+
   private static final String AUTHENTICATION_HEADER_PREFIX_BASIC = "Basic ";
   private static final String USERNAME_PROP_NAME = "security.auth.client.username";
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
-  private static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
 
   private String username;
   private String password;
