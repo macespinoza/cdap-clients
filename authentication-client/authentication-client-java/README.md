@@ -35,14 +35,14 @@ The Authentication Client Java API is for fetching the access token from the aut
  
 ## Example
    
- Create a ```BasicAuthenticationClient``` instance by full class name:
+Create a ```BasicAuthenticationClient``` instance by full class name:
  
  ```
   String authClientClassName = "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
   AuthenticationClient authenticationClient = configuration.getClassByName(authClientClassName);
  ```
  
- Set the gateway server connection info (this method needs calling only once for every ```AuthenticationClient``` 
+Set the gateway server connection info (this method needs calling only once for every ```AuthenticationClient```
  object):
   - the gateway server hostname;
   - the gateway server port;
@@ -52,7 +52,7 @@ The Authentication Client Java API is for fetching the access token from the aut
   authenticationClient.setConnectionInfo("localhost", 10000, false);
  ```
   
- Configure the authentication client with additional properties (this method should be called only once for every
+Configure the authentication client with additional properties (this method should be called only once for every
  ```AuthenticationClient``` object):
  
  ```
@@ -76,7 +76,7 @@ Check if authentication is enabled in the gateway server:
   boolean isEnabled = authenticationClient.isAuthEnabled();
  ```                      
  
- Get the access token for the user from the authentication server:
+Get the access token for the user from the authentication server:
  
  ```  
    String token = authenticationClient.getAccessToken();  
@@ -84,18 +84,13 @@ Check if authentication is enabled in the gateway server:
  If an access token is not available, an ```IOException``` will be thrown. 
  
  
- Invalidate an access token:
- 
- ```
-   authenticationClient.invalidateToken();
- ```
- 
- Retrieve credentials required by the authentication provider from the authentication server:
+Retrieve credentials required by the authentication provider from the authentication server:
 
  ```
    List<Credential> credentials = authenticationClient.getRequiredCredentials();
  ```
- **Note:** Interactive clients can use this list to obtain credentials from the user and then configure 
+
+**Note:** Interactive clients can use this list to obtain credentials from the user and then configure
  the ```authenticationClient```:
  
  ```
