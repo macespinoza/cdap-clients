@@ -59,16 +59,16 @@ The Authentication Client Java API is for fetching the access token from the aut
   authenticationClient.configure(properties);
  ```
 
- **Note:**
+**Note:**
 
-   - The ```BasicAuthenticationClient``` supports these properties:
+ - The ```BasicAuthenticationClient``` supports these properties:
 
  ```
   security.auth.client.username=username
   security.auth.client.password=password
  ```
 
-   - When SSL is enabled, to allow self-signed certificates set `security.auth.client.verify.ssl.cert=false`.
+ - When SSL is enabled, to allow self-signed certificates set `security.auth.client.verify.ssl.cert=false`.
  
 Check if authentication is enabled in the gateway server:
  
