@@ -7,10 +7,8 @@ The Authentication Client Java API is for fetching the access token from the aut
 
  - fetch an access token from the authentication server with credentials supported by the active authentication 
    mechanism;
- - check that authentication is enabled in the gateway server;
- - invalidate any cached access token;
- - retrieve credentials required by the authentication provider from the authentication server. 
- 
+ - check that authentication is enabled in the gateway server.
+
  Current implementation supports three authentication mechanisms:
   - Basic Authentication;
   - LDAP;
@@ -54,27 +52,31 @@ The Authentication Client Java API is for fetching the access token from the aut
   authenticationClient.setConnectionInfo("localhost", 10000, false);
  ```
   
- Configure the authentication client with additional properties (this method needs calling only once for every 
+ Configure the authentication client with additional properties (this method should be called only once for every
  ```AuthenticationClient``` object):
  
  ```
   authenticationClient.configure(properties);
  ```
 
- **Note:** The ```BasicAuthenticationClient``` supports these properties:
- 
+ **Note:**
+
+   - The ```BasicAuthenticationClient``` supports these properties:
+
  ```
-  security.auth.client.username=admin        
-  security.auth.client.password=realtime     
+  security.auth.client.username=username
+  security.auth.client.password=password
  ```
+
+   - When SSL is enabled, to allow self-signed certificates set `security.auth.client.verify.ssl.cert=false`.
  
- Check if authentication is enabled in the gateway server:
+Check if authentication is enabled in the gateway server:
  
  ```
   boolean isEnabled = authenticationClient.isAuthEnabled();
  ```                      
  
- Get the access token for the user with *username:"admin"* and *password:"realtime"* from the authentication server:
+ Get the access token for the user from the authentication server:
  
  ```  
    String token = authenticationClient.getAccessToken();  
@@ -102,20 +104,3 @@ The Authentication Client Java API is for fetching the access token from the aut
    }
    authenticationClient.configure(config);
  ```
-   
-## Additional Notes
- 
- ```getAccessToken();``` methods from the ```BasicAuthenticationClient``` throw exceptions using response code 
- analysis from the authentication server. These exceptions help determine if the request was processed unsuccessfully 
- and for what reason.
- 
- All cases, except a **200 OK** response, will throw these exceptions:
- 
-  - **400 Bad Request**: *javax.ws.rs.BadRequestException;*   
-  - **401 Unauthorized**: *javax.ws.rs.NotAuthorizedException;*
-  - **403 Forbidden**: *javax.ws.rs.ForbiddenException;*
-  - **404 Not Found**: *co.cask.cdap.client.exception.NotFoundException/javax.ws.rs.NotFoundException;*
-  - **405 Method Not Allowed**: *javax.ws.rs.NotAcceptableException;*
-  - **409 Conflict**: *javax.ws.rs.NotAcceptableException;*
-  - **500 Internal Server Error**: *javax.ws.rs.ServerErrorException;*
-  - **501 Not Implemented**: *javax.ws.rs.NotSupportedException*.
