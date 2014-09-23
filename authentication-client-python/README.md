@@ -43,7 +43,7 @@ external Python applications.
   {
     "security_auth_client_username": "admin",
     "security_auth_client_password": "secret",
-    "security_ssl_cert_check": "true" 
+    "security_ssl_cert_check": true
   }
  ```  
  
@@ -58,7 +58,7 @@ external Python applications.
  config = Config()
  config.security_auth_client_username = "admin"
  config.security_auth_client_password = "secret"
- config.security_ssl_cert_check = "true"
+ config.security_ssl_cert_check = True
  ```
  
  Configure the authentication client with the ```Config``` object:
@@ -69,13 +69,13 @@ external Python applications.
  Check if authentication is enabled in the gateway server:
  
  ```
-  is_enabled = authenticationClient.is_auth_enabled();
+  is_enabled = authentication_client.is_auth_enabled()
  ``` 
                       
  Retrieve the access token from the authentication server:
  
  ```
- token = authenticationClient.get_access_token();  
+ token = authentication_client.get_access_token()
  ```
 
 
