@@ -47,7 +47,7 @@
     </developer>
   </developers>
 
-  scm>
+  <scm>
     <connection>scm:git:https://github.com/caskco/cdap-clients.git</connection>
     <developerConnection>scm:git:git@github.com:caskco/cdap-clients.git</developerConnection>
     <url>https://github.com/caskco/cdap-clients.git</url>
