@@ -188,7 +188,7 @@
       <properties>
         <python.dir>${project.build.directory}/cdap-authentication-clients</python.dir>
         <python.stage.dir>${python.dir}/cdap-authentication-client-${project.version}</python.stage.dir>
-        <deploy.url>http://wwww.com</deploy.url>
+        <deploy.url>https://repository.continuuity.com/service/local/staging/deploy/maven2</deploy.url>
       </properties>
       <build>
         <plugins>
