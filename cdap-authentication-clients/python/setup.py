@@ -17,7 +17,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-setup(name='cdap-authentication-client',
+setup(name='cdap-auth-client',
     version='${project.version}',
     description='Authentication client for Cask Data Application Platform',
     author='Cask Data',
