@@ -29,6 +29,8 @@
   <artifactId>cdap-authentication-clients</artifactId>
   <packaging>pom</packaging>
   <name>CDAP Authentication clients</name>
+  <description>CDAP Authentication Clients</description>
+  <url>https://github.com/caskdata/cdap-clients</url>
 
   <modules>
     <module>java</module>

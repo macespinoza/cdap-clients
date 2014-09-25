@@ -30,6 +30,8 @@
   <version>1.0.0</version>
   <packaging>jar</packaging>
   <name>Java CDAP Authentication Client</name>
+  <description>Java CDAP Authentication Client</description>
+  <url>https://github.com/caskdata/cdap-clients</url>
 
   <dependencies>
     <dependency>
