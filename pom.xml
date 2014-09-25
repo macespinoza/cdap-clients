@@ -24,7 +24,8 @@
   <artifactId>cdap-clients</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
-  <description>CDAP Clients</description>
+  <name>CDAP Clients</name>
+  <description>CDAP Clients Project</description>
   <url>https://github.com/caskdata/cdap-clients</url>
 
   <organization>
