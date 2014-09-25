@@ -234,7 +234,7 @@
                   </descriptors>
                   <appendAssemblyId>false</appendAssemblyId>
                   <attach>false</attach>
-                  <finalName>python-authentication-client-${project.version}</finalName>
+                  <finalName>cdap-python-authentication-client-${project.version}</finalName>
                 </configuration>
               </execution>
             </executions>
@@ -254,10 +254,10 @@
                 <configuration>
                   <version>${project.version}</version>
                   <groupId>${project.groupId}</groupId>
-                  <artifactId>python-authentication-client</artifactId>
+                  <artifactId>cdap-python-authentication-client</artifactId>
                   <packaging>zip</packaging>
                   <generatePom>false</generatePom>
-                  <file>${project.build.directory}/python-authentication-client-${project.version}.zip</file>
+                  <file>${project.build.directory}/cdap-python-authentication-client-${project.version}.zip</file>
                   <repositoryId>continuuity</repositoryId>
                   <url>${deploy.url}</url>
                 </configuration>
