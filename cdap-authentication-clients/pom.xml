@@ -187,7 +187,7 @@
       <id>dist</id>
       <properties>
         <python.dir>${project.build.directory}/cdap-authentication-clients</python.dir>
-        <python.stage.dir>${python.dir}/python-${project.version}</python.stage.dir>
+        <python.stage.dir>${python.dir}/cdap-authentication-client-${project.version}</python.stage.dir>
         <deploy.url>http://wwww.com</deploy.url>
       </properties>
       <build>
@@ -209,7 +209,7 @@
                   <resources>
                     <resource>
                       <directory>${project.basedir}/python</directory>
-                      <targetPath>python</targetPath>
+                      <filtering>true</filtering>
                     </resource>
                   </resources>
                 </configuration>
