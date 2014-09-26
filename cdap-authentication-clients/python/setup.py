@@ -22,5 +22,7 @@ setup(name='cdap-auth-client',
     description='Authentication client for Cask Data Application Platform',
     author='Cask Data',
     author_email='cask-dev@googlegroups.com',
+    install_requires=["six"],
     packages=find_packages(),
     )
+

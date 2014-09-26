@@ -14,13 +14,19 @@ external Python applications.
  - LDAP
  - JAASPI
 
+## Installation
+ To install CDAP Authentication Client, run:
+```
+    $ python setup.py install
+```
+
 ## Usage
 
  To use the Authentication Client Python API, include these imports in your Python script:
 
 ```
-    from Config import Config
-    from BasicAuthenticationClient import BasicAuthenticationClient
+    from cdap_auth_client import Config
+    from cdap_auth_client import BasicAuthenticationClient
 ```
 
 ## Example
