@@ -5,6 +5,7 @@
 *.jar
 *.war
 *.ear
+*.pyc
 
 # Intellij Files & Dir #
 *.iml
@@ -26,3 +27,4 @@ logs/
 
 # Examples Stuff
 dependency-reduced-pom.xml
+
