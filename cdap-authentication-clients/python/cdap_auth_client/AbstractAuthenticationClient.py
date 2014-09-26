@@ -82,9 +82,9 @@ class AbstractAuthenticationClient(AuthenticationClient):
             raise ValueError(u"Base authentication"
                              u" client is not configured!")
         LOG.debug(u"Try to get the authentication URI from "
-                  u"the gateway server: {}.", self.__base_url + GATEWAY_VERSION + '/ping')
+                  u"the gateway server: {}.", self.__base_url + self.GATEWAY_VERSION + '/ping')
 
-        response = requests.get(self.__base_url + GATEWAY_VERSION + '/ping',
+        response = requests.get(self.__base_url + self.GATEWAY_VERSION + '/ping',
                                 verify=self.ssl_verification_status())
         result = None
         if response.status_code == hl.UNAUTHORIZED:
