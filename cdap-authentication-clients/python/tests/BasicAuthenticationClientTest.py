@@ -24,11 +24,11 @@ import os
 import sys
 import inspect
 
-currentdir = os.path.dirname(
+current_dir = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-srcdir = parentdir + '/cdap_auth_client'
-sys.path.insert(0, srcdir)
+parent_dir = os.path.dirname(current_dir)
+src_dir = parent_dir + '/cdap_auth_client'
+sys.path.insert(0, src_dir)
 
 from AuthDisabledHandler import AuthDisabledHandler
 from EmptyUrlListHandler import EmptyUrlListHandler
