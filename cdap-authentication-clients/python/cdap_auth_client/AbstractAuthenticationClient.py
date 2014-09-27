@@ -40,6 +40,7 @@ class AbstractAuthenticationClient(AuthenticationClient):
     ACCESS_TOKEN_KEY = u"access_token"
     AUTH_URI_KEY = u"auth_uri"
     AUTHENTICATION_HEADER_PREFIX_BASIC = u"Basic "
+    GATEWAY_VERSION = u'/v2'
     HTTP_PROTOCOL = u"http"
     HTTPS_PROTOCOL = u"https"
     EXPIRES_IN_KEY = u"expires_in"
@@ -81,9 +82,9 @@ class AbstractAuthenticationClient(AuthenticationClient):
             raise ValueError(u"Base authentication"
                              u" client is not configured!")
         LOG.debug(u"Try to get the authentication URI from "
-                  u"the gateway server: {}.", self.__base_url)
+                  u"the gateway server: {}.", self.__base_url + self.GATEWAY_VERSION + '/ping')
 
-        response = requests.get(self.__base_url,
+        response = requests.get(self.__base_url + self.GATEWAY_VERSION + '/ping',
                                 verify=self.ssl_verification_status())
         result = None
         if response.status_code == hl.UNAUTHORIZED:

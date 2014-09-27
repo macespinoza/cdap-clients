@@ -24,10 +24,11 @@ import os
 import sys
 import inspect
 
-currentdir = os.path.dirname(
+current_dir = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+parent_dir = os.path.dirname(current_dir)
+src_dir = parent_dir + '/cdap_auth_client'
+sys.path.insert(0, src_dir)
 
 from AuthDisabledHandler import AuthDisabledHandler
 from EmptyUrlListHandler import EmptyUrlListHandler
@@ -46,11 +47,9 @@ import TestConstants
 class BasicAuthenticationClientTest(unittest.TestCase):
 
     def setUp(self):
-
         self.__authentication_client = BasicAuthenticationClient()
         self.__local_test_server = SimpleTCPServer(
             (u"localhost", TestConstants.SERVER_PORT), AuthenticationHandler)
-        self.__local_test_server.allow_reuse_address = True
         self.__server_thread = threading.\
             Thread(target=self.__local_test_server.serve_forever)
         self.__server_thread.start()
@@ -71,12 +70,12 @@ class BasicAuthenticationClientTest(unittest.TestCase):
             .start()
 
     def tearDown(self):
-        self.__local_test_server.server_close()
         self.__local_test_server.shutdown()
-        self.empty_response_server.server_close()
+        self.__local_test_server.server_close()
         self.empty_response_server.shutdown()
-        self.auth_disabled_server.server_close()
+        self.empty_response_server.server_close()
         self.auth_disabled_server.shutdown()
+        self.auth_disabled_server.server_close()
 
     def test_auth_is_auth_enabled(self):
         config = Config().read_from_file(u"auth_config.json")
@@ -92,7 +91,6 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.assertEqual(TestConstants.TOKEN_TYPE, access_token.token_type)
         self.assertEqual(TestConstants.TOKEN_LIFE_TIME,
                          access_token.expires_in)
-        self.__local_test_server.server_close()
 
     def test_not_authorization_get_access_token(self):
         self.__authentication_client.username = u"fail"
