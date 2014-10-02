@@ -86,6 +86,8 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         config = Config().read_from_file(u"auth_config.json")
         self.__authentication_client.configure(config)
         access_token = self.__authentication_client.get_access_token()
+        cached_access_token = self.__authentication_client.get_access_token()
+        self.assertEqual(access_token, cached_access_token)
         self.assertIsNotNone(access_token)
         self.assertEqual(TestConstants.TOKEN, access_token.value)
         self.assertEqual(TestConstants.TOKEN_TYPE, access_token.token_type)
