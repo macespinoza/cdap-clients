@@ -27,8 +27,7 @@ import inspect
 current_dir = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
-src_dir = parent_dir + '/cdap_auth_client'
-sys.path.insert(0, src_dir)
+sys.path.insert(0, parent_dir)
 
 from AuthDisabledHandler import AuthDisabledHandler
 from EmptyUrlListHandler import EmptyUrlListHandler
@@ -38,13 +37,15 @@ try:
 except ImportError:
     import unittest as unittest
 
-from Config import Config
-from BasicAuthenticationClient import BasicAuthenticationClient
+from cdap_auth_client import Config
+from cdap_auth_client import BasicAuthenticationClient
 from AuthHandler import AuthenticationHandler
 import TestConstants
 
 
 class BasicAuthenticationClientTest(unittest.TestCase):
+    AUTH_CONFIG_FILE = os.path.join(os.path.dirname(__file__), u"auth_config.json")
+    EMPTY_USERNAME_CONFIG = os.path.join(os.path.dirname(__file__), u"empty_username_config.json")
 
     def setUp(self):
         self.__authentication_client = BasicAuthenticationClient()
@@ -78,14 +79,16 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.auth_disabled_server.server_close()
 
     def test_auth_is_auth_enabled(self):
-        config = Config().read_from_file(u"auth_config.json")
+        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         self.__authentication_client.configure(config)
         assert(self.__authentication_client.is_auth_enabled())
 
     def test_success_get_access_token(self):
-        config = Config().read_from_file(u"auth_config.json")
+        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         self.__authentication_client.configure(config)
         access_token = self.__authentication_client.get_access_token()
+        cached_access_token = self.__authentication_client.get_access_token()
+        self.assertEqual(access_token, cached_access_token)
         self.assertIsNotNone(access_token)
         self.assertEqual(TestConstants.TOKEN, access_token.value)
         self.assertEqual(TestConstants.TOKEN_TYPE, access_token.token_type)
@@ -118,12 +121,12 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.assertEqual(TestConstants.TOKEN_TYPE, access_token.token_type)
 
     def test_empty_username_configure(self):
-        config = Config().read_from_file(u"empty_username_config.json")
+        config = Config().read_from_file(self.EMPTY_USERNAME_CONFIG)
         self.assertRaises(ValueError,
                           self.__authentication_client.configure, config)
 
     def test_is_auth_enabled(self):
-        config = Config().read_from_file(u"auth_config.json")
+        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         self.__authentication_client.configure(config)
         self.assertTrue(self.__authentication_client.is_auth_enabled())
 
@@ -132,7 +135,7 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         empty_auth_client.set_connection_info(u'localhost',
                                               TestConstants.SERVER_PORT+1,
                                               False)
-        config = Config().read_from_file(u"auth_config.json")
+        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         empty_auth_client.configure(config)
         self.assertRaises(IOError, empty_auth_client.is_auth_enabled)
 
@@ -141,7 +144,7 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         dis_auth_client.set_connection_info(u'localhost',
                                             TestConstants.SERVER_PORT+2,
                                             False)
-        config = Config().read_from_file(u"auth_config.json")
+        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         dis_auth_client.configure(config)
         self.assertFalse(dis_auth_client.is_auth_enabled())
 

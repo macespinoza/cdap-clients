@@ -110,16 +110,16 @@ class AbstractAuthenticationClient(AuthenticationClient):
                           u"disabled in the gateway server.")
         if self.__access_token is None or self.is_token_expired():
             request_time = int(round(time.time() * 1000))
-            access_token = self.fetch_access_token()
+            self.__access_token = self.fetch_access_token()
             self.__expiration_time = \
-                request_time + access_token.expires_in\
+                request_time + self.__access_token.expires_in\
                 - self.SPARE_TIME_IN_MILLIS
             LOG.debug(u"Received the access token successfully."
                       u" Expiration date is {}.",
                       datetime.datetime.
                       fromtimestamp(self.__expiration_time/1000)
                       .strftime(u'%Y-%m-%d %H:%M:%S.%f'))
-        return access_token
+        return self.__access_token
 
     def execute(self, headers):
         """
