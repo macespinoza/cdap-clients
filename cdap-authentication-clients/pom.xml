@@ -115,7 +115,7 @@
                   <exclude>data/**</exclude>
                   <exclude>**/Apache-LICENSE-2.0</exclude>
                   <exclude>**/VERSION</exclude>
-                  <exlcude>**/*.patch</exlcude>
+                  <exclude>**/*.patch</exclude>
                   <exclude>**/auth.yml</exclude>
                   <exclude>**/logrotate.d/**</exclude>
                   <exclude>**/limits.d/**</exclude>

@@ -51,7 +51,7 @@ module CDAPIngest
       req = rest.get(@base_url + '/v2/ping', @ssl_cert_check)
       auth_urls = req ['auth_uri']
       if auth_urls.empty?
-        fail EmptyAuthUrlException 'Empty authentication URI list was received in the server response.'
+        fail AuthenticationServerNotFoundException.new 'No Authentication server to get a token from was found'
       else
         @auth_url = auth_urls.sample()
       end
@@ -90,4 +90,4 @@ end
 
 class IllegalStateException < Exception; end
 
-class EmptyAuthUrlException < Exception; end
+class AuthenticationServerNotFoundException < Exception; end

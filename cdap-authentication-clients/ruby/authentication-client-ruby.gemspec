@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.version     = CDAPIngest::VERSION
   s.authors     = ["Yura Tolochkevych"]
   s.email       = ["ytolochkevych@cask.co"]
-  #s.homepage    = "http://github.com/username/gem-name"
   s.summary     = "A Ruby client for authentication in CASK CDAP services"
   s.description = "Provide a more Ruby experience when using authentication in CASK CDAP services."
 
@@ -33,8 +32,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'simplecov-rcov'
 
-  # s.files         = `git ls-files`.split("\n")
-  # s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  # s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 end
