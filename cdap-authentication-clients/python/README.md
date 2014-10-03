@@ -86,7 +86,7 @@ external Python applications.
 
  ## Tests
  
- To run tests from the commandline:
+ To run tests from the command-line:
  
  ```
  python BasicAuthenticationClientTest.py
