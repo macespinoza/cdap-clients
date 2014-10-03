@@ -212,7 +212,6 @@
                   <exclude>**/Apache-LICENSE-2.0</exclude>
                   <exclude>**/VERSION</exclude>
                   <exclude>**/*.patch</exclude>
-                  <exclude>**/*.yml</exclude>
                   <exclude>**/logrotate.d/**</exclude>
                   <exclude>**/limits.d/**</exclude>
                   <!-- Excludes AVRO schema files -->
