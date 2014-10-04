@@ -8,68 +8,78 @@ interact with a secure CDAP cluster.
 
  - check that authentication is enabled in the CDAP cluster.
  - fetch an access token from the authentication server with credentials supported by the active authentication
-   mechanism;
+   mechanism.
 
- The default implementation of authentication client - ```BasicAuthenticationClient``` supports the default
- authentication mechanisms supported by CDAP:
-  - Basic Authentication;
-  - LDAP;
-  - JAASPI.
+The default implementation of authentication client - ```BasicAuthenticationClient``` supports the default authentication mechanisms supported by CDAP:
+ - Basic Authentication.
+ - LDAP.
+ - JAASPI.
 
 ## Custom authentication mechanism
 
  If CDAP is configured to use a custom authentication mechanism, a custom authentication client will have to be written
-  to fecth the access token. The custom authentication needs to implement the ```AuthenticationClient``` interface.
- ```AbstractAuthenticationClient``` class contains common funtionality required by authentication clients,
+ to fecth the access token. The custom authentication clients needs to implement the ```AuthenticationClient```
+ interface. ```AbstractAuthenticationClient``` class contains common funtionality required by authentication clients,
  and can be extended by the custom authentication client. The custom authentication client has to be placed into the
  classpath of the application that needs to use it.
 
 ## Build
  
- To build the Authentication Client API jar, use:
+ To build the Authentication Client API jar, use
 
  ```mvn clean package```
 
 ## Usage
 
- To use the Authentication Client API, include this Maven dependency in your project's ```pom.xml``` file:
- 
+ To use the Authentication Client API, include this Maven dependency in your project's ```pom.xml``` file
+
+ ```
  <dependency>
   <groupId>co.cask.cdap</groupId>
   <artifactId>cdap-authentication-client</artifactId>
   <version>1.0.0</version>
  </dependency>
+ ```
  
 ## Example
    
-Create an Authentication Client instance:
+#### Create an Authentication Client instance
  
  ```
-  String defaultAuthClientClassName = "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
-  String authClientClassName = properties.getProperty("security.auth.client.class.name", defaultAuthClientClassName);
-  AuthenticationClient authenticationClient = (AuthenticationClient) Class.forName(authClientClassName).newInstance();
+  String defaultAuthClientClass =
+      "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
+  String authClientClassName =
+       properties.getProperty("security.auth.client.class.name", defaultAuthClientClass);
+  AuthenticationClient authenticationClient =
+       (AuthenticationClient) Class.forName(authClientClassName).newInstance();
  ```
 
- The above way of creating Authentication Client using configuration parameter allows for plugging in custom
+ Creating an Authentication Client using a configuration parameter as shown above allows plugging in custom
  implementations of Authentication Client.
  
-Set the CDAP connection information (this method needs calling only once for every ```AuthenticationClient``` object):
-  - hostname;
-  - port;
-  - the boolean flag, ```true``` if SSL is enabled.
  
+#### Set the CDAP connection information
+ - hostname
+ - port
+ - boolean flag, true if SSL is enabled
+
+
  ```
   authenticationClient.setConnectionInfo("localhost", 10000, false);
  ```
+
+This method should be called only once for every ```AuthenticationClient``` object.
+
   
-Check if authentication is enabled in CDAP cluster:
+#### Check if authentication is enabled in CDAP cluster
 
  ```
   boolean isEnabled = authenticationClient.isAuthEnabled();
  ```
 
-If authentication is enabled, configure the authentication client with user credentials and other properties (this
-method should be called only once for every ```AuthenticationClient``` object):
+#### Configure Authentication Client
+If authentication is enabled, configure the Authentication Client with user credentials and other properties (this
+method should be called only once for every ```AuthenticationClient``` object).
  
  ```
   authenticationClient.configure(properties);
@@ -84,16 +94,19 @@ method should be called only once for every ```AuthenticationClient``` object):
   security.auth.client.password=password
  ```
 
- - When SSL is enabled, to allow self-signed certificates set `security.auth.client.verify.ssl.cert=false`.
+ - When SSL is enabled, to suspend certificate checks to allow self-signed certificates set
+ `security.auth.client.verify.ssl.cert=false`.
 
  - For non-interactive applications, user credentials will come from a configuration file.
- - For interactive applications, see below to get user credentials.
- 
-Get the access token for the user from the authentication server, and use it:
+ - For interactive applications, see [Interactive applications](#interactive-applications) section below  to get user credentials.
+
+
+#### Get access token for the user from the authentication server, and use it
  
  ```  
    HttpURLConnection conn = (HttpURLConnection) cdapURL.openConnection();
-   conn.setRequestProperty("Authorization", "Basic " + authenticationClient.getAccessToken());
+   conn.setRequestProperty("Authorization", 
+               "Bearer " + authenticationClient.getAccessToken());
    // ...
    conn.connect();
  ```
@@ -103,7 +116,8 @@ Get the access token for the user from the authentication server, and use it:
 
 ## Interactive applications
 
-This example illustrates obtaining user credentials and then configuring Authentication Client with it:
+This example illustrates obtaining user credentials in interactive application, and then configuring Authentication
+Client with it.
 
 ```
   authenticationClient.setConnectionInfo(hostname, port, ssl);
