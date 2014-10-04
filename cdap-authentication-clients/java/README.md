@@ -1,5 +1,4 @@
 # CDAP Authentication Client
-============================
 
 The Authentication Client API can be used for fetching the access token from the CDAP authentication server to
 interact with a secure CDAP cluster.
@@ -10,7 +9,7 @@ interact with a secure CDAP cluster.
  - Fetch an access token from the authentication server with credentials supported by the active authentication
    mechanism.
 
-The default implementation of the authentication client--BasicAuthenticationClient--supports the default
+The default implementation of the authentication client—`BasicAuthenticationClient`—supports the default
 authentication mechanisms supported by CDAP:
  - Basic Authentication
  - LDAP
@@ -20,7 +19,7 @@ authentication mechanisms supported by CDAP:
 
  If CDAP is configured to use a custom authentication mechanism, a custom authentication client will have to be written
  to fetch the access token. The custom authentication clients needs to implement the ```AuthenticationClient```
- interface. ```AbstractAuthenticationClient``` class contains common functionality required by authentication clients,
+ interface. The ```AbstractAuthenticationClient``` class contains common functionality required by authentication clients,
  and can be extended by the custom authentication client. The custom authentication client has to be placed into the
  classpath of the application that needs to use it.
 
