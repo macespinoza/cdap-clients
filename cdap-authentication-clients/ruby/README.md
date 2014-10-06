@@ -1,13 +1,19 @@
 authentication-client-ruby
 ==========================
 
-The Authentication Client Ruby API is for fetching the access token from the authentication server.
+The Authentication Client Ruby API is for fetching the access token from the authentication server when writing
+external Ruby applications.
 
 ## Supported Actions
 
- - fetch a access token from the authentication server with credentials, which are supported by the active
- authentication mechanism;
- - check is the authentication enabled in the gateway server.
+ - Fetch an access token from the authentication server with credentials supported by the active authentication mechanism;
+ - Check if authentication is enabled in the gateway server; and
+ - Invalidate any cached access tokens. 
+ 
+ Current implementation supports three authentication mechanisms:
+ - Basic Authentication
+ - LDAP
+ - JAASPI
 
 ## Usage
 
@@ -17,7 +23,7 @@ The Authentication Client Ruby API is for fetching the access token from the aut
  gem 'authentication-client-ruby'
  ```
 
- If you use gem outside Rails, you should require gem files in your application files:
+ If you use the gem outside Rails, you should require gem files in your application files:
 
  ```
  require 'authentication-client-ruby'
@@ -26,6 +32,10 @@ The Authentication Client Ruby API is for fetching the access token from the aut
 ## Example
 
  Create a ```CDAPIngest::AuthenticationClient``` instance.
+ 
+ ```
+ authentication_client = CDAPIngest::AuthenticationClient.new
+ ```
  Set the connection parameters: authentication server host; authentication server host port; SSL mode:
 
  ```
@@ -36,20 +46,20 @@ The Authentication Client Ruby API is for fetching the access token from the aut
  
  ```
  # config/auth.yml
- security.auth.client.username: 'user'
+ security.auth.client.username: 'admin'
  security.auth.client.password: 'secret'
  security.auth.client.ssl_cert_check: true
  ```  
  
- Load configuration from file:
+ Load configuration from the file:
  
  ```
  authentication_client.configure('config/auth.yml')
  ```
  
  Or set the required fields in the ```AuthenticationClient``` object:
- ```
  
+ ``` 
  authentication_client.username = "admin"
  authentication_client.password = "secret"
  authentication_client.ssl_cert_check = true
@@ -58,7 +68,7 @@ The Authentication Client Ruby API is for fetching the access token from the aut
  Check if authentication is enabled in the gateway server:
  
  ```
-  is_enabled = authentication_client.is_auth_enabled
+ is_enabled = authentication_client.is_auth_enabled
  ``` 
                       
  Retrieve the access token from the authentication server:
@@ -95,4 +105,4 @@ All methods from the ```AuthenticationClient``` throw exceptions using response 
 
 ## Testing
 
-To run RSpec tests, run ```rspec``` command in your shell.
+To run RSpec tests, run the ```rake rspec``` command in your shell.

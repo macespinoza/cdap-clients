@@ -22,6 +22,8 @@ module CDAPIngest
     attr_accessor :ssl_cert_check
 
     SPARSE_TIME_IN_MILLIS = 5000
+    USERNAME_PROP_NAME = 'security_auth_client_username'
+    PASSWORD_PROP_NAME = 'security_auth_client_password'
 
     def initialize
       @rest = AuthClientRest.new
@@ -30,6 +32,8 @@ module CDAPIngest
       @is_auth_enabled = nil
       @access_token = nil
       @ssl_cert_check = false
+      @credentials = [Credential.new(USERNAME_PROP_NAME, 'Username for basic authentication.', false),
+                      Credential.new(PASSWORD_PROP_NAME, 'Password for basic authentication.', true)]
     end
 
     def configure(path)
@@ -53,7 +57,7 @@ module CDAPIngest
       if auth_urls.empty?
         fail AuthenticationServerNotFoundException.new 'No Authentication server to get a token from was found'
       else
-        @auth_url = auth_urls.sample()
+        @auth_url = auth_urls.sample
       end
     end
 

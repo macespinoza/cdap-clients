@@ -12,6 +12,24 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-require 'bundler/gem_tasks'
-require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:rspec)
+class Credential
+
+  def initialize(name, description, secret)
+    @name = name
+    @description = description
+    @secret = secret
+  end
+
+  def get_name
+    @name
+  end
+
+  def get_description
+    @description
+  end
+
+  def is_secret
+    @secret
+  end
+
+end

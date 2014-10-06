@@ -24,10 +24,10 @@ Gem::Specification.new do |s|
   s.summary     = "A Ruby client for authentication in CASK CDAP services"
   s.description = "Provide a more Ruby experience when using authentication in CASK CDAP services."
 
-  s.rubyforge_project = "authentication-client-ruby"
+  s.rubyforge_project = "cdap-authentication-client"
 
   s.add_dependency 'httparty'
-  
+
   s.add_development_dependency 'pry'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'simplecov-rcov'
