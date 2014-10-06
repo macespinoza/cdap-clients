@@ -102,12 +102,13 @@ method should be called only once for every ```AuthenticationClient``` object).
  retrieving and using user credentials.
 
 
-#### Retrieve the access token for the user from the authentication server
+#### Retrieve the access token for the user from the authentication server, and use it
  
  ```  
    HttpURLConnection conn = (HttpURLConnection) cdapURL.openConnection();
    conn.setRequestProperty("Authorization", 
-               "Bearer " + authenticationClient.getAccessToken());
+               authenticationClient.getAccessToken().getTokenType() + " "
+               + authenticationClient.getAccessToken().getValue());
    // ...
    conn.connect();
  ```
