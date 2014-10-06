@@ -121,7 +121,7 @@ method should be called only once for every ```AuthenticationClient``` object).
                               authentication_client.get_access_token().value }
  requests.request(method, url, headers=headers)
  ```
- If there is error in fetching access token, an ```IOException``` will be thrown. The Authentication Client
+ If there is error in fetching access token, an ```IOError``` will be raised. The Authentication Client
  caches the access token until the token expires. It automatically re-fetches a new token upon expiry.
 
 
