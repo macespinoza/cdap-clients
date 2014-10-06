@@ -43,6 +43,10 @@ module CDAPIngest
       @ssl_cert_check = config['security.auth.client.ssl_cert_check']
     end
 
+    def get_required_credentials
+      @credentials
+    end
+
     def set_connection_info(host, port, ssl)
       if @base_url
         fail IllegalStateException.new, 'Connection info is already configured!'
