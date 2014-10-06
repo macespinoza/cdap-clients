@@ -32,8 +32,7 @@ describe CDAPIngest::AuthenticationClient do
 
   it 'get access token test' do
     VCR.insert_cassette('authentication_client_get_auth_enabled')
-    authentication_client.username = 'user'
-    authentication_client.password = 'secret'
+    authentication_client.configure('spec/auth.yml')
     authentication_client.auth_enabled?
     VCR.eject_cassette
     VCR.insert_cassette('authentication_client_get_access_token')
@@ -51,8 +50,7 @@ describe CDAPIngest::AuthenticationClient do
     VCR.eject_cassette
     VCR.insert_cassette(
         'invalid_credentials_authentication_client_get_access_token')
-    authentication_client.username = 'test'
-    authentication_client.password = 'test'
+    authentication_client.configure('spec/auth_fail.yml')
     expect { authentication_client.get_access_token }.to raise_error(
                                                 HTTParty::ResponseError,
                                                 'Invalid username or password')
@@ -63,8 +61,7 @@ describe CDAPIngest::AuthenticationClient do
 
   it 'is authentication enabled test' do
     VCR.insert_cassette('authentication_client_get_auth_enabled')
-    authentication_client.username = 'user'
-    authentication_client.password = 'secret'
+    authentication_client.configure('spec/auth.yml')
     # response = authentication_client.get_access_token
     is_enabled = authentication_client.auth_enabled?
     expect(is_enabled).to be_truthy

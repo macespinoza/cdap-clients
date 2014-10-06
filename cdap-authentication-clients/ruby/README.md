@@ -57,14 +57,6 @@ external Ruby applications.
  authentication_client.configure('config/auth.yml')
  ```
  
- Or set the required fields in the ```AuthenticationClient``` object:
- 
- ``` 
- authentication_client.username = "admin"
- authentication_client.password = "secret"
- authentication_client.ssl_cert_check = true
- ```
- 
  Check if authentication is enabled in the gateway server:
  
  ```

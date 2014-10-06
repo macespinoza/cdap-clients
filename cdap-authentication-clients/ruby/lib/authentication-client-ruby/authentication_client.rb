@@ -17,9 +17,9 @@ module CDAPIngest
   # The client interface to fetch access token from the authentication server
   class AuthenticationClient
     attr_reader :rest
-    attr_accessor :username
-    attr_accessor :password
-    attr_accessor :ssl_cert_check
+    attr_reader :username
+    attr_reader :password
+    attr_reader :ssl_cert_check
 
     SPARSE_TIME_IN_MILLIS = 5000
     USERNAME_PROP_NAME = 'security_auth_client_username'
@@ -37,6 +37,9 @@ module CDAPIngest
     end
 
     def configure(path)
+      if @username || @password
+        fail IllegalStateException.new, 'Client is already configured!'
+      end
       config = YAML.load_file(path)
       @username = config['security.auth.client.username']
       @password = config['security.auth.client.password']
