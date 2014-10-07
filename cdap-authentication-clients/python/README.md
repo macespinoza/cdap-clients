@@ -7,7 +7,7 @@ interact with a secure CDAP cluster.
 
 - Check that authentication is enabled in the CDAP cluster.
 - Fetch an access token from the authentication server with credentials supported by the active authentication
-   mechanism.
+  mechanism.
  
 The default implementation of the authentication client—`BasicAuthenticationClient`—supports the default
 authentication mechanisms supported by CDAP:
