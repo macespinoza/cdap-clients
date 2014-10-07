@@ -18,8 +18,8 @@ module CDAPIngest
   
 end
 
-require 'authentication-client-ruby/authentication_client'
-require 'authentication-client-ruby/auth_client_rest'
-require 'authentication-client-ruby/access_token'
-require 'authentication-client-ruby/version'
-require 'authentication-client-ruby/credential'
+require 'cdap-authentication-client/authentication_client'
+require 'cdap-authentication-client/auth_client_rest'
+require 'cdap-authentication-client/access_token'
+require 'cdap-authentication-client/version'
+require 'cdap-authentication-client/credential'

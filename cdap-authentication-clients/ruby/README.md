@@ -20,13 +20,13 @@ external Ruby applications.
  To use the Authentication Client Ruby API, include this gem in your Gemfile:
 
  ```
- gem 'authentication-client-ruby'
+ gem 'cdap-authentication-client'
  ```
 
  If you use the gem outside Rails, you should require gem files in your application files:
 
  ```
- require 'authentication-client-ruby'
+ require 'cdap-authentication-client'
  ```
 
 ## Example

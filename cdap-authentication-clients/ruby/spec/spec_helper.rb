@@ -26,7 +26,7 @@ VCR.configure do |c|
   c.allow_http_connections_when_no_cassette = true
 end
 
-require 'authentication-client-ruby'
+require 'cdap-authentication-client'
 require 'rspec'
 
 Dir.glob("#{File.dirname(__FILE__)}/support/*.rb").each { |f| require f }
