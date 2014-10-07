@@ -12,6 +12,6 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-module CDAPIngest
+module AuthenticationClient
   VERSION = '0.0.1'
 end

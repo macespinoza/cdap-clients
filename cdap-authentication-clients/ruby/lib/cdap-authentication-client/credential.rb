@@ -12,24 +12,28 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-class Credential
+module AuthenticationClient
 
-  def initialize(name, description, secret)
-    @name = name
-    @description = description
-    @secret = secret
-  end
+  class Credential
 
-  def get_name
-    @name
-  end
+    def initialize(name, description, secret)
+      @name = name
+      @description = description
+      @secret = secret
+    end
 
-  def get_description
-    @description
-  end
+    def get_name
+      @name
+    end
 
-  def is_secret
-    @secret
+    def get_description
+      @description
+    end
+
+    def is_secret
+      @secret
+    end
+
   end
 
 end

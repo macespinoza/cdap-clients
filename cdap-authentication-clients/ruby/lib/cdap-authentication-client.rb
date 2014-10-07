@@ -14,7 +14,7 @@
 
 require 'httparty'
 
-module CDAPIngest
+module AuthenticationClient
   
 end
 
@@ -23,3 +23,4 @@ require 'cdap-authentication-client/auth_client_rest'
 require 'cdap-authentication-client/access_token'
 require 'cdap-authentication-client/version'
 require 'cdap-authentication-client/credential'
+require 'cdap-authentication-client/authentication_client_interface'

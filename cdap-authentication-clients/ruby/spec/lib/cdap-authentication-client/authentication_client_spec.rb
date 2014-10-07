@@ -14,19 +14,19 @@
 
 require 'spec_helper'
 
-describe CDAPIngest::AuthenticationClient do
-  let(:authentication_client) { CDAPIngest::AuthenticationClient.new }
+describe AuthenticationClient::AuthenticationClient do
+  let(:authentication_client) { AuthenticationClient::AuthenticationClient.new }
   before do
     authentication_client.set_connection_info('127.0.0.1', 11000, false)
   end
 
   it 'instance check' do
     VCR.insert_cassette('authentication_client')
-    expect(authentication_client).to be_a CDAPIngest::AuthenticationClient
+    expect(authentication_client).to be_a AuthenticationClient::AuthenticationClient
     VCR.eject_cassette
   end
 
-  it { expect(CDAPIngest::AuthenticationClient).to respond_to(:new) }
+  it { expect(AuthenticationClient::AuthenticationClient).to respond_to(:new) }
 
   it { expect(authentication_client).to respond_to(:get_access_token) }
 
@@ -38,7 +38,7 @@ describe CDAPIngest::AuthenticationClient do
     VCR.eject_cassette
     VCR.insert_cassette('authentication_client_get_access_token')
     token = authentication_client.get_access_token
-    expect(token.class).to eq CDAPIngest::AccessToken
+    expect(token.class).to eq AuthenticationClient::AccessToken
     expect(token.value).to be_a String
     expect(token.token_type).to eq 'Bearer'
     expect(token.expires_in).to eq 86_400

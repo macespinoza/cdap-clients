@@ -12,10 +12,11 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-module CDAPIngest
+module AuthenticationClient
+  require 'cdap-authentication-client/authentication_client_interface'
   ###
-  # The client interface to fetch access token from the authentication server
-  class AuthenticationClient
+  # The client class to fetch access token from the authentication server
+  class AuthenticationClient < AuthenticationClientInterface
     attr_reader :rest
     attr_reader :username
     attr_reader :password
@@ -94,6 +95,10 @@ module CDAPIngest
 
     def token_expired?
       @expiration_time < Time.now.to_f * 1000
+    end
+
+    def invalidate_token
+      @access_token = nil
     end
   end
 end

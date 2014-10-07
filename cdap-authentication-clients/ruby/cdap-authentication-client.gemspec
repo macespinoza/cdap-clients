@@ -18,7 +18,7 @@ require "cdap-authentication-client/version"
 
 Gem::Specification.new do |s|
   s.name        = "cdap-authentication-client"
-  s.version     = CDAPIngest::VERSION
+  s.version     = AuthenticationClient::VERSION
   s.authors     = ["Yura Tolochkevych"]
   s.email       = ["ytolochkevych@cask.co"]
   s.summary     = "A Ruby client for authentication in CASK CDAP services"

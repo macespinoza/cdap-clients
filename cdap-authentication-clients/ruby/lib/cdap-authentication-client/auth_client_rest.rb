@@ -15,7 +15,7 @@
 require 'httparty'
 require 'yaml'
 
-module CDAPIngest
+module AuthenticationClient
   ###
   # The helper class for providing http requests
   class AuthClientRest
