@@ -37,7 +37,7 @@ authentication mechanisms supported by CDAP:
  <dependency>
   <groupId>co.cask.cdap</groupId>
   <artifactId>cdap-authentication-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
  </dependency>
  ```
  
@@ -62,11 +62,9 @@ authentication mechanisms supported by CDAP:
  - hostname
  - port
  - boolean flag, true if SSL is enabled
-
-
- ```
+```
   authenticationClient.setConnectionInfo("localhost", 10000, false);
- ```
+```
 
 This method should be called only once for every ```AuthenticationClient``` object.
 

@@ -23,17 +23,17 @@ interface. The ```AbstractAuthenticationClient``` class contains common function
 authentication clients, and can be extended by the custom authentication client.
  
 ## Installation
- To install CDAP Authentication Client, either [download a zip file](https://repository.cask.co/downloads/co/cask/cdap/cdap-python-authentication-client/1.0.0/cdap-python-authentication-client-1.0.0.zip)
+ To install CDAP Authentication Client, either [download a zip file](https://repository.cask.co/downloads/co/cask/cdap/cdap-python-authentication-client/1.0.1/cdap-python-authentication-client-1.0.1.zip)
  ```
- $ unzip cdap-python-authentication-client-1.0.0.zip
- $ cd cdap-python-authentication-client-1.0.0
+ $ unzip cdap-python-authentication-client-1.0.1.zip
+ $ cd cdap-python-authentication-client-1.0.1
  $ python setup.py install
  ```
  
  or [clone the repository](https://github.com/caskdata/cdap-clients)
 ```
  $ git clone https://github.com/caskdata/cdap-clients.git
- $ cd cdap-ingest/cdap-stream-clients/python/
+ $ cd cdap-clients/cdap-authentication-clients/python/
  $ python setup.py install
 ```
 
