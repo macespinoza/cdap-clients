@@ -23,9 +23,18 @@ authentication mechanisms supported by CDAP:
  and can be extended by the custom authentication client.
  
 ## Installation
- To install CDAP Authentication Client, run:
+ To install CDAP Authentication Client, either [Download the zip](https://repository.continuuity.com/content/repositories/public/co/cask/cdap/cdap-python-authentication-client/1.0.0/cdap-python-authentication-client-1.0.0.zip)
+ ```
+ $ unzip cdap-python-authentication-client-1.0.0.zip
+ $ cd cdap-python-authentication-client-1.0.0
+ $ python setup.py install
+ ```
+ 
+ or [Clone the repository](https://github.com/caskdata/cdap-clients)
 ```
-    $ python setup.py install
+ $ git clone https://github.com/caskdata/cdap-clients.git
+ $ cd cdap-ingest/cdap-stream-clients/python/
+ $ python setup.py install
 ```
 
 ## Usage
@@ -39,71 +48,55 @@ authentication mechanisms supported by CDAP:
 
 ## Example
    
-#### Create a BasicAuthenticationClient instance:
+#### Create a BasicAuthenticationClient instance
  
- ```
+```
    authentication_client = BasicAuthenticationClient()
- ```
+```
       
 #### Set the CDAP connection information
  - hostname
  - port
  - boolean flag, true if SSL is enabled
  
- ```
+```
    authentication_client.set_connection_info('localhost', 10000, False)
- ```
+```
   
 This method should be called only once for every ```AuthenticationClient``` object.
 
   
 #### Check if authentication is enabled in the CDAP cluster
  
- ```
+```
   is_enabled = authentication_client.is_auth_enabled()
- ``` 
+``` 
 
 #### Configure Authentication Client
 
- Create the configuration file structure in JSON format:
- 
- ```
-  {
-    "security_auth_client_username": "admin",
-    "security_auth_client_password": "secret",
-    "security_ssl_cert_check": true
-  }
- ```  
- 
- Load configuration from JSON File:
- 
- ```
- config = Config().read_from_file('auth_config.json')
- ```
- 
- Or set the required fields in the ```Config``` object:
- ```
+ Set the required fields on a ```Config``` object:
+```
  config = Config()
  config.security_auth_client_username = "admin"
  config.security_auth_client_password = "secret"
  config.security_ssl_cert_check = True
- ```
+```
  
  If authentication is enabled, configure the Authentication Client with user credentials and other properties (this
 method should be called only once for every ```AuthenticationClient``` object).
  Configure the authentication client with the ```Config``` object:
- ```
+```
  authentication_client.configure(config)
- ```
+```
 
 **Note:**
 
  - The ```BasicAuthenticationClient``` requires these user credentials:
 
- ```
+```
   security_auth_client_username=username
   security_auth_client_password=password
- ```
+```
 
  - When SSL is enabled, to suspend certificate checks to allow self-signed certificates set
  `security.security_ssl_cert_check=false`.
@@ -114,13 +107,13 @@ method should be called only once for every ```AuthenticationClient``` object).
 
 
 #### Retrieve and use the access token for the user from the authentication server
- ```
+```
  token = authentication_client.get_access_token()
  
  headers = { 'Authorization': authentication_client.get_access_token().token_type + " " + \
                               authentication_client.get_access_token().value }
  requests.request(method, url, headers=headers)
- ```
+```
  If there is an error while fetching the access token, an ```IOError``` will be raised. The Authentication Client
  caches the access token until the token expires. It automatically re-fetches a new token upon expiry.
 
