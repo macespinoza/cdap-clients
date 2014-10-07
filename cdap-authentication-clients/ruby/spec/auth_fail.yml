@@ -1,0 +1,3 @@
+security.auth.client.username: 'test'
+security.auth.client.password: 'test'
+security.auth.client.ssl_cert_check: true
