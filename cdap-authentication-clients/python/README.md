@@ -5,32 +5,32 @@ interact with a secure CDAP cluster.
 
 ## Supported Actions
 
- - Check that authentication is enabled in the CDAP cluster.
- - Fetch an access token from the authentication server with credentials supported by the active authentication
+- Check that authentication is enabled in the CDAP cluster.
+- Fetch an access token from the authentication server with credentials supported by the active authentication
    mechanism.
  
 The default implementation of the authentication client—`BasicAuthenticationClient`—supports the default
 authentication mechanisms supported by CDAP:
- - Basic Authentication
- - LDAP
- - JAASPI
+- Basic Authentication
+- LDAP
+- JAASPI
 
 ## Custom Authentication Mechanism
 
- If CDAP is configured to use a custom authentication mechanism, a custom authentication client will have to be written
- to fetch the access token. The custom authentication clients needs to implement the ```AuthenticationClient```
- interface. The ```AbstractAuthenticationClient``` class contains common functionality required by authentication clients,
- and can be extended by the custom authentication client.
+If CDAP is configured to use a custom authentication mechanism, a custom authentication client is needed
+to fetch the access token. Custom authentication clients must implement the ```AuthenticationClient```
+interface. The ```AbstractAuthenticationClient``` class contains common functionality required by 
+authentication clients, and can be extended by the custom authentication client.
  
 ## Installation
- To install CDAP Authentication Client, either [Download the zip](https://repository.continuuity.com/content/repositories/public/co/cask/cdap/cdap-python-authentication-client/1.0.0/cdap-python-authentication-client-1.0.0.zip)
+ To install CDAP Authentication Client, either [download a zip file](https://repository.continuuity.com/content/repositories/public/co/cask/cdap/cdap-python-authentication-client/1.0.0/cdap-python-authentication-client-1.0.0.zip)
  ```
  $ unzip cdap-python-authentication-client-1.0.0.zip
  $ cd cdap-python-authentication-client-1.0.0
  $ python setup.py install
  ```
  
- or [Clone the repository](https://github.com/caskdata/cdap-clients)
+ or [clone the repository](https://github.com/caskdata/cdap-clients)
 ```
  $ git clone https://github.com/caskdata/cdap-clients.git
  $ cd cdap-ingest/cdap-stream-clients/python/
@@ -98,11 +98,11 @@ method should be called only once for every ```AuthenticationClient``` object).
   security_auth_client_password=password
 ```
 
- - When SSL is enabled, to suspend certificate checks to allow self-signed certificates set
+- When SSL is enabled, to suspend certificate checks to allow self-signed certificates set
  `security.security_ssl_cert_check=false`.
 
- - For non-interactive applications, user credentials will come from a configuration file.
- - For interactive applications, see the section [Interactive Applications](#interactive-applications) below on
+- For non-interactive applications, user credentials will come from a configuration file.
+- For interactive applications, see the section [Interactive Applications](#interactive-applications) below on
  retrieving and using user credentials.
 
 
