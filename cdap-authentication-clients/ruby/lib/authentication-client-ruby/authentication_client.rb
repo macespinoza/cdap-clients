@@ -36,14 +36,13 @@ module CDAPIngest
                       Credential.new(PASSWORD_PROP_NAME, 'Password for basic authentication.', true)]
     end
 
-    def configure(path)
+    def configure(hash)
       if @username || @password
         fail IllegalStateException.new, 'Client is already configured!'
       end
-      config = YAML.load_file(path)
-      @username = config['security.auth.client.username']
-      @password = config['security.auth.client.password']
-      @ssl_cert_check = config['security.auth.client.ssl_cert_check']
+      @username = hash['security.auth.client.username']
+      @password = hash['security.auth.client.password']
+      @ssl_cert_check = hash['security.auth.client.ssl_cert_check']
     end
 
     def get_required_credentials
