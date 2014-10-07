@@ -19,7 +19,7 @@ module AuthenticationClient
       raise 'this method should be overriden'
     end
 
-    def set_connection_info(host, port, ssl)
+    def set_connection_info host, port, ssl
       raise 'this method should be overriden'
     end
 
