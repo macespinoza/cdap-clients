@@ -33,7 +33,7 @@ authentication clients, and can be extended by the custom authentication client.
  or [clone the repository](https://github.com/caskdata/cdap-clients)
 ```
  $ git clone https://github.com/caskdata/cdap-clients.git
- $ cd cdap-ingest/cdap-stream-clients/python/
+ $ cd cdap-clients/cdap-authentication-clients/python/
  $ python setup.py install
 ```
 
