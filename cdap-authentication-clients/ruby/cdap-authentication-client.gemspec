@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Yura Tolochkevych"]
   s.email       = ["ytolochkevych@cask.co"]
   s.summary     = "A Ruby client for authentication in CASK CDAP services"
-  s.description = "Provide a more Ruby experience when using authentication in CASK CDAP services."
+  s.description = "Provide a more Ruby experience when using authentication in Cask CDAP services."
 
   s.rubyforge_project = "cdap-authentication-client"
 

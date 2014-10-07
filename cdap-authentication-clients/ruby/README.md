@@ -1,7 +1,7 @@
-authentication-client-ruby
+cdap-authentication-client
 ==========================
 
-The Authentication Client Ruby API is for fetching the access token from the authentication server when writing
+The CDAP Authentication Client Ruby API is for fetching the access token from the authentication server when writing
 external Ruby applications.
 
 ## Supported Actions
@@ -17,7 +17,7 @@ external Ruby applications.
 
 ## Usage
 
- To use the Authentication Client Ruby API, include this gem in your Gemfile:
+ To use the CDAP Authentication Client Ruby API, include this gem in your Gemfile:
 
  ```
  gem 'cdap-authentication-client'
@@ -54,7 +54,13 @@ external Ruby applications.
  Load configuration from the file:
  
  ```
- authentication_client.configure('config/auth.yml')
+ config = YAML.load_file('spec/auth.yml')
+ ```
+
+ Configure the authentication client:
+ 
+ ```
+ authentication_client.configure(config)
  ```
  
  Check if authentication is enabled in the gateway server:

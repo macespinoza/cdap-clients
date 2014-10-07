@@ -13,7 +13,6 @@
 #  the License.
 
 require 'httparty'
-require 'yaml'
 
 module AuthenticationClient
   ###
