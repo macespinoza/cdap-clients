@@ -102,16 +102,17 @@ method should be called only once for every ```AuthenticationClient``` object).
  retrieving and using user credentials.
 
 
-#### Retrieve the access token for the user from the authentication server
+#### Retrieve the access token for the user from the authentication server, and use it
  
  ```  
    HttpURLConnection conn = (HttpURLConnection) cdapURL.openConnection();
    conn.setRequestProperty("Authorization", 
-               "Bearer " + authenticationClient.getAccessToken());
+               authenticationClient.getAccessToken().getTokenType() + " " +
+               authenticationClient.getAccessToken().getValue());
    // ...
    conn.connect();
  ```
- If there is error in fetching access token, an ```IOException``` will be thrown. The Authentication Client
+ If there is an error while fetching the access token, an `IOException` will be thrown. The Authentication Client
  caches the access token until the token expires. It automatically re-fetches a new token upon expiry.
  
 
