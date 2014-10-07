@@ -1,6 +1,6 @@
 # CDAP Authentication Client
 
-The Authentication Client API can be used for fetching the access token from the CDAP authentication server to
+The Authentication Client Python API can be used for fetching the access token from the CDAP authentication server to
 interact with a secure CDAP cluster.
 
 ## Supported Actions
@@ -121,7 +121,7 @@ method should be called only once for every ```AuthenticationClient``` object).
                               authentication_client.get_access_token().value }
  requests.request(method, url, headers=headers)
  ```
- If there is error in fetching access token, an ```IOError``` will be raised. The Authentication Client
+ If there is an error while fetching the access token, an ```IOError``` will be raised. The Authentication Client
  caches the access token until the token expires. It automatically re-fetches a new token upon expiry.
 
 
