@@ -37,7 +37,7 @@ authentication mechanisms supported by CDAP:
  <dependency>
   <groupId>co.cask.cdap</groupId>
   <artifactId>cdap-authentication-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
  </dependency>
  ```
  
