@@ -60,12 +60,12 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         AuthenticationHandler.AUTH_HOST = u'localhost'
         AuthenticationHandler.AUTH_PORT = test_constants.SERVER_PORT
         self.empty_response_server = SimpleTCPServer(
-            (u"localhost", test_constants.SERVER_PORT+1), EmptyUrlListHandler)
+            (u"localhost", test_constants.SERVER_PORT + 1), EmptyUrlListHandler)
         threading.Thread(target=self.empty_response_server.serve_forever)\
             .start()
 
         self.auth_disabled_server = \
-            SimpleTCPServer((u"localhost", test_constants.SERVER_PORT+2),
+            SimpleTCPServer((u"localhost", test_constants.SERVER_PORT + 2),
                             AuthDisabledHandler)
         threading.Thread(target=self.auth_disabled_server.serve_forever)\
             .start()
@@ -133,7 +133,7 @@ class BasicAuthenticationClientTest(unittest.TestCase):
     def test_empty_url_list(self):
         empty_auth_client = BasicAuthenticationClient()
         empty_auth_client.set_connection_info(u'localhost',
-                                              test_constants.SERVER_PORT+1,
+                                              test_constants.SERVER_PORT + 1,
                                               False)
         config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         empty_auth_client.configure(config)
@@ -142,7 +142,7 @@ class BasicAuthenticationClientTest(unittest.TestCase):
     def test_auth_disabled_is_auth_enabled(self):
         dis_auth_client = BasicAuthenticationClient()
         dis_auth_client.set_connection_info(u'localhost',
-                                            test_constants.SERVER_PORT+2,
+                                            test_constants.SERVER_PORT + 2,
                                             False)
         config = Config().read_from_file(self.AUTH_CONFIG_FILE)
         dis_auth_client.configure(config)
