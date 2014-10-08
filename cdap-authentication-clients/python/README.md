@@ -55,9 +55,11 @@ To use the Authentication Client Python API, include these imports in your Pytho
 
 - hostname
 - port
-- boolean flag, true if SSL is enabled
+- boolean flag, ```True``` if SSL is enabled
 
-        authentication_client.set_connection_info('localhost', 10000, False)
+Example:
+
+    authentication_client.set_connection_info('localhost', 10000, False)
 
 This method should be called only once for every ```AuthenticationClient``` object.
 
@@ -84,11 +86,10 @@ Configure the authentication client with the ```Config``` object:
 
 - The ```BasicAuthenticationClient``` requires these user credentials:
 
-        security_auth_client_username=username
-        security_auth_client_password=password
+    - ```security_auth_client_username=username```
+    - ```security_auth_client_password=password```
 
-- When SSL is enabled, to suspend certificate checks to allow self-signed certificates set
-  `security.security_ssl_cert_check=false`.
+- When SSL is enabled, to suspend certificate checks and allow self-signed certificates, set ```security.security_ssl_cert_check=false```.
 - For non-interactive applications, user credentials will come from a configuration file.
 - For interactive applications, see the section [Interactive Applications](#interactive-applications) below on
   retrieving and using user credentials.

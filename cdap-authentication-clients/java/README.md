@@ -61,7 +61,9 @@ implementations of Authentication Client.
 - port
 - boolean flag, true if SSL is enabled
 
-        authenticationClient.setConnectionInfo("localhost", 10000, false);
+Example:
+
+    authenticationClient.setConnectionInfo("localhost", 10000, false);
 
 This method should be called only once for every ```AuthenticationClient``` object.
 
@@ -84,8 +86,7 @@ method should be called only once for every ```AuthenticationClient``` object).
     - ```security.auth.client.username=username```
     - ```security.auth.client.password=password```
     
-- When SSL is enabled, to suspend certificate checks to allow self-signed certificates set
-  ```security.auth.client.verify.ssl.cert=false```.
+- When SSL is enabled, to suspend certificate checks and allow self-signed certificates, set ```security.auth.client.verify.ssl.cert=false```.
 - For non-interactive applications, user credentials will come from a configuration file.
 - For interactive applications, see the section [Interactive Applications](#interactive-applications) below on
   retrieving and using user credentials.
