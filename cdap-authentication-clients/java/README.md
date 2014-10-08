@@ -62,11 +62,9 @@ authentication mechanisms supported by CDAP:
  - hostname
  - port
  - boolean flag, true if SSL is enabled
-
-
- ```
+```
   authenticationClient.setConnectionInfo("localhost", 10000, false);
- ```
+```
 
 This method should be called only once for every ```AuthenticationClient``` object.
 
