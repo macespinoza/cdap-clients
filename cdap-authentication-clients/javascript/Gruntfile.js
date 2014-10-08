@@ -55,7 +55,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', [
 //        'mocha',
-        'open:browserTest',
         'mochaTest'
     ]);
     grunt.registerTask('build', [
