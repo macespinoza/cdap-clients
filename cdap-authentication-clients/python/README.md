@@ -70,10 +70,11 @@ This method should be called only once for every ```AuthenticationClient``` obje
 
 Set the required fields on a [dictionary](https://docs.python.org/2/tutorial/datastructures.html#dictionaries):
 
-    properties = {}
-    properties['security_auth_client_username'] = "admin"
-    properties['security_auth_client_password'] = "secret"
-    properties['security_ssl_cert_check'] = True
+    properties = {
+      'security_auth_client_username': 'admin',
+      'security_auth_client_password': 'secret',
+      'security_ssl_cert_check': True
+    }
 
 If authentication is enabled, configure the Authentication Client with user credentials and other properties (this
 method should be called only once for every ```AuthenticationClient``` object).
