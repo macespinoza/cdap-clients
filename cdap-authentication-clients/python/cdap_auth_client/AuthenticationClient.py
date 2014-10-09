@@ -29,9 +29,9 @@ class AuthenticationClient(object):
         called only once for every AuthenticationClient object
 
         Keyword arguments:
-        properties -- the configuration for authentication client
-        which includes credentials and some additional
-        properties, if needed
+        properties -- A dictionary which holds the configuration
+        for authentication client which includes credentials and
+        some additional properties, if needed.
         """
         return
 

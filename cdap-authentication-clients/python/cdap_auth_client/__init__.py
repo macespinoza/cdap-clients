@@ -14,7 +14,6 @@
 # the License.
 
 from BasicAuthenticationClient import BasicAuthenticationClient
-from Config import Config
 from Credential import Credential
 from AuthenticationClient import AuthenticationClient
 from AbstractAuthenticationClient import AbstractAuthenticationClient
