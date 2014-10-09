@@ -62,7 +62,7 @@
             httpConnection = new XMLHttpRequest();
         } else {
             helpers = require('./helper-node');
-            httpConnection = require('httpsync');
+            httpConnection = require('http-sync');
         }
 
         var getAuthHeaders = helpers.getAuthHeaders.bind(this, AUTH_HEADER_NAME, AUTH_TYPE, connectionInfo),

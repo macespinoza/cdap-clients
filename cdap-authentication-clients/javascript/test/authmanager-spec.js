@@ -1,7 +1,7 @@
 var CDAPAuthManager = require('../src/authmanager'),
     expect = require('expect.js'),
     sinon = require('sinon'),
-    httpsync = require('httpsync');
+    httpsync = require('http-sync');
 
 describe('CDAP Auth manager tests', function () {
     describe('Checking Auth Manager functionality', function () {
