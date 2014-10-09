@@ -13,10 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from BasicAuthenticationClient import BasicAuthenticationClient
-from Config import Config
-from Credential import Credential
-from AuthenticationClient import AuthenticationClient
-from AbstractAuthenticationClient import AbstractAuthenticationClient
-from AccessToken import AccessToken
-from RestClientUtils import RestClientUtils
+from basic_authentication_client import BasicAuthenticationClient
+from config import Config
+from credential import Credential
+from authentication_client import AuthenticationClient
+from abstract_authentication_client import AbstractAuthenticationClient
+from access_token import AccessToken
+from rest_client_utils import RestClientUtils

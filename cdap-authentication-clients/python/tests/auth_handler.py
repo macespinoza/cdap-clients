@@ -24,7 +24,7 @@ except ImportError:
 
 import base64
 import json
-import TestConstants
+import test_constants
 
 
 class AuthenticationHandler(brh):
@@ -69,37 +69,37 @@ class AuthenticationHandler(brh):
                 credentials = credentials_str.split(':', 1)
                 username = credentials[0]
                 password = credentials[1]
-                if TestConstants.USERNAME == username\
-                        and TestConstants.PASSWORD == password:
+                if test_constants.USERNAME == username\
+                        and test_constants.PASSWORD == password:
                     status_code = hl.OK
                     self.send_response(status_code)
                     self.send_header(u"Content-type", u"application/json")
                     self.end_headers()
                     self.wfile.write(self.create_resp_body
-                                     (TestConstants.TOKEN,
-                                      TestConstants.TOKEN_TYPE,
-                                      TestConstants.TOKEN_LIFE_TIME)
+                                     (test_constants.TOKEN,
+                                      test_constants.TOKEN_TYPE,
+                                      test_constants.TOKEN_LIFE_TIME)
                                      .encode('utf-8'))
-                elif TestConstants.EMPTY_TOKEN_USERNAME == username:
+                elif test_constants.EMPTY_TOKEN_USERNAME == username:
                     status_code = hl.OK
                     self.send_response(status_code)
                     self.send_header(u"Content-type", u"application/json")
                     self.end_headers()
                     self.wfile.write(
                         self.create_resp_body('',
-                                              TestConstants.TOKEN_TYPE,
-                                              TestConstants.TOKEN_LIFE_TIME)
+                                              test_constants.TOKEN_TYPE,
+                                              test_constants.TOKEN_LIFE_TIME)
                         .encode('utf-8'))
 
-                elif TestConstants.EXPIRED_TOKEN_USERNAME == username:
+                elif test_constants.EXPIRED_TOKEN_USERNAME == username:
                     if self.request_counter == 1:
                         resp = self.create_resp_body(
-                            TestConstants.TOKEN, TestConstants.TOKEN_TYPE, 5)
+                            test_constants.TOKEN, test_constants.TOKEN_TYPE, 5)
                     else:
                         resp = self.create_resp_body(
-                            TestConstants.NEW_TOKEN,
-                            TestConstants.TOKEN_TYPE,
-                            TestConstants.TOKEN_LIFE_TIME)
+                            test_constants.NEW_TOKEN,
+                            test_constants.TOKEN_TYPE,
+                            test_constants.TOKEN_LIFE_TIME)
 
                     status_code = hl.OK
                     self.send_response(status_code)

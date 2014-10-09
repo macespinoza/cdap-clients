@@ -24,10 +24,10 @@ from random import randint
 import time
 import datetime
 import requests
-from AccessToken import AccessToken
+from access_token import AccessToken
 
-from AuthenticationClient import AuthenticationClient
-from RestClientUtils import RestClientUtils
+from authentication_client import AuthenticationClient
+from rest_client_utils import RestClientUtils
 
 LOG = logging.getLogger(__name__)
 
