@@ -26,6 +26,8 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
 
     USERNAME_PROP_NAME = u'security_auth_client_username'
     PASSWORD_PROP_NAME = u'security_auth_client_password'
+    VERIFY_CERT_PROP_NAME = u'security_ssl_cert_check'
+    DEFAULT_VERIFY_SSL_CERT = True
 
     def __init__(self):
         super(BasicAuthenticationClient, self).__init__()
@@ -74,16 +76,16 @@ class BasicAuthenticationClient(AbstractAuthenticationClient):
     def ssl_verification_status(self):
         return self.__security_ssl_cert_check
 
-    def configure(self, config):
+    def configure(self, properties):
         if self.__username or self.__password:
             raise ValueError(u'Client is already configured!')
 
-        self.__username = config.security_auth_client_username
+        self.__username = properties.get(self.USERNAME_PROP_NAME)
         if not self.__username:
             raise ValueError(u'The username property cannot be empty.')
 
-        self.__password = config.security_auth_client_password
+        self.__password = properties.get(self.PASSWORD_PROP_NAME)
         if not self.__password:
             raise ValueError(u'The password property cannot be empty.')
 
-        self.__security_ssl_cert_check = config.security_ssl_cert_check
+        self.__security_ssl_cert_check = properties.get(self.VERIFY_CERT_PROP_NAME, self.DEFAULT_VERIFY_SSL_CERT)

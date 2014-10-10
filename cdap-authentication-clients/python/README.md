@@ -40,9 +40,8 @@ or [clone the repository:](https://github.com/caskdata/cdap-clients)
 
 ## Usage
 
-To use the Authentication Client Python API, include these imports in your Python script:
+To use the Authentication Client Python API, include this import in your Python script:
 
-    from cdap_auth_client import Config
     from cdap_auth_client import BasicAuthenticationClient
 
 ## Example
@@ -69,18 +68,18 @@ This method should be called only once for every ```AuthenticationClient``` obje
 
 ### Configure Authentication Client
 
-Set the required fields on a ```Config``` object:
+Set the required fields on a [dictionary](https://docs.python.org/2/tutorial/datastructures.html#dictionaries):
 
-    config = Config()
-    config.security_auth_client_username = "admin"
-    config.security_auth_client_password = "secret"
-    config.security_ssl_cert_check = True
+    properties = {
+      'security_auth_client_username': 'admin',
+      'security_auth_client_password': 'secret',
+      'security_ssl_cert_check': True
+    }
 
 If authentication is enabled, configure the Authentication Client with user credentials and other properties (this
 method should be called only once for every ```AuthenticationClient``` object).
-Configure the authentication client with the ```Config``` object:
 
-    authentication_client.configure(config)
+    authentication_client.configure(properties)
 
 **Note:**
 
@@ -113,7 +112,7 @@ This example illustrates obtaining user credentials in an interactive applicatio
 Authentication Client with the retrieved credentials.
 
     authentication_client.set_connection_info('localhost', 10000, False)
-    config = Config()
+    properties = {}
 
     if authentication_client.is_auth_enabled():
       for credential in authentication_client.get_required_credentials():
@@ -122,6 +121,6 @@ Authentication Client with the retrieved credentials.
             credential_value = getpass.getpass()
          else:
             credential_value = raw_input()
-         config.__setattr__(credential.get_name(), credential_value)
-      authentication_client.configure(config)
+         properties[credential.get_name()] = credential_value
+      authentication_client.configure(properties)
 
