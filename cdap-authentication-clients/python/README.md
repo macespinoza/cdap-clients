@@ -25,18 +25,9 @@ authentication clients, and can be extended by the custom authentication client.
 
 ## Installation
 
-To install CDAP Authentication Client, either 
-[download a zip file:](http://repository.cask.co/downloads/co/cask/cdap/cdap-python-authentication-client/1.0.1/cdap-python-authentication-client-1.0.1.zip)
+To install the CDAP Authentication Client, run 
 
-    $ unzip cdap-python-authentication-client-1.0.1.zip
-    $ cd cdap-python-authentication-client-1.0.1
-    $ python setup.py install
-
-or [clone the repository:](https://github.com/caskdata/cdap-clients)
-
-    $ git clone https://github.com/caskdata/cdap-clients.git
-    $ cd cdap-clients/cdap-authentication-clients/python/
-    $ python setup.py install
+    $ pip install cdap-auth-client
 
 ## Usage
 
@@ -97,13 +88,11 @@ method should be called only once for every ```AuthenticationClient``` object).
 ### Retrieve and use the access token for the user from the authentication server
 
     token = authentication_client.get_access_token()
-
-    headers = { 'Authorization': authentication_client.get_access_token().token_type + " " + \
-                                 authentication_client.get_access_token().value }
+    
+    headers = { 'Authorization': token.token_type + ' ' + token.value }
     requests.request(method, url, headers=headers)
 
-If there is an error while fetching the access token, an ```IOError``` will be raised. The Authentication Client
-caches the access token until the token expires. It automatically re-fetches a new token upon expiry.
+If there is an error while fetching the access token, an ```IOError``` will be raised.
 
 
 ## Interactive Applications
@@ -116,7 +105,7 @@ Authentication Client with the retrieved credentials.
 
     if authentication_client.is_auth_enabled():
       for credential in authentication_client.get_required_credentials():
-         print("Please, specify "  + credential.get_description() +  "> ")
+         print('Please specify %s > ' % credential.get_description())
          if credential.is_secret():
             credential_value = getpass.getpass()
          else:
