@@ -3,6 +3,6 @@
     "version": "1.0.0",
     "main": "authmanager.js",
     "dependencies": {
-        "httpsync": "0.0.8"
+        "http-sync": "0.0.5"
     }
 }

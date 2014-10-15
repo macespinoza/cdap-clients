@@ -25,38 +25,43 @@ module.exports = {
         return obj;
     },
     fetchAuthUrl: function (httpConnection, baseUrl) {
-        var authUrls = null,
+        var parsedUrl = url.parse(baseUrl()),
+            authUrls = null,
             request = httpConnection.request({
-                url: baseUrl,
+                protocol: parsedUrl.protocol,
+                host: parsedUrl.hostname,
+                port: parsedUrl.port,
+                path: parsedUrl.pathname,
                 method: 'GET'
             }),
             response = request.end();
 
-        if (401 === response.status) {
-            authUrls = JSON.parse(response.data)['auth_uri'];
+        if (401 === response.statusCode) {
+            authUrls = JSON.parse(response.body)['auth_uri'];
         }
 
         return authUrls;
     },
     fetchTokenInfo: function (authUrl, httpConnection, headers) {
         var tokenInfo = {},
-            __authUrl = authUrl();
+            parsedUrl = url.parse(authUrl());
 
-        if (__authUrl) {
-            var request = httpConnection.request({
-                    url: __authUrl,
-                    method: 'GET',
-                    headers: headers()
-                }),
-                response = request.end();
+        var request = httpConnection.request({
+                protocol: parsedUrl.protocol,
+                host: parsedUrl.hostname,
+                port: parsedUrl.port,
+                path: parsedUrl.pathname,
+                method: 'GET',
+                headers: headers()
+            }),
+            response = request.end();
 
-            if (200 === response.status) {
-                var tokenData = JSON.parse(response.data);
+        if (200 === response.statusCode) {
+            var tokenData = JSON.parse(response.body);
 
-                tokenInfo.value = tokenData.access_token;
-                tokenInfo.type = tokenData.token_type;
-                tokenInfo.expirationDate = Date.now() + (tokenData.expires_in * 1000);
-            }
+            tokenInfo.value = tokenData.access_token;
+            tokenInfo.type = tokenData.token_type;
+            tokenInfo.expirationDate = Date.now() + (tokenData.expires_in * 1000);
         }
 
         return tokenInfo;

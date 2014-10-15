@@ -33,17 +33,13 @@
 }(function (target, require) {
     'use strict';
 
-    var moduleConstructor = function (username, password, hostname, port, ssl) {
-        if (!username || !password) {
-            throw new Error('"username" and "password" have to be defined');
-        }
-
+    var moduleConstructor = function () {
         var connectionInfo = {
-                host: hostname || 'localhost',
-                port: port || 10000,
-                ssl: (null != ssl) ? ssl : false,
-                user: username,
-                pass: password
+                host: 'localhost',
+                port: 10000,
+                ssl: false,
+                user: '',
+                pass: ''
             },
             tokenInfo = {
                 value: '',
@@ -53,7 +49,7 @@
             httpConnection = null,
             authUrls = null,
             helpers = null,
-            AUTH_HEADER_NAME = 'Authentication',
+            AUTH_HEADER_NAME = 'Authorization',
             AUTH_TYPE = 'Basic',
             TOKEN_EXPIRATION_TIMEOUT = 5000;
 
@@ -73,21 +69,13 @@
                     ':', connectionInfo.port, '/'
                 ].join('');
             },
-            fetchAuthUrl = helpers.fetchAuthUrl.bind(this, httpConnection, baseUrl()),
+            fetchAuthUrl = helpers.fetchAuthUrl.bind(this, httpConnection, baseUrl),
             getAuthUrl = function () {
-                var authUrl;
-
                 if (!authUrls) {
                     return '';
                 }
 
-                if (1 === authUrls.length) {
-                    authUrl = authUrls[0];
-                } else {
-                    authUrl = authUrls[Math.floor(Math.random() * (authUrls.length - 1)) + 1];
-                }
-
-                return authUrl;
+                return authUrls[Math.floor(Math.random() * authUrls.length)];
             },
             isAuthEnabledImpl = function () {
                 if (!authUrls) {
@@ -107,11 +95,36 @@
                     token: tokenInfo.value,
                     type: tokenInfo.type
                 };
+            },
+            /**
+             * @param {Object} properties {
+             *   @param {string} username,
+             *   @param {password} password
+             * }
+             */
+            configureImpl = function (properties) {
+                if (!properties.username || !properties.password) {
+                    throw new Error('"username" and "password" are required');
+                }
+
+                if (connectionInfo.user && connectionInfo.pass) {
+                    throw new Error('Client is already configured!');
+                }
+
+                connectionInfo.user = properties.username;
+                connectionInfo.pass = properties.password;
+            },
+            setConnectionInfoImpl = function (host, port, ssl) {
+                connectionInfo.host = host;
+                connectionInfo.port = port;
+                connectionInfo.ssl = ssl;
             };
 
         return {
             isAuthEnabled: isAuthEnabledImpl,
-            getToken: getTokenImpl
+            getToken: getTokenImpl,
+            configure: configureImpl,
+            setConnectionInfo: setConnectionInfoImpl
         };
     };
 
