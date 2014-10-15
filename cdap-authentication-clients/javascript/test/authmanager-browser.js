@@ -12,16 +12,19 @@ describe('CDAP Auth manager tests', function () {
 
     describe('Checking Auth Manager functionality', function () {
         it('Constructor creates correct object', function () {
-            var authManager = new CASKAuthManager('username', 'password');
+            var authManager = new CASKAuthManager();
+
+            authManager.configure({username: 'username', password: 'password'});
 
             expect(authManager).to.be.an('object');
             expect(authManager).to.have.property('isAuthEnabled');
             expect(authManager).to.have.property('getToken');
         });
 
-        it('Constructor could not be called without "username" or "password" field', function () {
+        it('"configure" method could not be called without "username" or "password" field', function () {
+            var authManager = new CASKAuthManager();
             expect(function () {
-                var authManager = new CASKAuthManager();
+                authManager.configure({});
             }).to.throwException(function (e) {
                     expect(e).to.be.an(Error);
                 });
@@ -30,8 +33,11 @@ describe('CDAP Auth manager tests', function () {
         it('Authentication is disabled on server side.', function () {
             this.server.respondWith([200, {'Content-Type': 'application/json'}, '']);
 
-            var authManager = new CASKAuthManager('username', 'password'),
-                authEnabled = authManager.isAuthEnabled();
+            var authManager = new CASKAuthManager(),
+                authEnabled = false;
+
+            authManager.configure({username: 'username', password: 'password'});
+            authEnabled = authManager.isAuthEnabled();
 
             expect(authEnabled).to.not.be.ok();
         });
@@ -43,8 +49,11 @@ describe('CDAP Auth manager tests', function () {
 
             this.server.respondWith([401, {'Content-Type': 'application/json'}, JSON.stringify(jsonResp)]);
 
-            var authManager = new CASKAuthManager('username', 'password'),
-                authEnabled = authManager.isAuthEnabled();
+            var authManager = new CASKAuthManager(),
+                authEnabled = false;
+
+            authManager.configure({username: 'username', password: 'password'});
+            authEnabled = authManager.isAuthEnabled();
 
             expect(authEnabled).to.be.ok();
         });
@@ -58,8 +67,11 @@ describe('CDAP Auth manager tests', function () {
 
             this.server.respondWith([200, {'Content-Type': 'application/json'}, JSON.stringify(jsonResp)]);
 
-            var authManager = new CASKAuthManager('username', 'password'),
-                authToken = authManager.getToken();
+            var authManager = new CASKAuthManager(),
+                authToken = '';
+
+            authManager.configure({username: 'username', password: 'password'});
+            authToken = authManager.getToken();
 
             expect(authToken).to.have.property('token');
             expect(authToken).to.have.property('type');
@@ -79,8 +91,10 @@ describe('CDAP Auth manager tests', function () {
             this.server.respondWith(/\/token\/url[1-9]*$/, [200, {'Content-Type': 'application/json'},
                 JSON.stringify(jsonResp2)]);
 
-            var authManager = new CASKAuthManager('username', 'password'),
+            var authManager = new CASKAuthManager(),
                 authToken;
+
+            authManager.configure({username: 'username', password: 'password'});
 
             if (authManager.isAuthEnabled()) {
                 authToken = authManager.getToken();

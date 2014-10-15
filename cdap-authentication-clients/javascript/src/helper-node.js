@@ -14,6 +14,8 @@
  * the License.
  */
 
+var Url = require('url');
+
 module.exports = {
     getAuthHeaders: function (headerName, authType, connectionInfo) {
         var obj = {};
@@ -25,7 +27,7 @@ module.exports = {
         return obj;
     },
     fetchAuthUrl: function (httpConnection, baseUrl) {
-        var parsedUrl = url.parse(baseUrl()),
+        var parsedUrl = Url.parse(baseUrl()),
             authUrls = null,
             request = httpConnection.request({
                 protocol: parsedUrl.protocol,
@@ -44,7 +46,7 @@ module.exports = {
     },
     fetchTokenInfo: function (authUrl, httpConnection, headers) {
         var tokenInfo = {},
-            parsedUrl = url.parse(authUrl());
+            parsedUrl = Url.parse(authUrl());
 
         var request = httpConnection.request({
                 protocol: parsedUrl.protocol,

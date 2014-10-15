@@ -6,16 +6,19 @@ var CDAPAuthManager = require('../src/authmanager'),
 describe('CDAP Auth manager tests', function () {
     describe('Checking Auth Manager functionality', function () {
         it('Constructor creates correct object', function () {
-            var authManager = new CDAPAuthManager('username', 'password');
+            var authManager = new CDAPAuthManager();
 
             expect(authManager).to.be.an('object');
             expect(authManager).to.have.property('isAuthEnabled');
             expect(authManager).to.have.property('getToken');
+            expect(authManager).to.have.property('configure');
+            expect(authManager).to.have.property('setConnectionInfo');
         });
 
-        it('Constructor could not be called without "username" or "password" field', function () {
+        it('"configure" method could not be called without "username" or "password" field', function () {
+            var authManager = new CDAPAuthManager();
             expect(function () {
-                var authManager = new CDAPAuthManager();
+                authManager.configure({});
             }).to.throwException(function (e) {
                     expect(e).to.be.an(Error);
                 });
@@ -26,14 +29,17 @@ describe('CDAP Auth manager tests', function () {
             mock.expects('request').once().returns({
                 end: function () {
                     return {
-                        status: 200,
-                        data: ''
+                        statusCode: 200,
+                        body: ''
                     };
                 }
             });
 
-            var authManager = new CDAPAuthManager('username', 'password'),
-                authEnabled = authManager.isAuthEnabled();
+            var authManager = new CDAPAuthManager(),
+                authEnabled = false;
+
+            authManager.setConnectionInfo('localhost', 10000, false);
+            authEnabled = authManager.isAuthEnabled();
 
             mock.verify();
             mock.restore();
@@ -50,14 +56,17 @@ describe('CDAP Auth manager tests', function () {
             mock.expects('request').once().returns({
                 end: function () {
                     return {
-                        status: 401,
-                        data: JSON.stringify(jsonResp)
+                        statusCode: 401,
+                        body: JSON.stringify(jsonResp)
                     };
                 }
             });
 
-            var authManager = new CDAPAuthManager('username', 'password'),
-                authEnabled = authManager.isAuthEnabled();
+            var authManager = new CDAPAuthManager(),
+                authEnabled = false;
+
+            authManager.setConnectionInfo('localhost', 10000, false);
+            authEnabled = authManager.isAuthEnabled();
 
             mock.verify();
             mock.restore();
@@ -78,36 +87,45 @@ describe('CDAP Auth manager tests', function () {
                 },
                 mock = sinon.mock(httpsync),
                 getAuthUrlArgs = {
-                    url: 'http://localhost:10000/',
+                    host: "localhost",
+                    port: "10000",
+                    protocol: "http:",
+                    path: '/',
                     method: 'GET'
                 },
                 fetchTokenArgs = {
-                    url: '/token/url',
+                    host: null,
+                    port: null,
+                    protocol: null,
+                    path: '/token/url',
                     method: 'GET',
                     headers: {
-                        Authentication: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
+                        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
                     }
                 };
 
             mock.expects('request').withArgs(getAuthUrlArgs).returns({
                 end: function () {
                     return {
-                        status: 401,
-                        data: JSON.stringify(jsonResp1)
+                        statusCode: 401,
+                        body: JSON.stringify(jsonResp1)
                     };
                 }
             });
             mock.expects('request').withArgs(fetchTokenArgs).returns({
                 end: function () {
                     return {
-                        status: 200,
-                        data: JSON.stringify(jsonResp2)
+                        statusCode: 200,
+                        body: JSON.stringify(jsonResp2)
                     };
                 }
             });
 
-            var authManager = new CDAPAuthManager(username, password),
+            var authManager = new CDAPAuthManager(),
                 authToken;
+
+            authManager.setConnectionInfo('localhost', 10000, false);
+            authManager.configure({username: username, password: password});
 
             if (authManager.isAuthEnabled()) {
                 authToken = authManager.getToken();
@@ -133,36 +151,45 @@ describe('CDAP Auth manager tests', function () {
                 },
                 mock = sinon.mock(httpsync),
                 getAuthUrlArgs = {
-                    url: 'http://localhost:10000/',
+                    host: "localhost",
+                    port: "10000",
+                    protocol: "http:",
+                    path: '/',
                     method: 'GET'
                 },
                 fetchTokenArgs = {
-                    url: '/token/url',
+                    host: null,
+                    port: null,
+                    protocol: null,
+                    path: '/token/url',
                     method: 'GET',
                     headers: {
-                        Authentication: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
+                        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
                     }
                 };
 
             mock.expects('request').withArgs(getAuthUrlArgs).returns({
                 end: function () {
                     return {
-                        status: 401,
-                        data: JSON.stringify(jsonResp1)
+                        statusCode: 401,
+                        body: JSON.stringify(jsonResp1)
                     };
                 }
             });
             mock.expects('request').withArgs(fetchTokenArgs).returns({
                 end: function () {
                     return {
-                        status: 200,
-                        data: JSON.stringify(jsonResp2)
+                        statusCode: 200,
+                        body: JSON.stringify(jsonResp2)
                     };
                 }
             });
 
-            var authManager = new CDAPAuthManager(username, password),
+            var authManager = new CDAPAuthManager(),
                 authToken;
+
+            authManager.setConnectionInfo('localhost', 10000, false);
+            authManager.configure({username: username, password: password});
 
             if (authManager.isAuthEnabled()) {
                 authToken = authManager.getToken();
