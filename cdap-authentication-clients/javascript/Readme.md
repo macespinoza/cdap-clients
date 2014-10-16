@@ -42,6 +42,12 @@ Methods:
                            token: '',        - token value
                            type: ''          - token type. Currently 'Bearer' is only supported.
                        }
+'configure(config)'  - sets up username and password for authentication manager.
+                       config - {
+                           username: '',
+                           password: ''
+                       }
+'setConnectionInfo(hostname, port, ssl) - sets up connection data.
 
 ## Example
 
@@ -53,8 +59,14 @@ Optional configurations that can be set (and their default values):
   - ssl: False (use HTTP protocol)
 
 ```
-    var manager = new CDAPAuthManager('username', 'password'),
+    var manager = new CDAPAuthManager(),
         tokenInfo;
+
+    manager.configure({
+        username: 'username',
+        password: 'password'
+    });
+    manager.setConnectionInfo('localhost', 10000, false);
 
     if (manager.isAuthEnabled()) {
         tokenInfo = manager.getToken();
