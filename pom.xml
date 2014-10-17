@@ -205,6 +205,7 @@
                   <!-- Excludes examples by default, include it in the examples profile -->
                   <exclude>examples/**</exclude>
                   <exclude>**/testlogs/**</exclude>
+                  <exclude>**/*.yml</exclude>
                 </excludes>
               </configuration>
             </execution>
