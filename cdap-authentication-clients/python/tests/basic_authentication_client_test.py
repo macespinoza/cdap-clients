@@ -18,11 +18,12 @@ try:
 except ImportError:
     import socketserver as sserv
 
-import socket
-import threading
-import os
-import sys
 import inspect
+import json
+import os
+import socket
+import sys
+import threading
 
 current_dir = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -37,10 +38,14 @@ try:
 except ImportError:
     import unittest as unittest
 
-from cdap_auth_client import Config
 from cdap_auth_client import BasicAuthenticationClient
 from auth_handler import AuthenticationHandler
 import test_constants
+
+
+def read_from_file(input_file):
+    with open(input_file) as config_file:
+        return json.loads(config_file.read())
 
 
 class BasicAuthenticationClientTest(unittest.TestCase):
@@ -51,23 +56,23 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.__authentication_client = BasicAuthenticationClient()
         self.__local_test_server = SimpleTCPServer(
             (u"localhost", test_constants.SERVER_PORT), AuthenticationHandler)
-        self.__server_thread = threading.\
+        self.__server_thread = threading. \
             Thread(target=self.__local_test_server.serve_forever)
         self.__server_thread.start()
-        self.__authentication_client.\
+        self.__authentication_client. \
             set_connection_info(u'localhost',
                                 test_constants.SERVER_PORT, False)
         AuthenticationHandler.AUTH_HOST = u'localhost'
         AuthenticationHandler.AUTH_PORT = test_constants.SERVER_PORT
         self.empty_response_server = SimpleTCPServer(
             (u"localhost", test_constants.SERVER_PORT + 1), EmptyUrlListHandler)
-        threading.Thread(target=self.empty_response_server.serve_forever)\
+        threading.Thread(target=self.empty_response_server.serve_forever) \
             .start()
 
         self.auth_disabled_server = \
             SimpleTCPServer((u"localhost", test_constants.SERVER_PORT + 2),
                             AuthDisabledHandler)
-        threading.Thread(target=self.auth_disabled_server.serve_forever)\
+        threading.Thread(target=self.auth_disabled_server.serve_forever) \
             .start()
 
     def tearDown(self):
@@ -79,13 +84,13 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.auth_disabled_server.server_close()
 
     def test_auth_is_auth_enabled(self):
-        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
-        self.__authentication_client.configure(config)
-        assert(self.__authentication_client.is_auth_enabled())
+        properties = read_from_file(self.AUTH_CONFIG_FILE)
+        self.__authentication_client.configure(properties)
+        assert (self.__authentication_client.is_auth_enabled())
 
     def test_success_get_access_token(self):
-        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
-        self.__authentication_client.configure(config)
+        properties = read_from_file(self.AUTH_CONFIG_FILE)
+        self.__authentication_client.configure(properties)
         access_token = self.__authentication_client.get_access_token()
         cached_access_token = self.__authentication_client.get_access_token()
         self.assertEqual(access_token, cached_access_token)
@@ -102,7 +107,7 @@ class BasicAuthenticationClientTest(unittest.TestCase):
                           self.__authentication_client.get_access_token)
 
     def test_empty_token_get_access_token(self):
-        self.__authentication_client.username =\
+        self.__authentication_client.username = \
             test_constants.EMPTY_TOKEN_USERNAME
         self.__authentication_client.password = test_constants.PASSWORD
         self.assertRaises(IOError,
@@ -110,7 +115,7 @@ class BasicAuthenticationClientTest(unittest.TestCase):
 
     def test_expired_token_get_access_token(self):
         AuthenticationHandler.request_counter = 0
-        self.__authentication_client.username =\
+        self.__authentication_client.username = \
             test_constants.EXPIRED_TOKEN_USERNAME
         self.__authentication_client.password = test_constants.PASSWORD
         access_token = self.__authentication_client.get_access_token()
@@ -121,13 +126,13 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         self.assertEqual(test_constants.TOKEN_TYPE, access_token.token_type)
 
     def test_empty_username_configure(self):
-        config = Config().read_from_file(self.EMPTY_USERNAME_CONFIG)
+        properties = read_from_file(self.EMPTY_USERNAME_CONFIG)
         self.assertRaises(ValueError,
-                          self.__authentication_client.configure, config)
+                          self.__authentication_client.configure, properties)
 
     def test_is_auth_enabled(self):
-        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
-        self.__authentication_client.configure(config)
+        properties = read_from_file(self.AUTH_CONFIG_FILE)
+        self.__authentication_client.configure(properties)
         self.assertTrue(self.__authentication_client.is_auth_enabled())
 
     def test_empty_url_list(self):
@@ -135,8 +140,8 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         empty_auth_client.set_connection_info(u'localhost',
                                               test_constants.SERVER_PORT + 1,
                                               False)
-        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
-        empty_auth_client.configure(config)
+        properties = read_from_file(self.AUTH_CONFIG_FILE)
+        empty_auth_client.configure(properties)
         self.assertRaises(IOError, empty_auth_client.is_auth_enabled)
 
     def test_auth_disabled_is_auth_enabled(self):
@@ -144,8 +149,8 @@ class BasicAuthenticationClientTest(unittest.TestCase):
         dis_auth_client.set_connection_info(u'localhost',
                                             test_constants.SERVER_PORT + 2,
                                             False)
-        config = Config().read_from_file(self.AUTH_CONFIG_FILE)
-        dis_auth_client.configure(config)
+        properties = read_from_file(self.AUTH_CONFIG_FILE)
+        dis_auth_client.configure(properties)
         self.assertFalse(dis_auth_client.is_auth_enabled())
 
 
@@ -153,6 +158,7 @@ class SimpleTCPServer(sserv.TCPServer):
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.server_address)
+
 
 if u'__main__' == __name__:
     unittest.main()

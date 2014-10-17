@@ -20,9 +20,9 @@ from setuptools import find_packages
 setup(name='cdap-auth-client',
       version='${project.version}',
       description='Authentication client for Cask Data Application Platform',
-      author='Cask Data, Inc.',
+      author='Cask Data',
       author_email='cask-dev@googlegroups.com',
-      install_requires=["six", 'requests'],
+      license='The Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0',
+      install_requires=["six"],
       packages=find_packages(),
       )
-

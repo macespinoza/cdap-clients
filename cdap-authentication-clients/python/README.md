@@ -1,97 +1,124 @@
-# Authentication Client Python API
+# CDAP Authentication Client for Python
 
-The Authentication Client Python API is for fetching the access token from the authentication server when writing
-external Python applications.
+The Authentication Client Python API can be used for fetching the access token from the CDAP authentication server to
+interact with a secure CDAP cluster.
 
 ## Supported Actions
 
- - Fetch an access token from the authentication server with credentials supported by the active authentication mechanism;
- - Check if authentication is enabled in the gateway server; and
- - Invalidate any cached access tokens. 
- 
- Current implementation supports three authentication mechanisms:
- - Basic Authentication
- - LDAP
- - JAASPI
+- Check that authentication is enabled in the CDAP cluster.
+- Fetch an access token from the authentication server with credentials supported by the active authentication
+  mechanism.
+
+The default implementation of the authentication client—`BasicAuthenticationClient`—supports the default
+authentication mechanisms supported by CDAP:
+
+- Basic Authentication
+- LDAP
+- JAASPI
+
+## Custom Authentication Mechanism
+
+If CDAP is configured to use a custom authentication mechanism, a custom authentication client is needed
+to fetch the access token. Custom authentication clients must implement the ```AuthenticationClient```
+interface. The ```AbstractAuthenticationClient``` class contains common functionality required by 
+authentication clients, and can be extended by the custom authentication client.
 
 ## Installation
- To install CDAP Authentication Client, run:
-```
-    $ python setup.py install
-```
+
+To install the CDAP Authentication Client, run 
+
+    $ pip install cdap-auth-client
 
 ## Usage
 
- To use the Authentication Client Python API, include these imports in your Python script:
+To use the Authentication Client Python API, include this import in your Python script:
 
-```
-    from cdap_auth_client import Config
     from cdap_auth_client import BasicAuthenticationClient
-```
 
 ## Example
-   
- Create a BasicAuthenticationClient instance:
- 
- ```
-   authentication_client = BasicAuthenticationClient()
- ```
-      
- Set the connection parameters: authentication server host; authentication server host port; SSL mode:
- 
- ```
-   authentication_client.set_connection_info('localhost', 10000, False)
- ```
- 
- Create the configuration file structure in JSON format:
- 
- ```
-  {
-    "security_auth_client_username": "admin",
-    "security_auth_client_password": "secret",
-    "security_ssl_cert_check": true
-  }
- ```  
- 
- Load configuration from JSON File:
- 
- ```
- config = Config().read_from_file('auth_config.json')
- ```
- 
- Or set the required fields in the ```Config``` object:
- ```
- config = Config()
- config.security_auth_client_username = "admin"
- config.security_auth_client_password = "secret"
- config.security_ssl_cert_check = True
- ```
- 
- Configure the authentication client with the ```Config``` object:
- ```
- authentication_client.configure(config)
- ```
- 
- Check if authentication is enabled in the gateway server:
- 
- ```
-  is_enabled = authentication_client.is_auth_enabled()
- ``` 
-                      
- Retrieve the access token from the authentication server:
- 
- ```
- token = authentication_client.get_access_token()
- ```
 
- ## Tests
+
+### Create a BasicAuthenticationClient instance
+
+    authentication_client = BasicAuthenticationClient()
+
+### Set the CDAP connection information
+
+- hostname
+- port
+- boolean flag, ```True``` if SSL is enabled
+
+Example:
+
+    authentication_client.set_connection_info('localhost', 10000, False)
+
+This method should be called only once for every ```AuthenticationClient``` object.
+
+### Check if authentication is enabled in the CDAP cluster
+
+    is_enabled = authentication_client.is_auth_enabled()
+
+### Configure Authentication Client
+
+Set the required fields on a [dictionary](https://docs.python.org/2/tutorial/datastructures.html#dictionaries):
+
+    properties = {
+      'security_auth_client_username': 'admin',
+      'security_auth_client_password': 'secret',
+      'security_ssl_cert_check': True
+    }
+
+If authentication is enabled, configure the Authentication Client with user credentials and other properties (this
+method should be called only once for every ```AuthenticationClient``` object).
+
+    authentication_client.configure(properties)
+
+**Note:**
+
+- The ```BasicAuthenticationClient``` requires these user credentials:
+
+    - ```security_auth_client_username=username```
+    - ```security_auth_client_password=password```
+
+- When SSL is enabled, to suspend certificate checks and allow self-signed certificates, set ```security.security_ssl_cert_check=false```.
+- For non-interactive applications, user credentials will come from a configuration file.
+- For interactive applications, see the section [Interactive Applications](#interactive-applications) below on
+  retrieving and using user credentials.
+
+
+### Retrieve and use the access token for the user from the authentication server
+
+    token = authentication_client.get_access_token()
+    
+    headers = { 'Authorization': token.token_type + ' ' + token.value }
+    requests.request(method, url, headers=headers)
+
+If there is an error while fetching the access token, an ```IOError``` will be raised.
+
+
+## Interactive Applications
+
+This example illustrates obtaining user credentials in an interactive application, and then configuring the
+Authentication Client with the retrieved credentials.
+
+    authentication_client.set_connection_info('localhost', 10000, False)
+    properties = {}
+
+    if authentication_client.is_auth_enabled():
+      for credential in authentication_client.get_required_credentials():
+         print('Please specify %s > ' % credential.get_description())
+         if credential.is_secret():
+            credential_value = getpass.getpass()
+         else:
+            credential_value = raw_input()
+         properties[credential.get_name()] = credential_value
+      authentication_client.configure(properties)
+
+
+## Tests
  
  To run tests from the command-line:
  
  ```
- python BasicAuthenticationClientTest.py
+ python tests/BasicAuthenticationClientTest.py
  ```
-
-
-
- 
