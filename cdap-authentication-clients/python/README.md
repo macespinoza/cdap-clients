@@ -29,6 +29,12 @@ To install the CDAP Authentication Client, run
 
     $ pip install cdap-auth-client
 
+or clone the repository
+
+    $ git clone https://github.com/caskdata/cdap-clients.git
+    $ cd cdap-clients/cdap-authentication-clients/python/
+    $ python setup.py install
+
 ## Usage
 
 To use the Authentication Client Python API, include this import in your Python script:
