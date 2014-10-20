@@ -37,7 +37,7 @@ To use the Authentication Client API, include this Maven dependency in your proj
     <dependency>
       <groupId>co.cask.cdap</groupId>
       <artifactId>cdap-authentication-client</artifactId>
-      <version>1.0.1</version>
+      <version>{version}</version>
     </dependency>
 
 ## Example
