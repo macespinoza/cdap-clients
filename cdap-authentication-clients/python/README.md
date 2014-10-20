@@ -25,11 +25,11 @@ authentication clients, and can be extended by the custom authentication client.
 
 ## Installation
 
-To install the CDAP Authentication Client, run 
+To install the latest release version of CDAP Authentication Client, run 
 
     $ pip install cdap-auth-client
 
-or clone the repository
+To install the development version, clone the repository
 
     $ git clone https://github.com/caskdata/cdap-clients.git
     $ cd cdap-clients/cdap-authentication-clients/python/
