@@ -27,7 +27,7 @@ window.CDAPAuthHelpers.Browser = {
         return obj;
     },
     fetchAuthUrl: function (httpConnection, baseUrl) {
-        httpConnection.open('GET', baseUrl(), false);
+        httpConnection.open('GET', baseUrl() + '/v2/ping', false);
         httpConnection.send();
 
         var authUrls = null;

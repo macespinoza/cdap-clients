@@ -33,7 +33,7 @@ module.exports = {
                 protocol: parsedUrl.protocol,
                 host: parsedUrl.hostname,
                 port: parsedUrl.port,
-                path: parsedUrl.pathname,
+                path: parsedUrl.pathname + '/v2/ping',
                 method: 'GET'
             }),
             response = request.end();
