@@ -35,6 +35,8 @@ To install the development version, clone the repository
     $ cd cdap-clients/cdap-authentication-clients/python/
     $ python setup.py install
 
+Supported Python versions: 2.6, 2.7
+
 ## Usage
 
 To use the Authentication Client Python API, include this import in your Python script:
