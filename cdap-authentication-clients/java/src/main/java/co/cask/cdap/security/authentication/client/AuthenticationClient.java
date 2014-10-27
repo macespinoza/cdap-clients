@@ -16,14 +16,17 @@
 
 package co.cask.cdap.security.authentication.client;
 
+import com.google.common.base.Supplier;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import javax.annotation.Nullable;
 
 /**
  * The client interface to fetch access token from the authentication server.
  */
-public interface AuthenticationClient {
+public interface AuthenticationClient extends Supplier<AccessToken> {
   /**
    * Configures the authentication client and can be called only once for every AuthenticationClient object
    *
@@ -36,10 +39,10 @@ public interface AuthenticationClient {
    * Retrieves the access token generated according to the credentials required by the authentication provider
    * in the authentication server. The access token will be cached until its expiry.
    *
-   * @return {@link AccessToken} object containing the access token
-   * @throws IOException in case of a problem or the connection was aborted or authentication is disabled in the
-   *                     gateway server
+   * @return {@link AccessToken} object containing the access token, or null if authentication is not enabled
+   * @throws IOException in case of a problem or the connection was aborted
    */
+  @Nullable
   AccessToken getAccessToken() throws IOException;
 
   /**

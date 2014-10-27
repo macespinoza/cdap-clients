@@ -24,6 +24,7 @@ import co.cask.cdap.common.http.HttpRequests;
 import co.cask.cdap.common.http.HttpResponse;
 import co.cask.cdap.common.http.ObjectResponse;
 import co.cask.cdap.common.http.exception.HttpFailureException;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
@@ -95,7 +96,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   @Override
   public AccessToken getAccessToken() throws IOException {
     if (!isAuthEnabled()) {
-      throw new IOException("Authentication is disabled in the gateway server.");
+      return null;
     }
 
     if (accessToken == null || isTokenExpired()) {
@@ -105,6 +106,15 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
       LOG.debug("Received the access token successfully. Expiration date is {}.", new Date(expirationTime));
     }
     return accessToken;
+  }
+
+  @Override
+  public AccessToken get() {
+    try {
+      return getAccessToken();
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   /**
