@@ -48,6 +48,7 @@
             },
             httpConnection = null,
             authUrls = null,
+            authEnabled = null,
             helpers = null,
             AUTH_HEADER_NAME = 'Authorization',
             AUTH_TYPE = 'Basic',
@@ -78,17 +79,23 @@
                 return authUrls[Math.floor(Math.random() * authUrls.length)];
             },
             isAuthEnabledImpl = function () {
-                if (!authUrls) {
-                    authUrls = fetchAuthUrl();
+                if (null == authEnabled) {
+                    if (!authUrls) {
+                        authUrls = fetchAuthUrl();
+                    }
+
+                    authEnabled = !!authUrls;
                 }
 
-                return !!authUrls;
+                return authEnabled;
             },
             fetchToken = helpers.fetchTokenInfo.bind(this, getAuthUrl, httpConnection, getAuthHeaders,
                 AUTH_HEADER_NAME),
             getTokenImpl = function () {
-                if ((TOKEN_EXPIRATION_TIMEOUT >= (tokenInfo.expirationDate - Date.now()))) {
-                    tokenInfo = fetchToken();
+                if (authEnabled) {
+                    if ((TOKEN_EXPIRATION_TIMEOUT >= (tokenInfo.expirationDate - Date.now()))) {
+                        tokenInfo = fetchToken();
+                    }
                 }
 
                 return {
