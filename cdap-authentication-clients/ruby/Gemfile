@@ -22,6 +22,10 @@ group :test do
   gem 'rspec'
   gem 'vcr'
   gem 'webmock'
+  gem 'simplecov'
+  gem 'simplecov-rcov'
+  gem 'httparty'
+  gem 'bundle'
 end
 
 gem 'pry', group: :development

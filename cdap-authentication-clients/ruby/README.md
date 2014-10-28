@@ -78,3 +78,12 @@ external Ruby applications.
 ## Testing
 
 To run RSpec tests, run the ```rake rspec``` command in your shell.
+
+The following gems are needed to run the tests:
+
+ - simplecov
+ - simplecov-rcov
+ - webmock
+ - vcr
+ - httparty
+ - bundle

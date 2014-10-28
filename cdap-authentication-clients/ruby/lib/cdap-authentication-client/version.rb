@@ -13,5 +13,5 @@
 #  the License.
 
 module AuthenticationClient
-  VERSION = '1.1.0-SNAPSHOT'
+  VERSION = '1.1.0'
 end
