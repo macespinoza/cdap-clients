@@ -92,7 +92,7 @@
             fetchToken = helpers.fetchTokenInfo.bind(this, getAuthUrl, httpConnection, getAuthHeaders,
                 AUTH_HEADER_NAME),
             getTokenImpl = function () {
-                if (authEnabled) {
+                if (isAuthEnabledImpl()) {
                     if ((TOKEN_EXPIRATION_TIMEOUT >= (tokenInfo.expirationDate - Date.now()))) {
                         tokenInfo = fetchToken();
                     }

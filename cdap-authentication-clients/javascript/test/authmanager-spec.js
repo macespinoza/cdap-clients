@@ -90,7 +90,7 @@ describe('CDAP Auth manager tests', function () {
                     host: "localhost",
                     port: "10000",
                     protocol: "http:",
-                    path: '/',
+                    path: '/v2/ping',
                     method: 'GET'
                 },
                 fetchTokenArgs = {
@@ -154,7 +154,7 @@ describe('CDAP Auth manager tests', function () {
                     host: "localhost",
                     port: "10000",
                     protocol: "http:",
-                    path: '/',
+                    path: '/v2/ping',
                     method: 'GET'
                 },
                 fetchTokenArgs = {
