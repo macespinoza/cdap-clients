@@ -13,6 +13,8 @@ describe('CDAP Auth manager tests', function () {
             expect(authManager).to.have.property('getToken');
             expect(authManager).to.have.property('configure');
             expect(authManager).to.have.property('setConnectionInfo');
+            expect(authManager).to.have.property('getRequiredCredentials');
+            expect(authManager).to.have.property('invalidateToken');
         });
 
         it('"configure" method could not be called without "username" or "password" field', function () {

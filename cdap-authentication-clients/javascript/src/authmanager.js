@@ -25,7 +25,7 @@
         factory(target, require);
     } else if (typeof define === 'function' && define['amd']) {
         // [2] AMD anonymous module
-        define(['exports', 'Promise'], factory);
+        define(['exports', 'CDAPAuthManager'], factory);
     } else {
         // [3] No module loader (plain <script> tag) - put directly in global namespace
         factory(window);
@@ -125,19 +125,40 @@
                 connectionInfo.host = host;
                 connectionInfo.port = port;
                 connectionInfo.ssl = ssl;
+            },
+            invalidateTokenImpl = function () {
+                tokenInfo.value = '';
+                tokenInfo.type = '';
+                tokenInfo.expirationDate = 0;
+            },
+            getRequiredCredentialsImpl = function () {
+                return [
+                    {
+                        name: 'username',
+                        description: 'Username for basic authentication.',
+                        secret: false
+                    },
+                    {
+                        name: 'password',
+                        description: 'Password for basic authentication.',
+                        secret: true
+                    }
+                ];
             };
 
         return {
             isAuthEnabled: isAuthEnabledImpl,
             getToken: getTokenImpl,
             configure: configureImpl,
-            setConnectionInfo: setConnectionInfoImpl
+            setConnectionInfo: setConnectionInfoImpl,
+            invalidateToken: invalidateTokenImpl,
+            getRequiredCredentials: getRequiredCredentialsImpl
         };
     };
 
     if (('undefined' !== typeof module) && module.exports) {
         module.exports = moduleConstructor;
     } else {
-        target['CASKAuthManager'] = target['CASKAuthManager'] || moduleConstructor;
+        target['CDAPAuthManager'] = target['CDAPAuthManager'] || moduleConstructor;
     }
 }));
