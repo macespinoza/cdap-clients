@@ -34,8 +34,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>co.cask.cdap</groupId>
-      <artifactId>cdap-common</artifactId>
+      <groupId>co.cask.common</groupId>
+      <artifactId>common-http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -54,8 +54,17 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>co.cask.http</groupId>
+      <artifactId>netty-http</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

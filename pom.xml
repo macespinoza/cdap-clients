@@ -61,12 +61,14 @@
   </modules>
 
   <properties>
-    <cdap.version>2.5.0</cdap.version>
     <commons.lang.version>2.5</commons.lang.version>
     <slf4j.version>1.7.5</slf4j.version>
     <gson.version>2.2.4</gson.version>
     <guava.version>13.0.1</guava.version>
     <junit.version>4.11</junit.version>
+    <cask.common.version>0.1.0-SNAPSHOT</cask.common.version>
+    <netty.http.version>0.4.0</netty.http.version>
+    <commons.codec.version>1.6</commons.codec.version>
   </properties>
 
   <repositories>
@@ -98,9 +100,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>co.cask.cdap</groupId>
-        <artifactId>cdap-common</artifactId>
-        <version>${cdap.version}</version>
+        <groupId>co.cask.common</groupId>
+        <artifactId>common-http</artifactId>
+        <version>${cask.common.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -121,6 +123,16 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>co.cask.http</groupId>
+        <artifactId>netty-http</artifactId>
+        <version>${netty.http.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons.codec.version}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>

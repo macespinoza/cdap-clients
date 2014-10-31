@@ -17,13 +17,12 @@
 
 package co.cask.cdap.security.authentication.client;
 
-import co.cask.cdap.common.conf.Constants;
-import co.cask.cdap.common.http.HttpRequest;
-import co.cask.cdap.common.http.HttpRequestConfig;
-import co.cask.cdap.common.http.HttpRequests;
-import co.cask.cdap.common.http.HttpResponse;
-import co.cask.cdap.common.http.ObjectResponse;
-import co.cask.cdap.common.http.exception.HttpFailureException;
+import co.cask.common.http.HttpRequest;
+import co.cask.common.http.HttpRequestConfig;
+import co.cask.common.http.HttpRequests;
+import co.cask.common.http.HttpResponse;
+import co.cask.common.http.ObjectResponse;
+import co.cask.common.http.exception.HttpFailureException;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
@@ -53,7 +52,12 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private static final String ACCESS_TOKEN_KEY = "access_token";
   private static final String EXPIRES_IN_KEY = "expires_in";
   private static final String TOKEN_TYPE_KEY = "token_type";
+  private static final String DEFAULT_GATEWAY_VERSION = "v2";
   private static final long SPARE_TIME_IN_MILLIS = 5000;
+  private static final TypeToken<Map<String, String>> ACCESS_TOKEN_RESPONSE_TYPE_TOKEN
+    = new TypeToken<Map<String, String>>() { };
+  private static final TypeToken<Map<String, List<String>>> AUTH_URL_RESPONSE_TYPE_TOKEN
+    = new TypeToken<Map<String, List<String>>>() { };
 
   private long expirationTime;
   private AccessToken accessToken;
@@ -89,8 +93,8 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     if (baseURI != null) {
       throw new IllegalStateException("Connection info is already configured!");
     }
-    baseURI = URI.create(String.format("%s://%s:%d%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
-                                       Constants.Gateway.GATEWAY_VERSION));
+    baseURI = URI.create(String.format("%s://%s:%d/%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
+                                      DEFAULT_GATEWAY_VERSION));
   }
 
   @Override
@@ -162,8 +166,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     }
 
     Map<String, List<String>> responseMap =
-      ObjectResponse.fromJsonBody(response,
-                                  new TypeToken<Map<String, List<String>>>() { }).getResponseObject();
+      ObjectResponse.fromJsonBody(response, AUTH_URL_RESPONSE_TYPE_TOKEN).getResponseObject();
     LOG.debug("Response map from gateway server: {}", responseMap);
 
     String result;
@@ -193,7 +196,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     }
 
     Map<String, String> responseMap =
-      ObjectResponse.fromJsonBody(response, new TypeToken<Map<String, String>>() { }).getResponseObject();
+      ObjectResponse.fromJsonBody(response, ACCESS_TOKEN_RESPONSE_TYPE_TOKEN).getResponseObject();
     String tokenValue = responseMap.get(ACCESS_TOKEN_KEY);
     String tokenType = responseMap.get(TOKEN_TYPE_KEY);
     String expiresInStr = responseMap.get(EXPIRES_IN_KEY);
