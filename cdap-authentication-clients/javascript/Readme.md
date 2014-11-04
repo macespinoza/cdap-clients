@@ -59,6 +59,7 @@ Optional configurations that can be set (and their default values):
   - ssl: False (use HTTP protocol)
 
 ```
+
     var manager = new CDAPAuthManager(),
         tokenInfo;
 
