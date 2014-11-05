@@ -33,4 +33,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov-rcov'
 
   s.require_paths = ["lib"]
+
+  s.files = Dir['lib/**/*.rb']
 end
