@@ -34,5 +34,5 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.files = Dir['lib/**/*']
+  s.files = Dir['lib/**/*.rb']
 end
