@@ -83,6 +83,7 @@ module AuthenticationClient
         @expiration_time  = request_time + expires_in - SPARSE_TIME_IN_MILLIS
         @access_token = AccessToken.new(token_value, token_type, expires_in)
       end
+      @access_token
     end
 
     def auth_enabled?
