@@ -1,7 +1,7 @@
 cdap-clients
 ============
 
-Clients to interact with CDAP in multiple languages
+Clients to interact with CDAP in multiple programming languages.
 
 For details, please see the README.md file in each submodule.
 
