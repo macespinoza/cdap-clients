@@ -13,7 +13,7 @@ external Ruby applications.
  Current implementation supports three authentication mechanisms:
  - Basic Authentication
  - LDAP
- - JAASPI
+ - JASPI
 
 ## Usage
 
