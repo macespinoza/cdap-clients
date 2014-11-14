@@ -23,11 +23,11 @@
   <parent>
     <groupId>co.cask.cdap</groupId>
     <artifactId>cdap-authentication-clients</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </parent>
 
   <artifactId>cdap-authentication-client</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
   <name>Java CDAP Authentication Client</name>
   <description>Java CDAP Authentication Client</description>
