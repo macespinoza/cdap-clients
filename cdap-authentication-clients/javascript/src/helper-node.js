@@ -14,7 +14,8 @@
  * the License.
  */
 
-var Url = require('url');
+var Url = require('url'),
+    Promise = require('./promise');
 
 module.exports = {
     getAuthHeaders: function (headerName, authType, connectionInfo) {
@@ -27,45 +28,73 @@ module.exports = {
         return obj;
     },
     fetchAuthUrl: function (httpConnection, baseUrl) {
-        var parsedUrl = Url.parse(baseUrl()),
-            authUrls = null,
+        var promise = new Promise(),
+            parsedUrl = Url.parse(baseUrl()),
             request = httpConnection.request({
                 protocol: parsedUrl.protocol,
                 host: parsedUrl.hostname,
                 port: parsedUrl.port,
                 path: '/v2/ping',
                 method: 'GET'
-            }),
-            response = request.end();
+            }, function (response) {
+                response.setEncoding('utf8');
 
-        if (401 === response.statusCode) {
-            authUrls = JSON.parse(response.body)['auth_uri'];
-        }
+                response.on('data', function (chunk) {
+                    if (401 === response.statusCode) {
+                        promise.resolve(JSON.parse(chunk)['auth_uri']);
+                    } else {
+                        promise.resolve(null);
+                    }
+                });
 
-        return authUrls;
+                response.on('end', function () {
+                    promise.resolve(null);
+                });
+            });
+
+        request.on('error', function (error) {
+            promise.resolve(null);
+        });
+
+        request.end();
+
+        return promise;
     },
     fetchTokenInfo: function (authUrl, httpConnection, headers) {
-        var tokenInfo = {},
-            parsedUrl = Url.parse(authUrl());
-
-        var request = httpConnection.request({
+        var promise = new Promise(),
+            tokenInfo = {},
+            parsedUrl = Url.parse(authUrl()),
+            request = httpConnection.request({
                 protocol: parsedUrl.protocol,
                 host: parsedUrl.hostname,
                 port: parsedUrl.port,
                 path: parsedUrl.pathname,
                 method: 'GET',
                 headers: headers()
-            }),
-            response = request.end();
+            }, function (response) {
+                response.setEncoding('utf8');
 
-        if (200 === response.statusCode) {
-            var tokenData = JSON.parse(response.body);
+                response.on('data', function (chunk) {
+                    if (200 === response.statusCode) {
+                        var tokenData = JSON.parse(chunk);
 
-            tokenInfo.value = tokenData.access_token;
-            tokenInfo.type = tokenData.token_type;
-            tokenInfo.expirationDate = Date.now() + (tokenData.expires_in * 1000);
-        }
+                        tokenInfo.value = tokenData.access_token;
+                        tokenInfo.type = tokenData.token_type;
+                        tokenInfo.expirationDate = Date.now() + (tokenData.expires_in * 1000);
 
-        return tokenInfo;
+                        promise.resolve(tokenInfo);
+                    } else {
+                        promise.reject(null);
+                    }
+                });
+            });
+
+        request.on('error', function (error) {
+            promise.reject(null);
+        });
+
+        request.end();
+
+        return promise;
     }
 };

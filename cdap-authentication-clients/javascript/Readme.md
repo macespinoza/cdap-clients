@@ -69,7 +69,8 @@ Optional configurations that can be set (and their default values):
     });
     manager.setConnectionInfo('localhost', 10000, false);
 
-    if (manager.isAuthEnabled()) {
-        tokenInfo = manager.getToken();
-    }
+    var tokenPromise = authManager.getToken();
+    tokenPromise.then(function (token) {
+        //do something with token
+    });
 ```

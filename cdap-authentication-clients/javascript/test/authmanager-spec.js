@@ -1,7 +1,6 @@
 var CDAPAuthManager = require('../src/authmanager'),
     expect = require('expect.js'),
-    sinon = require('sinon'),
-    httpsync = require('http-sync');
+    nock = require('nock');
 
 describe('CDAP Auth manager tests', function () {
     describe('Checking Auth Manager functionality', function () {
@@ -27,58 +26,61 @@ describe('CDAP Auth manager tests', function () {
         });
 
         it('Authentication is disabled on server side.', function () {
-            var mock = sinon.mock(httpsync);
-            mock.expects('request').once().returns({
-                end: function () {
-                    return {
-                        statusCode: 200,
-                        body: ''
-                    };
-                }
+            var host = 'localhost',
+                port = 10000,
+
+                mock = nock('http://' + host + ':' + port)
+                    .get('/v2/ping')
+                    .reply(200),
+
+                authManager = new CDAPAuthManager(),
+                promise = null,
+                authEnabled = true,
+                checker = function () {
+                    expect(authEnabled).not.to.be.ok();
+                };
+
+            authManager.setConnectionInfo(host, port, false);
+            promise = authManager.isAuthEnabled();
+            promise.then(function (isEnabled) {
+                authEnabled = isEnabled;
             });
 
-            var authManager = new CDAPAuthManager(),
-                authEnabled = false;
-
-            authManager.setConnectionInfo('localhost', 10000, false);
-            authEnabled = authManager.isAuthEnabled();
-
-            mock.verify();
-            mock.restore();
-
-            expect(authEnabled).to.not.be.ok();
+            promise.then(checker, checker);
         });
 
         it('Authentication is enabled on server side.', function () {
-            var jsonResp = {
+            var host = 'localhost',
+                port = 10000,
+                jsonResp = {
                     auth_uri: ["/some/url", "/some/url1", "/some/url2"]
                 },
-                mock = sinon.mock(httpsync);
+                mock = nock('http://' + host + ':' + port)
+                    .get('/v2/ping')
+                    .reply(401, JSON.stringify(jsonResp)),
 
-            mock.expects('request').once().returns({
-                end: function () {
-                    return {
-                        statusCode: 401,
-                        body: JSON.stringify(jsonResp)
-                    };
-                }
+                authManager = new CDAPAuthManager(),
+                promise = null,
+                authEnabled = false,
+                checker = function () {
+                    expect(authEnabled).to.be.ok();
+                };
+
+            authManager.setConnectionInfo(host, port, false);
+            promise = authManager.isAuthEnabled();
+
+            promise.then(function (isEnabled) {
+                authEnabled = isEnabled;
             });
 
-            var authManager = new CDAPAuthManager(),
-                authEnabled = false;
-
-            authManager.setConnectionInfo('localhost', 10000, false);
-            authEnabled = authManager.isAuthEnabled();
-
-            mock.verify();
-            mock.restore();
-
-            expect(authEnabled).to.be.ok();
+            promise.then(checker, checker);
         });
 
         it('"getToken" returns valid object', function () {
             var username = 'username',
                 password = 'password',
+                host = 'localhost',
+                port = 10000,
                 jsonResp1 = {
                     auth_uri: ["/token/url"]
                 },
@@ -87,121 +89,67 @@ describe('CDAP Auth manager tests', function () {
                     "token_type": "Bearer",
                     "expires_in": 3600
                 },
-                mock = sinon.mock(httpsync),
-                getAuthUrlArgs = {
-                    host: "localhost",
-                    port: "10000",
-                    protocol: "http:",
-                    path: '/v2/ping',
-                    method: 'GET'
-                },
-                fetchTokenArgs = {
-                    host: null,
-                    port: null,
-                    protocol: null,
-                    path: '/token/url',
-                    method: 'GET',
-                    headers: {
-                        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
-                    }
-                };
-
-            mock.expects('request').withArgs(getAuthUrlArgs).returns({
-                end: function () {
-                    return {
-                        statusCode: 401,
-                        body: JSON.stringify(jsonResp1)
-                    };
-                }
-            });
-            mock.expects('request').withArgs(fetchTokenArgs).returns({
-                end: function () {
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify(jsonResp2)
-                    };
-                }
-            });
+                mockAuth = nock('http://' + host + ':' + port).
+                    get('/v2/ping')
+                    .reply(401, JSON.stringify(jsonResp1)),
+                mockToken = nock('http://' + host + ':' + port).
+                    get('/token/url')
+                    .reply(200, JSON.stringify(jsonResp2));
 
             var authManager = new CDAPAuthManager(),
-                authToken;
+                authToken = null,
+                checker = function () {
+                    expect(authToken).to.have.property('token');
+                    expect(authToken).to.have.property('type');
+                };
 
             authManager.setConnectionInfo('localhost', 10000, false);
             authManager.configure({username: username, password: password});
 
-            if (authManager.isAuthEnabled()) {
-                authToken = authManager.getToken();
-            }
-
-            mock.verify();
-            mock.restore();
-
-            expect(authToken).to.have.property('token');
-            expect(authToken).to.have.property('type');
+            var tokenPromise = authManager.getToken();
+            tokenPromise.then(function (token) {
+                authToken = token;
+            }).then(checker, checker);
         });
 
         it('"getToken" returns valid token data', function () {
             var username = 'username',
                 password = 'password',
+                host = 'localhost',
+                port = 10000,
                 jsonResp1 = {
-                    auth_uri: ["/token/url"]
+                    auth_uri: ['http://' + host + ':' + port + '/token/url']
                 },
                 jsonResp2 = {
                     access_token: "2YotnFZFEjr1zCsicMWpAA",
                     token_type: "Bearer",
                     expires_in: 3600
                 },
-                mock = sinon.mock(httpsync),
-                getAuthUrlArgs = {
-                    host: "localhost",
-                    port: "10000",
-                    protocol: "http:",
-                    path: '/v2/ping',
-                    method: 'GET'
-                },
-                fetchTokenArgs = {
-                    host: null,
-                    port: null,
-                    protocol: null,
-                    path: '/token/url',
-                    method: 'GET',
-                    headers: {
-                        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
+                mockAuth = nock('http://' + host + ':' + port).
+                    get('/v2/ping')
+                    .reply(401, JSON.stringify(jsonResp1)),
+                mockToken = nock('http://' + host + ':' + port, {
+                    reqheaders: {
+                        'authorization': 'Basic ' + new Buffer(username + ':' + password).toString('base64')
                     }
-                };
-
-            mock.expects('request').withArgs(getAuthUrlArgs).returns({
-                end: function () {
-                    return {
-                        statusCode: 401,
-                        body: JSON.stringify(jsonResp1)
-                    };
-                }
-            });
-            mock.expects('request').withArgs(fetchTokenArgs).returns({
-                end: function () {
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify(jsonResp2)
-                    };
-                }
-            });
+                }).
+                    get('/token/url')
+                    .reply(200, JSON.stringify(jsonResp2));
 
             var authManager = new CDAPAuthManager(),
-                authToken;
+                authToken = null,
+                checker = function () {
+                    expect(authToken.token).to.be(jsonResp2.access_token);
+                    expect(authToken.type).to.be(jsonResp2.token_type);
+                };
 
-            authManager.setConnectionInfo('localhost', 10000, false);
+            authManager.setConnectionInfo(host, port, false);
             authManager.configure({username: username, password: password});
 
-            if (authManager.isAuthEnabled()) {
-                authToken = authManager.getToken();
-            }
-
-            mock.verify();
-            mock.restore();
-
-            expect(authToken.token).to.be(jsonResp2.access_token);
-            expect(authToken.type).to.be(jsonResp2.token_type);
+            var authTokenPromise = authManager.getToken();
+            authTokenPromise.then(function (token) {
+                authToken = token;
+            }).then(checker, checker);
         });
     });
 });

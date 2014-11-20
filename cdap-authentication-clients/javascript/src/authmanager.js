@@ -25,7 +25,7 @@
         factory(target, require);
     } else if (typeof define === 'function' && define['amd']) {
         // [2] AMD anonymous module
-        define(['exports', 'CDAPAuthManager'], factory);
+        define(['exports', 'CDAPAuth.Manager'], factory);
     } else {
         // [3] No module loader (plain <script> tag) - put directly in global namespace
         factory(window);
@@ -50,16 +50,19 @@
             authUrls = null,
             authEnabled = null,
             helpers = null,
+            Promise = null,
             AUTH_HEADER_NAME = 'Authorization',
             AUTH_TYPE = 'Basic',
             TOKEN_EXPIRATION_TIMEOUT = 5000;
 
         if ('undefined' !== typeof window) {
+            Promise = CDAPAuth.Promise;
             helpers = CDAPAuthHelpers.Browser;
             httpConnection = new XMLHttpRequest();
         } else {
+            Promise = require('./promise');
             helpers = require('./helper-node');
-            httpConnection = require('http-sync');
+            httpConnection = require('http');
         }
 
         var getAuthHeaders = helpers.getAuthHeaders.bind(this, AUTH_HEADER_NAME, AUTH_TYPE, connectionInfo),
@@ -79,29 +82,47 @@
                 return authUrls[Math.floor(Math.random() * authUrls.length)];
             },
             isAuthEnabledImpl = function () {
+                var retPromise = new Promise();
                 if (null == authEnabled) {
                     if (!authUrls) {
-                        authUrls = fetchAuthUrl();
+                        var urlsPromise = fetchAuthUrl();
+                        urlsPromise.then(function (urls) {
+                            authUrls = urls || [];
+                            authEnabled = !!authUrls.length;
+                            retPromise.resolve(authEnabled);
+                        });
                     }
-
-                    authEnabled = !!authUrls;
+                } else {
+                    retPromise.resolve(authEnabled);
                 }
 
-                return authEnabled;
+                return retPromise;
             },
             fetchToken = helpers.fetchTokenInfo.bind(this, getAuthUrl, httpConnection, getAuthHeaders,
                 AUTH_HEADER_NAME),
             getTokenImpl = function () {
-                if (isAuthEnabledImpl()) {
-                    if ((TOKEN_EXPIRATION_TIMEOUT >= (tokenInfo.expirationDate - Date.now()))) {
-                        tokenInfo = fetchToken();
-                    }
-                }
+                var retPromise = new Promise(),
+                    authEnabledPromise = isAuthEnabledImpl();
 
-                return {
-                    token: tokenInfo.value,
-                    type: tokenInfo.type
-                };
+                authEnabledPromise.then(function (isAuthEnabled) {
+                    var resolveWithToken = function (token) {
+                        retPromise.resolve({
+                            token: tokenInfo.value,
+                            type: tokenInfo.type
+                        });
+                    };
+
+                    if (isAuthEnabled) {
+                        if ((TOKEN_EXPIRATION_TIMEOUT >= (tokenInfo.expirationDate - Date.now()))) {
+                            var tokenInfoPromise = fetchToken();
+                            tokenInfoPromise.then(function (token) {
+                                tokenInfo = token;
+                            }).then(resolveWithToken, resolveWithToken);
+                        }
+                    }
+                });
+
+                return retPromise;
             },
             /**
              * @param {Object} properties {
@@ -159,6 +180,7 @@
     if (('undefined' !== typeof module) && module.exports) {
         module.exports = moduleConstructor;
     } else {
-        target['CDAPAuthManager'] = target['CDAPAuthManager'] || moduleConstructor;
+        target['CDAPAuth'] = target['CDAPAuth'] || {};
+        target['CDAPAuth']['Manager'] = target['CDAPAuth']['Manager'] || moduleConstructor;
     }
 }));

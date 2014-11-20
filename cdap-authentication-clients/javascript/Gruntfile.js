@@ -27,7 +27,7 @@ module.exports = function (grunt) {
         },
         concat: {
             browser_dist: {
-                src: ['src/base64.js', 'src/helper-browser.js', 'src/authmanager.js'],
+                src: ['src/base64.js', 'src/promise.js', 'src/helper-browser.js', 'src/authmanager.js'],
                 dest: 'tmp/browser/<%= pkg.name %>.js'
             },
         },

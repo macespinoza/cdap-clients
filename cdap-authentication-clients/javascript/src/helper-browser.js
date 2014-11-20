@@ -27,27 +27,29 @@ window.CDAPAuthHelpers.Browser = {
         return obj;
     },
     fetchAuthUrl: function (httpConnection, baseUrl) {
-        httpConnection.open('GET', baseUrl() + '/v2/ping', false);
+        var promise = new CDAPAuth.Promise();
+
+        httpConnection.onreadystatechange = function () {
+            if (XMLHttpRequest.DONE === httpConnection.readyState && 401 === httpConnection.status) {
+                promise.resolve(JSON.parse(httpConnection.responseText)['auth_uri']);
+            } else if(XMLHttpRequest.DONE === httpConnection.readyState && 401 !== httpConnection.status) {
+                promise.resolve(null);
+            }
+        };
+        httpConnection.open('GET', baseUrl() + '/v2/ping', true);
         httpConnection.send();
 
-        var authUrls = null;
-        if (XMLHttpRequest.DONE === httpConnection.readyState && 401 === httpConnection.status) {
-            authUrls = JSON.parse(httpConnection.responseText)['auth_uri'];
-        }
-
-        return authUrls;
+        return promise;
     },
     fetchTokenInfo: function (authUrl, httpConnection, headers, authHeaderName) {
-        httpConnection.open('GET', authUrl(), false);
-        httpConnection.setRequestHeader(authHeaderName, headers()[authHeaderName]);
+        var promise = new CDAPAuth.Promise();
 
-        var tokenInfo = {
-            value: '',
-            type: '',
-            expirationDate: 0
-        };
-        if (authUrl) {
-            httpConnection.send();
+        httpConnection.onreadystatechange = function () {
+            var tokenInfo = {
+                value: '',
+                type: '',
+                expirationDate: 0
+            };
 
             if (XMLHttpRequest.DONE === httpConnection.readyState && 200 === httpConnection.status) {
                 var tokenData = JSON.parse(httpConnection.responseText);
@@ -55,9 +57,19 @@ window.CDAPAuthHelpers.Browser = {
                 tokenInfo.value = tokenData.access_token;
                 tokenInfo.type = tokenData.token_type;
                 tokenInfo.expirationDate = Date.now() + (tokenData.expires_in * 1000);
+
+                promise.resolve(tokenInfo);
+            } else if (XMLHttpRequest.DONE === httpConnection.readyState && 200 !== httpConnection.status) {
+                promise.reject(null);
             }
+        };
+        httpConnection.open('GET', authUrl(), true);
+        httpConnection.setRequestHeader(authHeaderName, headers()[authHeaderName]);
+
+        if (authUrl()) {
+            httpConnection.send();
         }
 
-        return tokenInfo;
+        return promise;
     }
 };
