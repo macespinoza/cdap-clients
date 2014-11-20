@@ -36,9 +36,11 @@ var CDAPAuthManager = require('cdap-auth-client');
 Methods:
 
 'isAuthEnabled()'    - checks if authentication is enabled from the server side.
-                       Returns: true/false
+                       Returns: Promise object. Resolve with true/false value is only possible event.
 'getToken()'         - authenticates and returns token info.
-                       Returns: {
+                       Returns: Promise object. Resolve with true/false value is only possible event.
+                       Resolves with object:
+                       {
                            token: '',        - token value
                            type: ''          - token type. Currently 'Bearer' is only supported.
                        }
@@ -71,6 +73,6 @@ Optional configurations that can be set (and their default values):
 
     var tokenPromise = authManager.getToken();
     tokenPromise.then(function (token) {
-        //do something with token
+        
     });
 ```
