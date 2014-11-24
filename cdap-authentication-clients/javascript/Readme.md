@@ -2,11 +2,6 @@
 
 Authentication client JavaScript API for CASK reactor.
 
-## Supported Actions
-
-- checking if authentication is available from the server side.
-- authentication
-
 ## Installation
 
 ### Web browser
