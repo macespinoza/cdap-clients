@@ -35,7 +35,7 @@ describe('CDAP Auth manager tests', function () {
                 });
         });
 
-        it('Authentication is disabled on server side.', function () {
+        it('Authentication is disabled on server side.', function (done) {
             this.server.respondWith([200, {'Content-Type': 'application/json'}, '']);
 
             var authManager = new CDAPAuth.Manager(),
@@ -43,6 +43,7 @@ describe('CDAP Auth manager tests', function () {
                 promise = null,
                 checker = function () {
                     expect(authEnabled).not.to.be.ok();
+                    done();
                 };
 
             authManager.configure({username: 'username', password: 'password'});
@@ -54,7 +55,7 @@ describe('CDAP Auth manager tests', function () {
             promise.then(checker, checker);
         });
 
-        it('Authentication is enabled on server side.', function () {
+        it('Authentication is enabled on server side.', function (done) {
             var jsonResp = {
                 auth_uri: ["/some/url", "/some/url1", "/some/url2"]
             };
@@ -66,6 +67,7 @@ describe('CDAP Auth manager tests', function () {
                 promise = null,
                 checker = function () {
                     expect(authEnabled).to.be.ok();
+                    done();
                 };
 
             authManager.configure({username: 'username', password: 'password'});
@@ -77,7 +79,7 @@ describe('CDAP Auth manager tests', function () {
             promise.then(checker, checker);
         });
 
-        it('"getToken" returns valid object', function () {
+        it('"getToken" returns valid object', function (done) {
             var jsonResp = {
                 "access_token": "2YotnFZFEjr1zCsicMWpAA",
                 "token_type": "Bearer",
@@ -92,6 +94,7 @@ describe('CDAP Auth manager tests', function () {
                 checker = function () {
                     expect(authToken).to.have.property('token');
                     expect(authToken).to.have.property('type');
+                    done();
                 };
 
             authManager.configure({username: 'username', password: 'password'});
@@ -101,7 +104,7 @@ describe('CDAP Auth manager tests', function () {
             }).then(checker, checker);
         });
 
-        it('"getToken" returns valid token data', function () {
+        it('"getToken" returns valid token data', function (done) {
             var jsonRespAuthUrls = {
                     auth_uri: ["/token/url", "/token/url1", "/token/url2"]
                 },
@@ -120,6 +123,7 @@ describe('CDAP Auth manager tests', function () {
                 checker = function () {
                     expect(authToken.token).to.be(jsonRespAuthToken.access_token);
                     expect(authToken.type).to.be(jsonRespAuthToken.token_type);
+                    done();
                 };
 
             authManager.configure({username: 'username', password: 'password'});
