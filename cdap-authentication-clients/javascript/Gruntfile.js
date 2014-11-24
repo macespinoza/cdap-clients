@@ -27,7 +27,7 @@ module.exports = function (grunt) {
         },
         concat: {
             browser_dist: {
-                src: ['src/base64.js', 'src/helper-browser.js', 'src/authmanager.js'],
+                src: ['src/base64.js', 'src/promise.js', 'src/helper-browser.js', 'src/authmanager.js'],
                 dest: 'tmp/browser/<%= pkg.name %>.js'
             },
         },
@@ -41,7 +41,7 @@ module.exports = function (grunt) {
             nodejs_src: {
                 expand: true,
                 cwd: 'src/',
-                src: ['helper-node.js', 'authmanager.js'],
+                src: ['helper-node.js', 'authmanager.js', 'promise.js'],
                 dest: 'dist/nodejs/<%= pkg.name %>/'
             },
         },

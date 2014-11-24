@@ -2,11 +2,6 @@
 
 Authentication client JavaScript API for CASK reactor.
 
-## Supported Actions
-
-- checking if authentication is available from the server side.
-- authentication
-
 ## Installation
 
 ### Web browser
@@ -32,22 +27,24 @@ of your project.
 var CDAPAuthManager = require('cdap-auth-client');
 ```
 
-## Tracker object
+## Supported actions
 Methods:
 
-'isAuthEnabled()'    - checks if authentication is enabled from the server side.
-                       Returns: true/false
-'getToken()'         - authenticates and returns token info.
-                       Returns: {
-                           token: '',        - token value
-                           type: ''          - token type. Currently 'Bearer' is only supported.
-                       }
-'configure(config)'  - sets up username and password for authentication manager.
-                       config - {
-                           username: '',
-                           password: ''
-                       }
-'setConnectionInfo(hostname, port, ssl) - sets up connection data.
+    'isAuthEnabled()'    - checks if authentication is enabled from the server side.
+                           Returns: Promise object. Resolve with true/false value is only possible event.
+    'getToken()'         - authenticates and returns token info.
+                           Returns: Promise object. Resolve with true/false value is only possible event.
+                           Resolves with object:
+                           {
+                             token: '',        - token value
+                             type: ''          - token type. Currently 'Bearer' is only supported.
+                           }
+    'configure(config)'  - sets up username and password for authentication manager.
+                           config - {
+                             username: '',
+                             password: ''
+                           }
+    'setConnectionInfo(hostname, port, ssl) - sets up connection data.
 
 ## Example
 
@@ -60,8 +57,7 @@ Optional configurations that can be set (and their default values):
 
 ```
 
-    var manager = new CDAPAuthManager(),
-        tokenInfo;
+    var manager = new CDAPAuthManager();
 
     manager.configure({
         username: 'username',
@@ -69,7 +65,8 @@ Optional configurations that can be set (and their default values):
     });
     manager.setConnectionInfo('localhost', 10000, false);
 
-    if (manager.isAuthEnabled()) {
-        tokenInfo = manager.getToken();
-    }
+    var tokenPromise = manager.getToken();
+    tokenPromise.then(function (token) {
+        console.log(token);
+    });
 ```
