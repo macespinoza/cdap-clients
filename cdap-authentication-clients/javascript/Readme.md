@@ -32,24 +32,24 @@ of your project.
 var CDAPAuthManager = require('cdap-auth-client');
 ```
 
-## Tracker object
+## Supported actions
 Methods:
 
-'isAuthEnabled()'    - checks if authentication is enabled from the server side.
-                       Returns: Promise object. Resolve with true/false value is only possible event.
-'getToken()'         - authenticates and returns token info.
-                       Returns: Promise object. Resolve with true/false value is only possible event.
-                       Resolves with object:
-                       {
-                           token: '',        - token value
-                           type: ''          - token type. Currently 'Bearer' is only supported.
-                       }
-'configure(config)'  - sets up username and password for authentication manager.
-                       config - {
-                           username: '',
-                           password: ''
-                       }
-'setConnectionInfo(hostname, port, ssl) - sets up connection data.
+    'isAuthEnabled()'    - checks if authentication is enabled from the server side.
+                           Returns: Promise object. Resolve with true/false value is only possible event.
+    'getToken()'         - authenticates and returns token info.
+                           Returns: Promise object. Resolve with true/false value is only possible event.
+                           Resolves with object:
+                           {
+                             token: '',        - token value
+                             type: ''          - token type. Currently 'Bearer' is only supported.
+                           }
+    'configure(config)'  - sets up username and password for authentication manager.
+                           config - {
+                             username: '',
+                             password: ''
+                           }
+    'setConnectionInfo(hostname, port, ssl) - sets up connection data.
 
 ## Example
 
@@ -72,6 +72,6 @@ Optional configurations that can be set (and their default values):
 
     var tokenPromise = manager.getToken();
     tokenPromise.then(function (token) {
-        
+        console.log(token);
     });
 ```
