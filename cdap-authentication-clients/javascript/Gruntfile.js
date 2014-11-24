@@ -41,7 +41,7 @@ module.exports = function (grunt) {
             nodejs_src: {
                 expand: true,
                 cwd: 'src/',
-                src: ['helper-node.js', 'authmanager.js'],
+                src: ['helper-node.js', 'authmanager.js', 'promise.js'],
                 dest: 'dist/nodejs/<%= pkg.name %>/'
             },
         },

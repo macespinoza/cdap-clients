@@ -62,8 +62,7 @@ Optional configurations that can be set (and their default values):
 
 ```
 
-    var manager = new CDAPAuthManager(),
-        tokenInfo;
+    var manager = new CDAPAuthManager();
 
     manager.configure({
         username: 'username',
@@ -71,7 +70,7 @@ Optional configurations that can be set (and their default values):
     });
     manager.setConnectionInfo('localhost', 10000, false);
 
-    var tokenPromise = authManager.getToken();
+    var tokenPromise = manager.getToken();
     tokenPromise.then(function (token) {
         
     });
