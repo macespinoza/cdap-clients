@@ -16,8 +16,8 @@
 import base64
 import logging
 import json
-from abstract_authentication_client import AbstractAuthenticationClient
-from credential import Credential
+from .abstract_authentication_client import AbstractAuthenticationClient
+from .credential import Credential
 
 LOG = logging.getLogger(__name__)
 
