@@ -10,7 +10,7 @@ module.exports = function (grunt) {
          * temporary doesn`t work.
          * More investigation required.
          */
-/*        mocha: {
+        mocha: {
             browser: {
                 src: ['test/client.html'],
                 options: {
@@ -18,7 +18,7 @@ module.exports = function (grunt) {
                     reporter: 'Nyan',
                 },
             },
-        },*/
+        },
         // Node.JS side tests
         mochaTest: {
             nodejs: {
@@ -54,7 +54,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('test', [
-//        'mocha',
+        'mocha',
         'mochaTest'
     ]);
     grunt.registerTask('build', [
@@ -73,5 +73,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-mocha');
     grunt.loadNpmTasks('grunt-mocha-test');
 };

@@ -1,8 +1,8 @@
 describe('CDAP Auth manager tests', function () {
     beforeEach(function () {
-        sinon.log = function (data) {
+/*        sinon.log = function (data) {
             console.log(data);
-        };
+        };*/
         this.server = sinon.fakeServer.create();
         this.server.autoRespond = true;
     });
