@@ -65,7 +65,7 @@
             httpConnection = require('http');
         }
 
-        var getAuthHeaders = helpers.getAuthHeaders.bind(this, AUTH_HEADER_NAME, AUTH_TYPE, connectionInfo),
+        var getAuthHeaders = helpers.getAuthHeaders,
             baseUrl = function () {
                 return [
                     connectionInfo.ssl ? 'https' : 'http',
@@ -73,7 +73,7 @@
                     ':', connectionInfo.port, '/'
                 ].join('');
             },
-            fetchAuthUrl = helpers.fetchAuthUrl.bind(this, httpConnection, baseUrl),
+            fetchAuthUrl = helpers.fetchAuthUrl,
             getAuthUrl = function () {
                 if (!authUrls) {
                     return '';
@@ -85,7 +85,7 @@
                 var retPromise = new Promise();
                 if (null == authEnabled) {
                     if (!authUrls) {
-                        var urlsPromise = fetchAuthUrl();
+                        var urlsPromise = fetchAuthUrl(httpConnection, baseUrl);
                         urlsPromise.then(function (urls) {
                             authUrls = urls || [];
                             authEnabled = !!authUrls.length;
@@ -98,8 +98,7 @@
 
                 return retPromise;
             },
-            fetchToken = helpers.fetchTokenInfo.bind(this, getAuthUrl, httpConnection, getAuthHeaders,
-                AUTH_HEADER_NAME),
+            fetchToken = helpers.fetchTokenInfo,
             getTokenImpl = function () {
                 var retPromise = new Promise(),
                     authEnabledPromise = isAuthEnabledImpl();
@@ -114,7 +113,9 @@
 
                     if (isAuthEnabled) {
                         if ((TOKEN_EXPIRATION_TIMEOUT >= (tokenInfo.expirationDate - Date.now()))) {
-                            var tokenInfoPromise = fetchToken();
+                            var authHeaders = getAuthHeaders(AUTH_HEADER_NAME, AUTH_TYPE, connectionInfo),
+                                tokenInfoPromise = fetchToken(getAuthUrl, httpConnection, authHeaders,
+                                AUTH_HEADER_NAME);
                             tokenInfoPromise.then(function (token) {
                                 tokenInfo = token;
                             }).then(resolveWithToken, resolveWithToken);
