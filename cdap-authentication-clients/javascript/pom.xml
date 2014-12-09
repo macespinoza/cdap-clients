@@ -55,7 +55,6 @@
                 <exclude>target/**</exclude>
                 <exclude>tmp/**</exclude>
                 <exclude>src/base64.js</exclude>
-                <exclude>test/client.html</exclude>
                 <exclude>test/samsam.js</exclude>
                 <exclude>test/formatio.js</exclude>
                 <exclude>test/sinon-server-1.10.3.js</exclude>
