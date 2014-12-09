@@ -14,6 +14,7 @@
  * the License.
  */
 
+
 describe('CDAP Auth manager tests', function () {
     beforeEach(function () {
 /*        sinon.log = function (data) {
