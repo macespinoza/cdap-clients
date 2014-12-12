@@ -70,7 +70,7 @@ module.exports = {
                 port: parsedUrl.port,
                 path: parsedUrl.pathname,
                 method: 'GET',
-                headers: headers()
+                headers: headers
             }, function (response) {
                 response.setEncoding('utf8');
 

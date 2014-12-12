@@ -14,6 +14,7 @@
  * the License.
  */
 
+
 var CDAPAuthManager = require('../src/authmanager'),
     expect = require('expect.js'),
     nock = require('nock');

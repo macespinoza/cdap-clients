@@ -64,7 +64,7 @@ window.CDAPAuthHelpers.Browser = {
             }
         };
         httpConnection.open('GET', authUrl(), true);
-        httpConnection.setRequestHeader(authHeaderName, headers()[authHeaderName]);
+        httpConnection.setRequestHeader(authHeaderName, headers[authHeaderName]);
 
         if (authUrl()) {
             httpConnection.send();
