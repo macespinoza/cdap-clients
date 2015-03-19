@@ -292,7 +292,7 @@ public abstract class BasicAuthenticationClientTestBase {
     }
 
     @GET
-    @Path("/v3/ping")
+    @Path("/ping")
     public void testHttpStatus(@SuppressWarnings("UnusedParameters") HttpRequest request,
                                HttpResponder responder) throws Exception {
       if (authEnabled) {

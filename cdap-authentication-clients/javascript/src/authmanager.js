@@ -72,9 +72,9 @@
         }
 
         var getAuthHeaders = helpers.getAuthHeaders,
-            baseUrl = [ connectionInfo.ssl ? 'https' : 'http',
+            pingUrl = [ connectionInfo.ssl ? 'https' : 'http',
                         '://', connectionInfo.host,
-                        ':', connectionInfo.port, '/', '/v3/ping'
+                        ':', connectionInfo.port, '/ping'
                         ].join(''),
             fetchAuthUrl = helpers.fetchAuthUrl,
             getAuthUrl = function () {
@@ -88,7 +88,7 @@
                 var retPromise = new Promise();
                 if (null === authEnabled) {
                     if (!authUrls) {
-                        var urlsPromise = fetchAuthUrl(httpConnection, baseUrl);
+                        var urlsPromise = fetchAuthUrl(httpConnection, pingUrl);
                         urlsPromise.then(function (urls) {
                             authUrls = urls || [];
                             authEnabled = !!authUrls.length;

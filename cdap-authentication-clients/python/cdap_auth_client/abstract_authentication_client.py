@@ -40,7 +40,6 @@ class AbstractAuthenticationClient(AuthenticationClient):
     ACCESS_TOKEN_KEY = u"access_token"
     AUTH_URI_KEY = u"auth_uri"
     AUTHENTICATION_HEADER_PREFIX_BASIC = u"Basic "
-    GATEWAY_VERSION = u'/v3'
     HTTP_PROTOCOL = u"http"
     HTTPS_PROTOCOL = u"https"
     EXPIRES_IN_KEY = u"expires_in"
@@ -82,7 +81,7 @@ class AbstractAuthenticationClient(AuthenticationClient):
             raise ValueError(u"Base authentication"
                              u" client is not configured!")
 
-        ping_uri = self.__base_url + self.GATEWAY_VERSION + '/ping'
+        ping_uri = self.__base_url + '/ping'
         LOG.debug(u"Try to get the authentication URI from "
                   u"the gateway server: {}.", ping_uri)
 

@@ -52,7 +52,6 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private static final String ACCESS_TOKEN_KEY = "access_token";
   private static final String EXPIRES_IN_KEY = "expires_in";
   private static final String TOKEN_TYPE_KEY = "token_type";
-  private static final String DEFAULT_GATEWAY_VERSION = "v3";
   private static final long SPARE_TIME_IN_MILLIS = 5000;
   private static final TypeToken<Map<String, String>> ACCESS_TOKEN_RESPONSE_TYPE_TOKEN
     = new TypeToken<Map<String, String>>() { };
@@ -93,8 +92,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     if (baseURI != null) {
       throw new IllegalStateException("Connection info is already configured!");
     }
-    baseURI = URI.create(String.format("%s://%s:%d/%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
-                                      DEFAULT_GATEWAY_VERSION));
+    baseURI = URI.create(String.format("%s://%s:%d/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port));
   }
 
   @Override
