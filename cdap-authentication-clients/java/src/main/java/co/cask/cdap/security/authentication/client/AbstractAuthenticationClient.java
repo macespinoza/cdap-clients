@@ -52,7 +52,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private static final String ACCESS_TOKEN_KEY = "access_token";
   private static final String EXPIRES_IN_KEY = "expires_in";
   private static final String TOKEN_TYPE_KEY = "token_type";
-  private static final String DEFAULT_GATEWAY_VERSION = "v2";
+  private static final String DEFAULT_GATEWAY_VERSION = "v3";
   private static final long SPARE_TIME_IN_MILLIS = 5000;
   private static final TypeToken<Map<String, String>> ACCESS_TOKEN_RESPONSE_TYPE_TOKEN
     = new TypeToken<Map<String, String>>() { };

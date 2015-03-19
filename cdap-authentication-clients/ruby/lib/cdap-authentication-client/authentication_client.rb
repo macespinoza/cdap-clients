@@ -59,7 +59,7 @@ module AuthenticationClient
     end
 
     def fetch_auth_url
-      req = rest.get(@base_url + '/v2/ping', @ssl_cert_check)
+      req = rest.get(@base_url + '/v3/ping', @ssl_cert_check)
       auth_urls = req ['auth_uri']
       if auth_urls.empty?
         fail AuthenticationServerNotFoundException.new 'No Authentication server to get a token from was found'

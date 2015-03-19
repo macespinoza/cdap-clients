@@ -103,7 +103,7 @@ describe('CDAP Auth manager tests', function () {
                 "expires_in": 3600
             };
 
-            this.server.respondWith('GET', /\/v2\/ping/, [401, {'Content-Type': 'application/json'}, JSON.stringify({auth_uri: ['/some/url']})]);
+            this.server.respondWith('GET', /\/v3\/ping/, [401, {'Content-Type': 'application/json'}, JSON.stringify({auth_uri: ['/some/url']})]);
             this.server.respondWith('GET', /\/some\/url/, [200, {'Content-Type': 'application/json'}, JSON.stringify(jsonResp)]);
 
             var authManager = new CDAPAuth.Manager(),
@@ -131,7 +131,7 @@ describe('CDAP Auth manager tests', function () {
                     expires_in: 3600
                 };
 
-            this.server.respondWith(/\/v2\/ping$/, [401, {'Content-Type': 'application/json'}, JSON.stringify(jsonRespAuthUrls)]);
+            this.server.respondWith(/\/v3\/ping$/, [401, {'Content-Type': 'application/json'}, JSON.stringify(jsonRespAuthUrls)]);
             this.server.respondWith(/\/token\/url[1-9]*$/, [200, {'Content-Type': 'application/json'},
                 JSON.stringify(jsonRespAuthToken)]);
 

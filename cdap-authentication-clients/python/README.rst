@@ -154,4 +154,4 @@ Tests
 
 To run tests from a command line::
  
-  python tests/BasicAuthenticationClientTest.py
+  python tests/basic_authentication_client_test.py

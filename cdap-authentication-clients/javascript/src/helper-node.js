@@ -27,14 +27,14 @@ module.exports = {
 
         return obj;
     },
-    fetchAuthUrl: function (httpConnection, baseUrl) {
+    fetchAuthUrl: function (httpConnection, pingUrl) {
         var promise = new Promise(),
-            parsedUrl = Url.parse(baseUrl()),
+            parsedUrl = Url.parse(pingUrl),
             request = httpConnection.request({
                 protocol: parsedUrl.protocol,
                 host: parsedUrl.hostname,
                 port: parsedUrl.port,
-                path: '/v2/ping',
+                path: parsedUrl.path,
                 method: 'GET'
             }, function (response) {
                 response.setEncoding('utf8');
@@ -53,7 +53,7 @@ module.exports = {
             });
 
         request.on('error', function (error) {
-            promise.resolve(null);
+            promise.reject(error);
         });
 
         request.end();

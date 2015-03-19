@@ -16,7 +16,7 @@
 http_interactions:
 - request:
     method: get
-    uri: http://127.0.0.1:11000/v2/ping
+    uri: http://127.0.0.1:11000/v3/ping
     body:
       encoding: US-ASCII
       string: ''

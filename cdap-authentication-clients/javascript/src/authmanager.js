@@ -33,6 +33,12 @@
 }(function (target, require) {
     'use strict';
 
+    // Given a promise, returns a callback which propogates the error to the given promise.
+    var propogateError = function (promise) {
+        return function(err) {
+            promise.reject(err);
+        }
+    };
     var moduleConstructor = function () {
         var connectionInfo = {
                 host: 'localhost',
@@ -66,13 +72,10 @@
         }
 
         var getAuthHeaders = helpers.getAuthHeaders,
-            baseUrl = function () {
-                return [
-                    connectionInfo.ssl ? 'https' : 'http',
-                    '://', connectionInfo.host,
-                    ':', connectionInfo.port, '/'
-                ].join('');
-            },
+            baseUrl = [ connectionInfo.ssl ? 'https' : 'http',
+                        '://', connectionInfo.host,
+                        ':', connectionInfo.port, '/', '/v3/ping'
+                        ].join(''),
             fetchAuthUrl = helpers.fetchAuthUrl,
             getAuthUrl = function () {
                 if (!authUrls) {
@@ -83,14 +86,14 @@
             },
             isAuthEnabledImpl = function () {
                 var retPromise = new Promise();
-                if (null == authEnabled) {
+                if (null === authEnabled) {
                     if (!authUrls) {
                         var urlsPromise = fetchAuthUrl(httpConnection, baseUrl);
                         urlsPromise.then(function (urls) {
                             authUrls = urls || [];
                             authEnabled = !!authUrls.length;
                             retPromise.resolve(authEnabled);
-                        });
+                        }, propogateError(retPromise));
                     }
                 } else {
                     retPromise.resolve(authEnabled);
@@ -121,7 +124,7 @@
                             }).then(resolveWithToken, resolveWithToken);
                         }
                     }
-                });
+                }, propogateError(retPromise));
 
                 return retPromise;
             },
