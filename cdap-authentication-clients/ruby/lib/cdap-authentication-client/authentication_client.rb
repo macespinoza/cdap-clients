@@ -28,7 +28,7 @@ module AuthenticationClient
 
     def initialize
       @rest = AuthClientRest.new
-      @base_url = nil
+      @ping_url = nil
       @auth_url = nil
       @is_auth_enabled = nil
       @access_token = nil
@@ -51,15 +51,15 @@ module AuthenticationClient
     end
 
     def set_connection_info(host, port, ssl)
-      if @base_url
+      if @ping_url
         fail IllegalStateException.new, 'Connection info is already configured!'
       end
       protocol = ssl ? 'https' : 'http'
-      @base_url = "#{protocol}://#{host}:#{port}"
+      @ping_url = "#{protocol}://#{host}:#{port}/ping"
     end
 
     def fetch_auth_url
-      req = rest.get(@base_url, @ssl_cert_check)
+      req = rest.get(@ping_url, @ssl_cert_check)
       auth_urls = req ['auth_uri']
       if auth_urls.empty?
         fail AuthenticationServerNotFoundException.new 'No Authentication server to get a token from was found'
