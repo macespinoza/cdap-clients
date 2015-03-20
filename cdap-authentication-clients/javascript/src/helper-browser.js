@@ -26,7 +26,7 @@ window.CDAPAuthHelpers.Browser = {
 
         return obj;
     },
-    fetchAuthUrl: function (httpConnection, baseUrl) {
+    fetchAuthUrl: function (httpConnection, pingUrl) {
         var promise = new CDAPAuth.Promise();
 
         httpConnection.onreadystatechange = function () {
@@ -36,7 +36,7 @@ window.CDAPAuthHelpers.Browser = {
                 promise.resolve(null);
             }
         };
-        httpConnection.open('GET', baseUrl() + '/v2/ping', true);
+        httpConnection.open('GET', pingUrl, true);
         httpConnection.send();
 
         return promise;

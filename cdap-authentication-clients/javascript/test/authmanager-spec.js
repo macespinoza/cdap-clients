@@ -47,7 +47,7 @@ describe('CDAP Auth manager tests', function () {
                 port = 10000,
 
                 mock = nock('http://' + host + ':' + port)
-                    .get('/v2/ping')
+                    .get('/ping')
                     .reply(200),
 
                 authManager = new CDAPAuthManager(),
@@ -73,7 +73,7 @@ describe('CDAP Auth manager tests', function () {
                     auth_uri: ["/some/url", "/some/url1", "/some/url2"]
                 },
                 mock = nock('http://' + host + ':' + port)
-                    .get('/v2/ping')
+                    .get('/ping')
                     .reply(401, JSON.stringify(jsonResp)),
 
                 authManager = new CDAPAuthManager(),
@@ -107,7 +107,7 @@ describe('CDAP Auth manager tests', function () {
                     "expires_in": 3600
                 },
                 mockAuth = nock('http://' + host + ':' + port).
-                    get('/v2/ping')
+                    get('/ping')
                     .reply(401, JSON.stringify(jsonResp1)),
                 mockToken = nock('http://' + host + ':' + port).
                     get('/token/url')
@@ -143,7 +143,7 @@ describe('CDAP Auth manager tests', function () {
                     expires_in: 3600
                 },
                 mockAuth = nock('http://' + host + ':' + port).
-                    get('/v2/ping')
+                    get('/ping')
                     .reply(401, JSON.stringify(jsonResp1)),
                 mockToken = nock('http://' + host + ':' + port, {
                     reqheaders: {

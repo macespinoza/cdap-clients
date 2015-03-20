@@ -43,6 +43,7 @@
             </goals>
             <configuration>
               <excludes>
+                <exclude>*.rst</exclude>
                 <exclude>*.log</exclude>
                 <exclude>*.sh</exclude>
                 <exclude>*.md</exclude>

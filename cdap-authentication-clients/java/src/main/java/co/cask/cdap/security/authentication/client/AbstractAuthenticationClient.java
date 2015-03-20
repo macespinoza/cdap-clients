@@ -52,7 +52,6 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private static final String ACCESS_TOKEN_KEY = "access_token";
   private static final String EXPIRES_IN_KEY = "expires_in";
   private static final String TOKEN_TYPE_KEY = "token_type";
-  private static final String DEFAULT_GATEWAY_VERSION = "v2";
   private static final long SPARE_TIME_IN_MILLIS = 5000;
   private static final TypeToken<Map<String, String>> ACCESS_TOKEN_RESPONSE_TYPE_TOKEN
     = new TypeToken<Map<String, String>>() { };
@@ -61,7 +60,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
 
   private long expirationTime;
   private AccessToken accessToken;
-  private URI baseURI;
+  private URI pingURI;
   private URI authURI;
   private Boolean authEnabled;
   private boolean verifySSLCert;
@@ -90,11 +89,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
 
   @Override
   public void setConnectionInfo(String host, int port, boolean ssl) {
-    if (baseURI != null) {
+    if (pingURI != null) {
       throw new IllegalStateException("Connection info is already configured!");
     }
-    baseURI = URI.create(String.format("%s://%s:%d/%s/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port,
-                                      DEFAULT_GATEWAY_VERSION));
+    pingURI = URI.create(String.format("%s://%s:%d/ping", ssl ? HTTPS_PROTOCOL : HTTP_PROTOCOL, host, port));
   }
 
   @Override
@@ -153,14 +151,14 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * @throws IOException IOException in case of a problem or the connection was aborted or if url list is empty
    */
   private String fetchAuthURI() throws IOException {
-    if (baseURI == null) {
+    if (pingURI == null) {
       throw new IllegalStateException("Connection information not set!");
     }
 
-    LOG.debug("Try to get the authentication URI from the gateway server: {}.", baseURI);
-    HttpResponse response = HttpRequests.execute(HttpRequest.get(baseURI.toURL()).build(), getHttpRequestConfig());
+    LOG.debug("Try to get the authentication URI from the gateway server: {}.", pingURI);
+    HttpResponse response = HttpRequests.execute(HttpRequest.get(pingURI.toURL()).build(), getHttpRequestConfig());
 
-    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
+    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), pingURI);
     if (response.getResponseCode() != HttpURLConnection.HTTP_UNAUTHORIZED) {
       return "";
     }
@@ -190,7 +188,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   private AccessToken execute(HttpRequest request) throws IOException {
     HttpResponse response = HttpRequests.execute(request, getHttpRequestConfig());
 
-    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), baseURI);
+    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), pingURI);
     if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
       throw new HttpFailureException(response.getResponseMessage(), response.getResponseCode());
     }
