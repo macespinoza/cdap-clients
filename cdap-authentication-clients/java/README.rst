@@ -37,7 +37,7 @@ Build
 =====
 To build the Authentication Client API jar, use::
 
-    mvn clean package
+  mvn clean package
 
 
 Usage
@@ -45,11 +45,11 @@ Usage
 To use the Authentication Client API, include this Maven dependency in your project's
 ``pom.xml`` file::
 
-    <dependency>
-      <groupId>co.cask.cdap</groupId>
-      <artifactId>cdap-authentication-client</artifactId>
-      <version>{version}</version>
-    </dependency>
+  <dependency>
+    <groupId>co.cask.cdap</groupId>
+    <artifactId>cdap-authentication-client</artifactId>
+    <version>{version}</version>
+  </dependency>
 
 
 Examples
@@ -79,13 +79,14 @@ Set the CDAP connection information
 
 Example::
 
-    authenticationClient.setConnectionInfo("localhost", 10000, false);
+  authenticationClient.setConnectionInfo("localhost", 10000, false);
 
 This method should be called only once for every ``AuthenticationClient`` object.
 
 
 Check if authentication is enabled in the CDAP cluster
 ------------------------------------------------------
+
 ::
     boolean isEnabled = authenticationClient.isAuthEnabled();
 
@@ -102,8 +103,8 @@ and other properties (this method should be called only once for every
 
 - The ``BasicAuthenticationClient`` requires these user credentials:
 
-    - ``security.auth.client.username=username``
-    - ``security.auth.client.password=password``
+  - ``security.auth.client.username=username``
+  - ``security.auth.client.password=password``
     
 - When SSL is enabled, to suspend certificate checks and allow self-signed certificates,
   set ``security.auth.client.verify.ssl.cert=false``.
