@@ -28,3 +28,8 @@ logs/
 # Examples Stuff
 dependency-reduced-pom.xml
 
+# created by javascript packaging
+/cdap-authentication-clients/javascript/bower_components/
+/cdap-authentication-clients/javascript/dist/
+/cdap-authentication-clients/javascript/node_modules/
+/cdap-authentication-clients/javascript/tmp/
