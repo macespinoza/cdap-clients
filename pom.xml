@@ -218,6 +218,7 @@
                   <exclude>examples/**</exclude>
                   <exclude>**/testlogs/**</exclude>
                   <exclude>**/*.yml</exclude>
+                  <exclude>javascript/**</exclude>
                 </excludes>
               </configuration>
             </execution>
