@@ -14,7 +14,7 @@
 
 require 'httparty'
 
-module AuthenticationClient
+module CDAP
   
 end
 

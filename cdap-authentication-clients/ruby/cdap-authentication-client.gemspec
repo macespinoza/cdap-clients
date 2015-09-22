@@ -1,4 +1,4 @@
-#  Copyright © 2014 Cask Data, Inc.
+#  Copyright © 2014-2015 Cask Data, Inc.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may not
 #  use this file except in compliance with the License. You may obtain a copy of
@@ -18,7 +18,7 @@ require "cdap-authentication-client/version"
 
 Gem::Specification.new do |s|
   s.name        = "cdap-authentication-client"
-  s.version     = AuthenticationClient::VERSION
+  s.version     = CDAP::VERSION
   s.authors     = ["Yura Tolochkevych"]
   s.email       = ["ytolochkevych@cask.co"]
   s.summary     = "A Ruby client for authentication in Cask CDAP services"
