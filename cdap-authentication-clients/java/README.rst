@@ -88,6 +88,7 @@ Check if authentication is enabled in the CDAP cluster
 ------------------------------------------------------
 
 ::
+
     boolean isEnabled = authenticationClient.isAuthEnabled();
 
 Configure Authentication Client
