@@ -58,14 +58,14 @@ Examples
 Create an Authentication Client instance
 ----------------------------------------
 
-::
+.. code:: java
 
-    String defaultAuthClientClass =
-      "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
-    String authClientClassName =
-       properties.getProperty("security.auth.client.class.name", defaultAuthClientClass);
-    AuthenticationClient authenticationClient =
-       (AuthenticationClient) Class.forName(authClientClassName).newInstance();
+  String defaultAuthClientClass =
+    "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
+  String authClientClassName =
+     properties.getProperty("security.auth.client.class.name", defaultAuthClientClass);
+  AuthenticationClient authenticationClient =
+     (AuthenticationClient) Class.forName(authClientClassName).newInstance();
 
 Creating an Authentication Client using a configuration parameter as shown above allows
 plugging in custom implementations of Authentication Client.
