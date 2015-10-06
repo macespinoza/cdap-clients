@@ -35,7 +35,9 @@ needs to use it.
 
 Build
 =====
-To build the Authentication Client API jar, use::
+To build the Authentication Client API jar, use:
+
+.. code: console
 
   mvn clean package
 
@@ -43,7 +45,9 @@ To build the Authentication Client API jar, use::
 Usage
 =====
 To use the Authentication Client API, include this Maven dependency in your project's
-``pom.xml`` file::
+``pom.xml`` file:
+
+.. code:: xml
 
   <dependency>
     <groupId>co.cask.cdap</groupId>
@@ -58,14 +62,14 @@ Examples
 Create an Authentication Client instance
 ----------------------------------------
 
-::
+.. code:: java
 
-    String defaultAuthClientClass =
-      "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
-    String authClientClassName =
-       properties.getProperty("security.auth.client.class.name", defaultAuthClientClass);
-    AuthenticationClient authenticationClient =
-       (AuthenticationClient) Class.forName(authClientClassName).newInstance();
+  String defaultAuthClientClass =
+    "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
+  String authClientClassName =
+     properties.getProperty("security.auth.client.class.name", defaultAuthClientClass);
+  AuthenticationClient authenticationClient =
+     (AuthenticationClient) Class.forName(authClientClassName).newInstance();
 
 Creating an Authentication Client using a configuration parameter as shown above allows
 plugging in custom implementations of Authentication Client.
@@ -77,7 +81,9 @@ Set the CDAP connection information
 - port
 - boolean flag, true if SSL is enabled
 
-Example::
+Example:
+
+.. code:: java
 
   authenticationClient.setConnectionInfo("localhost", 10000, false);
 
@@ -87,7 +93,8 @@ This method should be called only once for every ``AuthenticationClient`` object
 Check if authentication is enabled in the CDAP cluster
 ------------------------------------------------------
 
-::
+.. code:: java
+
     boolean isEnabled = authenticationClient.isAuthEnabled();
 
 Configure Authentication Client
@@ -95,7 +102,9 @@ Configure Authentication Client
 
 If authentication is enabled, configure the Authentication Client with user credentials
 and other properties (this method should be called only once for every
-``AuthenticationClient`` object)::
+``AuthenticationClient`` object):
+
+.. code:: java
 
     authenticationClient.configure(properties);
 
@@ -112,17 +121,18 @@ and other properties (this method should be called only once for every
 - For interactive applications, see the section `Interactive Applications
   <#interactive-applications>`__ below on retrieving and using user credentials.
 
-Retrieve the access token for the user from the authentication server, and use it
----------------------------------------------------------------------------------
+Retrieve the access token
+-------------------------
+Retrieve the access token for the user from the authentication server, and use it:
 
-::
+.. code:: java
 
-    HttpURLConnection conn = (HttpURLConnection) cdapURL.openConnection();
-    conn.setRequestProperty("Authorization", 
-               authenticationClient.getAccessToken().getTokenType() + " " +
-               authenticationClient.getAccessToken().getValue());
-    ...
-    conn.connect();
+  HttpURLConnection conn = (HttpURLConnection) cdapURL.openConnection();
+  conn.setRequestProperty("Authorization", 
+             authenticationClient.getAccessToken().getTokenType() + " " +
+             authenticationClient.getAccessToken().getValue());
+  ...
+  conn.connect();
 
 If there is an error while fetching the access token, an ``IOException`` will be thrown.
 The Authentication Client caches the access token until the token expires. It
@@ -132,23 +142,25 @@ automatically re-fetches a new token upon expiry.
 Interactive Applications
 ========================
 This example illustrates obtaining user credentials in an interactive application, and
-then configuring the Authentication Client with the retrieved credentials::
+then configuring the Authentication Client with the retrieved credentials:
 
-    authenticationClient.setConnectionInfo(hostname, port, ssl);
-    Properties properties = new Properties();
+.. code:: java
 
-    if (authenticationClient.isAuthEnabled()) {
-      ConsoleReader reader = new ConsoleReader();
-      for (Credential credential : authenticationClient.getRequiredCredentials()) {
-        String credentialValue;
-        output.printf("Please, specify "  credential.getDescription()  "> ");
-        if (credential.isSecret()) {
-            credentialValue = reader.readLine(prompt, '*');
-        } else {
-          credentialValue = reader.readLine(prompt);
-        }
-        properties.put(credential.getName(), credentialValue);
+  authenticationClient.setConnectionInfo(hostname, port, ssl);
+  Properties properties = new Properties();
+
+  if (authenticationClient.isAuthEnabled()) {
+    ConsoleReader reader = new ConsoleReader();
+    for (Credential credential : authenticationClient.getRequiredCredentials()) {
+      String credentialValue;
+      output.printf("Please, specify "  credential.getDescription()  "> ");
+      if (credential.isSecret()) {
+          credentialValue = reader.readLine(prompt, '*');
+      } else {
+        credentialValue = reader.readLine(prompt);
       }
-
-      authenticationClient.configure(properties);
+      properties.put(credential.getName(), credentialValue);
     }
+
+    authenticationClient.configure(properties);
+  }
