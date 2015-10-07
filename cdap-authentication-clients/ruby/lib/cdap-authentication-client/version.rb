@@ -12,6 +12,6 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-module AuthenticationClient
+module CDAP
   VERSION = '1.3.0.a.1'
 end
