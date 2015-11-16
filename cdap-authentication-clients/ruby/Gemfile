@@ -19,6 +19,7 @@ gemspec
 gem 'rake'
 
 group :test do
+  gem 'rubocop'
   gem 'rspec'
   gem 'vcr'
   gem 'webmock'
