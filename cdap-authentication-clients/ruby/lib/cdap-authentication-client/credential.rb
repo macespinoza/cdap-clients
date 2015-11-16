@@ -13,9 +13,7 @@
 #  the License.
 
 module CDAP
-
   class Credential
-
     def initialize(name, description, secret)
       @name = name
       @description = description
@@ -33,7 +31,5 @@ module CDAP
     def is_secret
       @secret
     end
-
   end
-
 end

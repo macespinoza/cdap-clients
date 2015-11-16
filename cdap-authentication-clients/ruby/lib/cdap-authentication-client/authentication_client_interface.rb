@@ -13,31 +13,29 @@
 #  the License.
 
 module CDAP
-
   class AuthenticationClientInterface
-
-    def configure properties
-      raise 'this method should be overriden'
+    def configure(_properties)
+      fail 'this method should be overriden'
     end
 
     def get_access_token
-      raise 'this method should be overriden'
+      fail 'this method should be overriden'
     end
 
     def auth_enabled?
-      raise 'this method should be overriden'
+      fail 'this method should be overriden'
     end
 
     def invalidate_token
-      raise 'this method should be overriden'
+      fail 'this method should be overriden'
     end
 
-    def set_connection_info host, port, ssl
-      raise 'this method should be overriden'
+    def set_connection_info(_host, _port, _ssl)
+      fail 'this method should be overriden'
     end
 
     def get_required_credentials
-      raise 'this method should be overriden'
+      fail 'this method should be overriden'
     end
   end
 end

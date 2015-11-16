@@ -21,11 +21,11 @@ module CDAP
     include HTTParty
 
     def get(url, options = {}, ssl_cert_check, &block)
-      request('get', url, options , ssl_cert_check, &block)
+      request('get', url, options, ssl_cert_check, &block)
     end
 
     def put(url, options = {}, ssl_cert_check, &block)
-      request('put', url, options , ssl_cert_check, &block)
+      request('put', url, options, ssl_cert_check, &block)
     end
 
     def post(url, options = {}, ssl_cert_check, &block)
@@ -33,19 +33,20 @@ module CDAP
     end
 
     private
+
     def request(method, url, options = {}, ssl_cert_check, &block)
       method.downcase!
       # send request
       HTTParty::Basement.default_options.update(verify: ssl_cert_check)
       case method
-        when 'get'
-          response = self.class.get(url, options, &block)
-        when 'post'
-          response = self.class.post(url, options, &block)
-        when 'put'
-          response = self.class.put(url, options, &block)
-        else
-          raise 'Unknown http method'
+      when 'get'
+        response = self.class.get(url, options, &block)
+      when 'post'
+        response = self.class.post(url, options, &block)
+      when 'put'
+        response = self.class.put(url, options, &block)
+      else
+        fail 'Unknown http method'
       end
       # process response
       unless response.response.is_a?(Net::HTTPSuccess)

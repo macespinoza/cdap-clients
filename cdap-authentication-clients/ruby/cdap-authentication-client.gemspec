@@ -12,19 +12,19 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-#encoding: utf-8
-$:.push File.expand_path("../lib", __FILE__)
-require "cdap-authentication-client/version"
+# encoding: utf-8
+$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+require 'cdap-authentication-client/version'
 
 Gem::Specification.new do |s|
-  s.name        = "cdap-authentication-client"
+  s.name        = 'cdap-authentication-client'
   s.version     = CDAP::VERSION
-  s.authors     = ["Cask Data, Inc."]
-  s.email       = ["ops@cask.co"]
-  s.summary     = "A Ruby client for authentication in Cask CDAP services"
-  s.description = "Provide a more Ruby experience when using authentication in Cask CDAP services."
+  s.authors     = ['Cask Data, Inc.']
+  s.email       = ['ops@cask.co']
+  s.summary     = 'A Ruby client for authentication in Cask CDAP services'
+  s.description = 'Provide a more Ruby experience when using authentication in Cask CDAP services.'
 
-  s.rubyforge_project = "cdap-authentication-client"
+  s.rubyforge_project = 'cdap-authentication-client'
 
   s.add_dependency 'httparty'
 
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'simplecov-rcov'
 
-  s.require_paths = ["lib"]
+  s.require_paths = ['lib']
 
   s.files = Dir['lib/**/*.rb']
 end

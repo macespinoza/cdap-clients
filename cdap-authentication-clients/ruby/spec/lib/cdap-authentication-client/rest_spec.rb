@@ -15,7 +15,6 @@
 require 'spec_helper'
 
 describe CDAP::AuthClientRest do
-
   let(:rest) { VCR.use_cassette('rest') { CDAP::AuthClientRest.new } }
 
   it { expect(rest).to be_a CDAP::AuthClientRest }
@@ -23,5 +22,4 @@ describe CDAP::AuthClientRest do
   it { expect(CDAP::AuthClientRest).to respond_to(:new) }
 
   it { expect(rest).to respond_to(:get) }
-
 end
