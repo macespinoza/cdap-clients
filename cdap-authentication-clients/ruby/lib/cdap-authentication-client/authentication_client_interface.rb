@@ -15,27 +15,27 @@
 module CDAP
   class AuthenticationClientInterface
     def configure(_properties)
-      fail 'this method should be overriden'
+      fail 'This method should be overridden'
     end
 
     def get_access_token
-      fail 'this method should be overriden'
+      fail 'This method should be overridden'
     end
 
     def auth_enabled?
-      fail 'this method should be overriden'
+      fail 'This method should be overridden'
     end
 
     def invalidate_token
-      fail 'this method should be overriden'
+      fail 'This method should be overridden'
     end
 
     def set_connection_info(_host, _port, _ssl)
-      fail 'this method should be overriden'
+      fail 'This method should be overridden'
     end
 
     def get_required_credentials
-      fail 'this method should be overriden'
+      fail 'This method should be overridden'
     end
   end
 end
