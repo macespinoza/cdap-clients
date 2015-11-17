@@ -73,14 +73,14 @@ module CDAP
         fail ArgumentError.new, 'Authentication is disabled
                                  in the gateway server.'
       end
-      if  @access_token.nil? || token_expired?
+      if @access_token.nil? || token_expired?
         request_time = Time.now.to_f * 1000
         options = { basic_auth: { username: @username, password: @password } }
         response = rest.get(@auth_url, options, @ssl_cert_check)
         token_value = response['access_token']
         token_type  = response['token_type']
         expires_in = response['expires_in']
-        @expiration_time  = request_time + expires_in - SPARSE_TIME_IN_MILLIS
+        @expiration_time = request_time + expires_in - SPARSE_TIME_IN_MILLIS
         @access_token = AccessToken.new(token_value, token_type, expires_in)
       end
       @access_token

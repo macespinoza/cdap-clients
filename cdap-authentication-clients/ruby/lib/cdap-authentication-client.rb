@@ -15,7 +15,6 @@
 require 'httparty'
 
 module CDAP
-  
 end
 
 require 'cdap-authentication-client/authentication_client'
