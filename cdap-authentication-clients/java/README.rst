@@ -37,7 +37,7 @@ Build
 =====
 To build the Authentication Client API jar, use:
 
-.. code: console
+.. code:: console
 
   mvn clean package
 
