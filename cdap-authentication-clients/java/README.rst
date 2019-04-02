@@ -50,7 +50,7 @@ To use the Authentication Client API, include this Maven dependency in your proj
 .. code:: xml
 
   <dependency>
-    <groupId>co.cask.cdap</groupId>
+    <groupId>io.cdap.cdap</groupId>
     <artifactId>cdap-authentication-client</artifactId>
     <version>{version}</version>
   </dependency>
@@ -65,7 +65,7 @@ Create an Authentication Client instance
 .. code:: java
 
   String defaultAuthClientClass =
-    "co.cask.cdap.security.authentication.client.basic.BasicAuthenticationClient";
+    "io.cdap.cdap.security.authentication.client.basic.BasicAuthenticationClient";
   String authClientClassName =
      properties.getProperty("security.auth.client.class.name", defaultAuthClientClass);
   AuthenticationClient authenticationClient =

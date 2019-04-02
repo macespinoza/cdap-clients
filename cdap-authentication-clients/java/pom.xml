@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright © 2014 Cask Data, Inc.
+  Copyright © 2014-2019 Cask Data, Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy of
@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>co.cask.cdap</groupId>
+    <groupId>io.cdap.cdap</groupId>
     <version>1.3.0-SNAPSHOT</version>
     <artifactId>cdap-authentication-clients</artifactId>
   </parent>
@@ -30,11 +30,11 @@
   <packaging>jar</packaging>
   <name>Java CDAP Authentication Client</name>
   <description>Java CDAP Authentication Client</description>
-  <url>https://github.com/caskdata/cdap-clients</url>
+  <url>https://github.com/cdapio/cdap-clients</url>
 
   <dependencies>
     <dependency>
-      <groupId>co.cask.common</groupId>
+      <groupId>io.cdap.common</groupId>
       <artifactId>common-http</artifactId>
     </dependency>
     <dependency>
@@ -63,7 +63,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>co.cask.http</groupId>
+      <groupId>io.cdap.http</groupId>
       <artifactId>netty-http</artifactId>
       <scope>test</scope>
     </dependency>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright © 2014 Cask Data, Inc.
+  Copyright © 2014-2019 Cask Data, Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy of
@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
 
  <parent>
-    <groupId>co.cask.cdap</groupId>
+    <groupId>io.cdap.cdap</groupId>
     <artifactId>cdap-clients</artifactId>
     <version>1.3.0-SNAPSHOT</version>
   </parent>
@@ -30,7 +30,7 @@
   <packaging>pom</packaging>
   <name>CDAP Authentication clients</name>
   <description>CDAP Authentication Clients</description>
-  <url>https://github.com/caskdata/cdap-clients</url>
+  <url>https://github.com/cdapio/cdap-clients</url>
 
   <modules>
     <module>java</module>
@@ -42,7 +42,7 @@
       <properties>
         <python.dir>${project.build.directory}/cdap-authentication-clients</python.dir>
         <python.stage.dir>${python.dir}/cdap-python-authentication-client-${project.version}</python.stage.dir>
-        <deploy.url>https://repository.continuuity.com/service/local/staging/deploy/maven2</deploy.url>
+        <deploy.url>https://repository.cask.co/service/local/staging/deploy/maven2</deploy.url>
       </properties>
       <build>
         <plugins>
@@ -112,7 +112,7 @@
                   <packaging>zip</packaging>
                   <generatePom>false</generatePom>
                   <file>${project.build.directory}/cdap-python-authentication-client-${project.version}.zip</file>
-                  <repositoryId>continuuity</repositoryId>
+                  <repositoryId>cask</repositoryId>
                   <url>${deploy.url}</url>
                 </configuration>
               </execution>

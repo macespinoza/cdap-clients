@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Cask Data, Inc.
+ * Copyright © 2014-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,7 +14,7 @@
  * the License.
  */
 
-package co.cask.cdap.security.authentication.client.basic;
+package io.cdap.cdap.security.authentication.client.basic;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -24,20 +24,20 @@ import org.junit.BeforeClass;
 /**
  *
  */
-public class BasicAuthenticationClientHttpTest extends BasicAuthenticationClientTestBase {
+public class BasicAuthenticationClientHttpsTest extends BasicAuthenticationClientTestBase {
   @BeforeClass
   public static void setUp() throws Exception {
-    sslEnabled = false;
+    sslEnabled = true;
     authServer = new TestHttpService(ImmutableSet.of(new AuthServer()), sslEnabled);
     authServer.startAndWait();
 
     authEnabledRouter = new TestHttpService(ImmutableSet.of(
-      new Router(true, ImmutableList.of(
-        String.format("%s://%s:%d/token",
-                      sslEnabled ? "https" : "http",
-                      authServer.getBindAddress().getHostName(),
-                      authServer.getBindAddress().getPort())
-      ))), sslEnabled);
+    new Router(true, ImmutableList.of(
+      String.format("%s://%s:%d/token",
+                    sslEnabled ? "https" : "http",
+                    authServer.getBindAddress().getHostName(),
+                    authServer.getBindAddress().getPort())
+    ))), sslEnabled);
     authEnabledRouter.startAndWait();
 
     authDisabledRouter = new TestHttpService(ImmutableSet.of(new Router(false, ImmutableList.<String>of())),
