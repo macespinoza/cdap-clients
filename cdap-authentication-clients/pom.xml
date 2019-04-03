@@ -42,7 +42,6 @@
       <properties>
         <python.dir>${project.build.directory}/cdap-authentication-clients</python.dir>
         <python.stage.dir>${python.dir}/cdap-python-authentication-client-${project.version}</python.stage.dir>
-        <deploy.url>https://repository.cask.co/service/local/staging/deploy/maven2</deploy.url>
       </properties>
       <build>
         <plugins>
@@ -89,31 +88,6 @@
                   <appendAssemblyId>false</appendAssemblyId>
                   <attach>false</attach>
                   <finalName>cdap-python-authentication-client-${project.version}</finalName>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <version>2.8</version>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>deploy-python</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>deploy-file</goal>
-                </goals>
-                <configuration>
-                  <version>${project.version}</version>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>cdap-python-authentication-client</artifactId>
-                  <packaging>zip</packaging>
-                  <generatePom>false</generatePom>
-                  <file>${project.build.directory}/cdap-python-authentication-client-${project.version}.zip</file>
-                  <repositoryId>cask</repositoryId>
-                  <url>${deploy.url}</url>
                 </configuration>
               </execution>
             </executions>
