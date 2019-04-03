@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Cask Data, Inc.
+ * Copyright © 2014-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,25 +14,27 @@
  * the License.
  */
 
-package co.cask.cdap.security.authentication.client.basic;
+package io.cdap.cdap.security.authentication.client.basic;
 
-import co.cask.cdap.security.authentication.client.AccessToken;
-import co.cask.cdap.security.authentication.client.AuthenticationClient;
-import co.cask.common.http.exception.HttpFailureException;
-import co.cask.http.AbstractHttpHandler;
-import co.cask.http.HttpHandler;
-import co.cask.http.HttpResponder;
-import co.cask.http.NettyHttpService;
 import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 import com.google.common.util.concurrent.AbstractIdleService;
+import com.google.gson.Gson;
+import io.cdap.cdap.security.authentication.client.AccessToken;
+import io.cdap.cdap.security.authentication.client.AuthenticationClient;
+import io.cdap.common.http.exception.HttpFailureException;
+import io.cdap.http.AbstractHttpHandler;
+import io.cdap.http.HttpHandler;
+import io.cdap.http.HttpResponder;
+import io.cdap.http.NettyHttpService;
+import io.cdap.http.SSLConfig;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -69,6 +71,7 @@ public abstract class BasicAuthenticationClientTestBase {
   private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
   private static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
   private static final String VERIFY_SSL_CERT_PROP_VALUE = "false";
+  private static final Gson GSON = new Gson();
 
   protected static TestHttpService authEnabledRouter;
   protected static TestHttpService authDisabledRouter;
@@ -247,9 +250,8 @@ public abstract class BasicAuthenticationClientTestBase {
 
     @GET
     @Path("/token")
-    public void getToken(HttpRequest request,
-                         HttpResponder responder) throws Exception {
-      String authHeaderVal = request.getHeader(HttpHeaders.AUTHORIZATION);
+    public void getToken(HttpRequest request, HttpResponder responder) throws Exception {
+      String authHeaderVal = request.headers().get(HttpHeaders.AUTHORIZATION);
       if (StringUtils.isNotEmpty(authHeaderVal)) {
         authHeaderVal = authHeaderVal.replace("Basic ", StringUtils.EMPTY);
         String credentialsStr = new String(Base64.decodeBase64(authHeaderVal), Charsets.UTF_8);
@@ -257,15 +259,15 @@ public abstract class BasicAuthenticationClientTestBase {
         String username = credentials[0];
         String password = credentials[1];
         if (USERNAME.equals(username) && PASSWORD.equals(password)) {
-          responder.sendJson(HttpResponseStatus.OK, getTokenMap(TOKEN, TOKEN_TYPE, TOKEN_LIFE_TIME));
+          responder.sendJson(HttpResponseStatus.OK, GSON.toJson(getTokenMap(TOKEN, TOKEN_TYPE, TOKEN_LIFE_TIME)));
         } else if (EMPTY_TOKEN_USERNAME.equals(username)) {
-          responder.sendJson(HttpResponseStatus.OK, getTokenMap("", TOKEN_TYPE, TOKEN_LIFE_TIME));
+          responder.sendJson(HttpResponseStatus.OK, GSON.toJson(getTokenMap("", TOKEN_TYPE, TOKEN_LIFE_TIME)));
         } else if (EXPIRED_TOKEN_USERNAME.equals(username)) {
           if (expiredRequestsCounter == 0) {
             ++expiredRequestsCounter;
-            responder.sendJson(HttpResponseStatus.OK, getTokenMap(TOKEN, TOKEN_TYPE, 5L));
+            responder.sendJson(HttpResponseStatus.OK, GSON.toJson(getTokenMap(TOKEN, TOKEN_TYPE, 5L)));
           } else {
-            responder.sendJson(HttpResponseStatus.OK, getTokenMap(NEW_TOKEN, TOKEN_TYPE, TOKEN_LIFE_TIME));
+            responder.sendJson(HttpResponseStatus.OK, GSON.toJson(getTokenMap(NEW_TOKEN, TOKEN_TYPE, TOKEN_LIFE_TIME)));
           }
         } else {
           responder.sendStatus(HttpResponseStatus.UNAUTHORIZED);
@@ -296,7 +298,7 @@ public abstract class BasicAuthenticationClientTestBase {
     public void testHttpStatus(@SuppressWarnings("UnusedParameters") HttpRequest request,
                                HttpResponder responder) throws Exception {
       if (authEnabled) {
-        responder.sendJson(HttpResponseStatus.UNAUTHORIZED, ImmutableMap.of("auth_uri", authUris));
+        responder.sendJson(HttpResponseStatus.UNAUTHORIZED, GSON.toJson(ImmutableMap.of("auth_uri", authUris)));
       } else {
         responder.sendString(HttpResponseStatus.OK, "OK.");
       }
@@ -308,9 +310,9 @@ public abstract class BasicAuthenticationClientTestBase {
     private final NettyHttpService httpService;
 
     public TestHttpService(Set<? extends HttpHandler> handlers, boolean sslEnabled) throws Exception {
-      NettyHttpService.Builder serviceBuilder = NettyHttpService.builder()
+      NettyHttpService.Builder serviceBuilder = NettyHttpService.builder("testservice")
         .setHost("localhost")
-        .addHttpHandlers(Sets.newHashSet(handlers))
+        .setHttpHandlers(Sets.newHashSet(handlers))
         .setWorkerThreadPoolSize(10)
         .setExecThreadPoolSize(10)
         .setConnectionBacklog(20000);
@@ -318,7 +320,9 @@ public abstract class BasicAuthenticationClientTestBase {
       if (sslEnabled) {
         URL keystore = getClass().getClassLoader().getResource("cert.jks");
         Assert.assertNotNull(keystore);
-        serviceBuilder.enableSSL(new File(keystore.toURI()), "secret", "secret");
+        serviceBuilder.enableSSL(SSLConfig.builder(new File(keystore.getPath()), "secret")
+                                   .setCertificatePassword("secret")
+                                   .build());
       }
 
       this.httpService = serviceBuilder.build();
@@ -330,12 +334,12 @@ public abstract class BasicAuthenticationClientTestBase {
 
     @Override
     protected void startUp() throws Exception {
-      httpService.startAndWait();
+      httpService.start();
     }
 
     @Override
     protected void shutDown() throws Exception {
-      httpService.stopAndWait();
+      httpService.stop();
     }
 
     @Override

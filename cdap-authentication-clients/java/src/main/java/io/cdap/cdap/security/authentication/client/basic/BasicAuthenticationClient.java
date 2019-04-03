@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Cask Data, Inc.
+ * Copyright © 2014-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,15 +14,15 @@
  * the License.
  */
 
-package co.cask.cdap.security.authentication.client.basic;
+package io.cdap.cdap.security.authentication.client.basic;
 
-import co.cask.cdap.security.authentication.client.AbstractAuthenticationClient;
-import co.cask.cdap.security.authentication.client.Credential;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.net.HttpHeaders;
+import io.cdap.cdap.security.authentication.client.AbstractAuthenticationClient;
+import io.cdap.cdap.security.authentication.client.Credential;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Cask Data, Inc.
+ * Copyright © 2014-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,17 +15,17 @@
  */
 
 
-package co.cask.cdap.security.authentication.client;
+package io.cdap.cdap.security.authentication.client;
 
-import co.cask.common.http.HttpRequest;
-import co.cask.common.http.HttpRequestConfig;
-import co.cask.common.http.HttpRequests;
-import co.cask.common.http.HttpResponse;
-import co.cask.common.http.ObjectResponse;
-import co.cask.common.http.exception.HttpFailureException;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
+import io.cdap.common.http.HttpRequest;
+import io.cdap.common.http.HttpRequestConfig;
+import io.cdap.common.http.HttpRequests;
+import io.cdap.common.http.HttpResponse;
+import io.cdap.common.http.ObjectResponse;
+import io.cdap.common.http.exception.HttpFailureException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
