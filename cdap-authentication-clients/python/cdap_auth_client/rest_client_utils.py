@@ -31,7 +31,7 @@ class RestClientUtils:
 
     @staticmethod
     def verify_response_code(response_code):
-        if response_code is hl.OK:
+        if response_code == 200 or response_code is hl.OK:
             LOG.debug("Success operation result code.")
             return
         else:
